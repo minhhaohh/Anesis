@@ -11,9 +11,33 @@
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                 PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 640px;"
                 CellContextMenu="OnCellContextMenu" CellClick="OnCellClick">
+    <Template Context="batch">
+        <RadzenTable>
+            <RadzenTableHeader>
+                <RadzenTableHeaderRow>
+                    <RadzenTableHeaderCell Style="width: 10%;">#ID</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 15%;">Batch ID</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 20%;">Batch Owner</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 15%;">Payment Type</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 15%;">Trans. Type</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 25%;">Doc No</RadzenTableHeaderCell>
+                </RadzenTableHeaderRow>
+            </RadzenTableHeader>
+            <RadzenTableBody>
+                <RadzenTableRow>
+                    <RadzenTableCell>@batch.Id</RadzenTableCell>
+                    <RadzenTableCell>@batch.BatchId</RadzenTableCell>
+                    <RadzenTableCell>@batch.BatchOwner</RadzenTableCell>
+                    <RadzenTableCell>@batch.PaymentType</RadzenTableCell>
+                    <RadzenTableCell>@batch.TransactionType</RadzenTableCell>
+                    <RadzenTableCell>@batch.DocNo</RadzenTableCell>
+                </RadzenTableRow>
+            </RadzenTableBody>
+        </RadzenTable>
+    </Template>
     <Columns>
         <RadzenDataGridColumn TItem="BatchTransactionViewModel" Property="@nameof(BatchTransactionViewModel.BankTransactionId)" Title="#BankID"
-                              IsInEditMode="IsEditing" Width="12%" CssClass="rz-py-0">
+                              IsInEditMode="IsEditing" Width="15%" CssClass="rz-py-0">
             <Template Context="batch">
                 <RadzenText Text="@batch.BankTransactionId.ToString()" TextStyle="TextStyle.Subtitle2" class="rz-m-0" />
             </Template>
@@ -22,13 +46,9 @@
                                Change="async (bankId) => await UpdateLinkedBankIdAsync(batch.Id, bankId)" />
             </EditTemplate>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.Id)" Title="#ID" Width="10%" />
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PostDate)" Title="Date" FormatString="{0:MM-dd-yyyy}" Width="12%" />
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.BatchId)" Title="Batch ID" Width="12%" />
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentFrom)" Title="Payment From" Width="22%" />
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentType)" Title="P.Type" Width="10%" />
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.TransactionType)" Title="T.Type" Width="10%" />
-        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentAmount)" Title="Amount" FormatString="{0:C2}" Width="12%" />
+        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PostDate)" Title="Date" FormatString="{0:MM-dd-yyyy}" Width="15%" />
+        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentFrom)" Title="Payment From" Width="50%" />
+        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentAmount)" Title="Amount" FormatString="{0:C2}" Width="15%" />
     </Columns>
 </RadzenDataGrid>
 
