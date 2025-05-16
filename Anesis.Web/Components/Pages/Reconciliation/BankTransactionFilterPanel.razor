@@ -4,8 +4,8 @@
 
 <RadzenRow>
     <RadzenColumn Size="12" SizeMD="9">
-        <RadzenFieldset Text="@($"Bank Transactions - Last Time Reconciliation: {LastTimeReconciliation.DateThruAndBy}")">
-            <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+        <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+            <RadzenFieldset Text="@($"Bank Transactions - Last Time Reconciliation: {LastTimeReconciliation.DateThruAndBy}")">
                 <RadzenRow>
                     <RadzenColumn Size="12" SizeMD="4">
                         <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
@@ -34,8 +34,8 @@
                         </RadzenStack>
                     </RadzenColumn>
                 </RadzenRow>
-            </RadzenTemplateForm>
-        </RadzenFieldset>
+            </RadzenFieldset>
+        </RadzenTemplateForm>
     </RadzenColumn>
     <RadzenColumn Size="12" SizeMD="3">
         <BalanceSummary BalanceSummaryModel="BalanceSummaryModel" />
@@ -102,8 +102,7 @@
 
     private async Task ConfirmAndCreateReconciliationAsync()
     {
-        var confirmMessage = $"Do you really want to mark the reconciliation to {FilterModel.ReconciledDate.Value.ToString("MM/dd/yyyy")} "
-            + $"with a balance of {BalanceSummaryModel.Different.ToString("C2")} as completed?";
+        var confirmMessage = $"Do you really want to mark the reconciliation to {FilterModel.ReconciledDate.Value.ToString("MM/dd/yyyy")} as completed?";
 
         var result = await _dialogService.Confirm(confirmMessage, $"Complete Reconciliation",
             new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });

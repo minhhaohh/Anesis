@@ -6,5 +6,10 @@
         {
             return string.Join(separator, source);
         }
+
+        public static string StrJoin(this IEnumerable<int> source, string separator)
+        {
+            return string.Join(separator, source);
+        }
     }
 }

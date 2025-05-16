@@ -2,8 +2,8 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenStack>
-    <RadzenTemplateForm TItem="BasicInvoiceEditModel" Data="EditBasicModel" Submit="SaveBasicInvoiceAsync">
+<RadzenTemplateForm TItem="BasicInvoiceEditModel" Data="EditBasicModel" Submit="SaveBasicInvoiceAsync">
+    <RadzenStack>
         <RadzenFieldset Text="Invoice Information">
             <RadzenStack Gap="0.5rem">
                 <RadzenRow>
@@ -101,14 +101,14 @@
                 </RadzenRow>
             </RadzenStack>
         </RadzenFieldset>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                           Text="Save" Icon="save" />
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                           Text="Close" Click="() => _dialogService.Close()" />
         </RadzenStack>
-    </RadzenTemplateForm>
-</RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

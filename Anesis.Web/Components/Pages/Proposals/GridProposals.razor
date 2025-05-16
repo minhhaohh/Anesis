@@ -12,46 +12,36 @@
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.Id)" Title="#ID" Width="3%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.EcwChartNo)" Title="Patient" Width="10%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div title="Chart No"><strong>@proposal.EcwChartNo</strong> (@proposal.ChartNo)</div>
-                    <div class="rz-color-primary" title="Patient Name"><strong>@proposal.FirstName, @proposal.LastName</strong></div>
-                    <div><span title="Gender">@proposal.Gender</span> | <span title="Date of birth">@proposal.Dob.ToString("MM-dd-yyyy")</span></div>
-                </RadzenText>
+                <div title="Chart No"><strong>@proposal.EcwChartNo</strong> (@proposal.ChartNo)</div>
+                <div class="rz-color-primary" title="Patient Name"><strong>@proposal.FirstName, @proposal.LastName</strong></div>
+                <div><span title="Gender">@proposal.Gender</span> | <span title="Date of birth">@proposal.Dob.ToString("MM-dd-yyyy")</span></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.AppointmentDate)" Title="Original Appointment" Width="10%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div class="rz-color-series-4"><strong title="Provider">@proposal.ProviderName</strong></div>
-                    <div><strong title="Location">@proposal.LocationName</strong> | <span title="Appointment Date">@proposal.AppointmentDate.ToString("MM-dd-yyyy")</span></div>
-                </RadzenText>
+                <div class="rz-color-series-4"><strong title="Provider">@proposal.ProviderName</strong></div>
+                <div><strong title="Location">@proposal.LocationName</strong> | <span title="Appointment Date">@proposal.AppointmentDate.ToString("MM-dd-yyyy")</span></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.ProcedureName)" Title="Proposed Procedure" Width="20%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div title="Procedure: @proposal.ProcedureName"><strong>@proposal.ProcedureName</strong></div>
-                    <div title="Diagnosis Code: @proposal.DiagnosisCode">Diagnosis Code: <strong>@proposal.DiagnosisCode</strong></div>
-                </RadzenText>
+                <div title="Procedure: @proposal.ProcedureName"><strong>@proposal.ProcedureName</strong></div>
+                <div title="Diagnosis Code: @proposal.DiagnosisCode">Diagnosis Code: <strong>@proposal.DiagnosisCode</strong></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.ProposerName)" Title="Requested By" Width="10%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div class="rz-color-series-4"><strong title="Requested By">@proposal.ProposerName</strong></div>
-                    <div title="Requested Date">@proposal.CreatedDate.ToString("MM-dd-yyyy")</div>
-                </RadzenText>
+                <div class="rz-color-series-4"><strong title="Requested By">@proposal.ProposerName</strong></div>
+                <div title="Requested Date">@proposal.CreatedDate.ToString("MM-dd-yyyy")</div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.ReviewerName)" Title="Review By" Width="10%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    @if (proposal.ReviewerId > 0)
-                    {
-                        <div class="rz-color-series-4"><strong title="Reviewer">@proposal.ReviewerName</strong></div>
-                        <div title="Reviewer Notes: @proposal.ReviewerNotes">Notes: @proposal.ReviewerNotes</div>
-                    }
-                </RadzenText>
+                @if (proposal.ReviewerId > 0)
+                {
+                    <div class="rz-color-series-4"><strong title="Reviewer">@proposal.ReviewerName</strong></div>
+                    <div title="Reviewer Notes: @proposal.ReviewerNotes">Notes: @proposal.ReviewerNotes</div>
+                }
                 @if (proposal.CanReview && proposal.ReviewerId > 0)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="rate_review"
@@ -62,12 +52,10 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.SurgeonName)" Title="Surgery By" Width="10%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    @if (proposal.SurgeonId > 0)
-                    {
-                        <div class="rz-color-series-4"><strong title="Surgeon">@proposal.SurgeonName</strong></div>
-                    }
-                </RadzenText>
+                @if (proposal.SurgeonId > 0)
+                {
+                    <div class="rz-color-series-4"><strong title="Surgeon">@proposal.SurgeonName</strong></div>
+                }
                 @if (proposal.CanMarkAsOrdered)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Size="ButtonSize.Small" Icon="task"
@@ -83,12 +71,10 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.RequestStatus)" Title="Status" Width="7%">
             <Template Context="proposal">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    @{
-                        var colorClass = ProposalStatusColors.GetColorClass(proposal.RequestStatusStr);
-                    }
-                    <div class="@colorClass"><strong>@proposal.RequestStatusStr</strong></div>
-                </RadzenText>
+                @{
+                    var colorClass = ProposalStatusColors.GetColorClass(proposal.RequestStatusStr);
+                }
+                <div class="@colorClass"><strong>@proposal.RequestStatusStr</strong></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.Id)" Width="10%" Sortable="false">
@@ -131,7 +117,7 @@
     [Parameter]
     public EventCallback<int> OnOpenEditProposalDialog { get; set; }
 
-    private string _gridStyle = "";
+    private string _gridStyle = "max-height: 472px;";
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
     private ResponseModel<List<ProposalViewModel>> _data = new();
@@ -139,17 +125,11 @@
     // COMPONENTS
     private RadzenDataGrid<ProposalViewModel> _grid;
 
-    // OVERRIDE METHODS
-    protected override void OnParametersSet()
-    {
-        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 500px;";
-    }
-
     // PUBLIC METHODS
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 500px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 472px;";
     }
 
     public async Task RefreshGridAsync()

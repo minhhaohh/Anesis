@@ -4,8 +4,8 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenStack>
-    <RadzenTemplateForm TItem="SignatureViewModel" Data="SignatureModel" Submit="SaveSignatureAsync">
+<RadzenTemplateForm TItem="SignatureViewModel" Data="SignatureModel" Submit="SaveSignatureAsync">
+    <RadzenStack>
         <RadzenFieldset Text="Signature">
             <RadzenStack Gap="1rem">
                 <SignaturePad @bind-Value="SignatureModel.Image" Disabled="_disabled" ShowClearButton="false"
@@ -14,7 +14,7 @@
                               style="width: 100%; height: 200px" />
             </RadzenStack>
         </RadzenFieldset>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             @if (!_disabled)
             {
                 <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Text="Save" Icon="save" />
@@ -22,8 +22,8 @@
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Text="Close"
                           Click="() => _dialogService.Close()" />
         </RadzenStack>
-    </RadzenTemplateForm>
-</RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

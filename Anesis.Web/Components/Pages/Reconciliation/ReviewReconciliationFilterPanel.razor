@@ -1,7 +1,7 @@
 ﻿<RadzenRow>
     <RadzenColumn Size="12" SizeMD="9">
-        <RadzenFieldset Text="Filter Panel">
-            <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+        <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+            <RadzenFieldset Text="Filter Panel">
                 <RadzenRow>
                     <RadzenColumn Size="12" SizeMD="4">
                         <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
@@ -11,10 +11,10 @@
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="4">
                         <RadzenLabel Text="Reconciliation" Component="ReconciledId" class="rz-text-subtitle2" />
-                        <RadzenDropDown @bind-Value="FilterModel.ReconciliationId" Name="ReconciledId" 
+                        <RadzenDropDown @bind-Value="FilterModel.ReconciliationId" Name="ReconciledId"
                                         Data="Reconciliations"
                                         TextProperty="@nameof(ReconciliationViewModel.DateThruAndBy)"
-                                        ValueProperty="@nameof(ReconciliationViewModel.Id)" 
+                                        ValueProperty="@nameof(ReconciliationViewModel.Id)"
                                         Placeholder="---All---" Style="width: 100%;" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="4">
@@ -28,8 +28,8 @@
                         </RadzenStack>
                     </RadzenColumn>
                 </RadzenRow>
-            </RadzenTemplateForm>
-        </RadzenFieldset>
+            </RadzenFieldset>
+        </RadzenTemplateForm>
     </RadzenColumn>
     <RadzenColumn Size="12" SizeMD="3">
         <BalanceSummary BalanceSummaryModel="BalanceSummaryModel" />

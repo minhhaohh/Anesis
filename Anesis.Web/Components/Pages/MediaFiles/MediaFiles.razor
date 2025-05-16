@@ -5,13 +5,15 @@
 
 <PageTitle>Media Files</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Media Files</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">Media Files</RadzenText>
 
-<MediaFileFilterPanel @ref="_mediaFileFilterPanel" FilterModel="_filterModel"
-                      FileCategories="_fileCategories" FileTypes="_fileTypes"
-                      OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
+    <MediaFileFilterPanel @ref="_mediaFileFilterPanel" FilterModel="_filterModel"
+                          FileCategories="_fileCategories" FileTypes="_fileTypes"
+                          OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
 
-<GridMediaFiles @ref="_gridMediaFiles" FilterModel="_filterModel" />
+    <GridMediaFiles @ref="_gridMediaFiles" FilterModel="_filterModel" />
+</RadzenStack>
 
 @code {
     public MediaFileFilterModel _filterModel = new();

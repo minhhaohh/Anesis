@@ -37,6 +37,7 @@
             </RadzenRow>
         </RadzenFieldset>
     </RadzenTemplateForm>
+
     <RadzenDataGrid @ref="_gridCaseCptCodes" TItem="CaseCptCodeViewModel" IsLoading=_isLoading
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
@@ -76,7 +77,8 @@
             </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                       Text="Close" Click="() => _dialogService.Close()" />
     </RadzenStack>

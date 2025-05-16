@@ -2,8 +2,8 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenStack>
-    <RadzenTemplateForm TItem="LinkInvoiceCaseModel" Data="LinkInvoiceModel" Submit="LinkInvoiceAsync">
+<RadzenTemplateForm TItem="LinkInvoiceCaseModel" Data="LinkInvoiceModel" Submit="LinkInvoiceAsync">
+    <RadzenStack>
         <RadzenFieldset Text="Link Invoice">
             <RadzenRow>
                 <RadzenColumn Size="12" SizeMD="3">
@@ -54,13 +54,13 @@
         </RadzenFieldset>
         @if (HasCloseButton)
         {
-            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
                 <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                               Text="Close" Click="() => _dialogService.Close()" />
             </RadzenStack>
         }
-    </RadzenTemplateForm>
-</RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

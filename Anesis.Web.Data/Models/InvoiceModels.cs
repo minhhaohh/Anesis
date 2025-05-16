@@ -276,12 +276,16 @@ namespace Anesis.Web.Data.Models
 
         public bool IsBulk { get; set; }
 
-        public List<InvoiceItemEditModel> Items { get; set; }
+        public List<InvoiceLinkSurgeryCaseModel> LinkedCases { get; set; }
 
-        public string LinkedCases { get; set; }
+        public string LinkedCasesStr { get; set; }
+
+        public List<InvoiceItemEditModel> Items { get; set; }
 
         public InvoiceEditModel()
         {
+            LinkedCases = new List<InvoiceLinkSurgeryCaseModel>();
+
             var invoiceItems = new List<InvoiceItemEditModel>();
 
             while (invoiceItems.Count < 20)
@@ -329,5 +333,12 @@ namespace Anesis.Web.Data.Models
         public string Notes { get; set; }
 
         public bool IsBulk { get; set; }
+    }
+
+    public class InvoiceLinkSurgeryCaseModel
+    {
+        public int SurgeryCaseId { get; set; }
+
+        public decimal InvoiceAmount { get; set; }
     }
 }

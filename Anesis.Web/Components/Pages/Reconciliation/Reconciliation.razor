@@ -4,25 +4,27 @@
 
 <PageTitle>Reconciliation</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Reconciliation</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">Reconciliation</RadzenText>
 
-<RadzenRow>
-    <RadzenColumn Size="12" SizeMD="6">
-        <BatchTransactionFilterPanel FilterModel="_batchFilterModel" LastTimeReconciliation="_lastTimeReconciliation"
-                                     ActiveLocations="_activeLocations" PaymentTypes="_paymentTypes"
-                                     OnFilterGrid="FilterBatchGridAsync" OnRefreshGrid="RefreshBatchGridAsync" />
-        <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="true" 
-                               FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="6">
-        <BankTransactionFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
-                                    LastTimeReconciliation="_lastTimeReconciliation" PaymentTypes="_paymentTypes"
-                                    OnFilterGrid="FilterBankGridAsync" OnRefreshGrid="RefreshBankGridAsync" />
-        <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="true"
-                              FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
-                              OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
-    </RadzenColumn>
-</RadzenRow>
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="6">
+            <BatchTransactionFilterPanel FilterModel="_batchFilterModel" LastTimeReconciliation="_lastTimeReconciliation"
+                                         ActiveLocations="_activeLocations" PaymentTypes="_paymentTypes"
+                                         OnFilterGrid="FilterBatchGridAsync" OnRefreshGrid="RefreshBatchGridAsync" />
+            <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="true"
+                                   FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <BankTransactionFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                        LastTimeReconciliation="_lastTimeReconciliation" PaymentTypes="_paymentTypes"
+                                        OnFilterGrid="FilterBankGridAsync" OnRefreshGrid="RefreshBankGridAsync" />
+            <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="true"
+                                  FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                  OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
 
 @code {
     private BatchTransactionFilterModel _batchFilterModel = new();
@@ -60,7 +62,7 @@
             _notifyService.NotifyErrors("Get Last Time Reconciliation", reconciliationRes.Messages);
             return null;
         }
-        
+
         return reconciliationRes.Data;
     }
 

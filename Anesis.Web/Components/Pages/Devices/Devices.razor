@@ -5,14 +5,16 @@
 
 <PageTitle>Devices & Costs</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Devices & Costs</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">Devices & Costs</RadzenText>
 
-<DeviceFilterPanel @ref="_deviceFilterPanel" CanEditDevice="_canEditDevice" FilterModel="_filterModel"
-                   CollapsedFilterPanel="_collapsedFilterPanel" DeviceCategories="_deviceCategories"
-                   OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
-                   OnRefreshGrid="RefreshGridAsync" OnOpenEditDeviceDialog="OpenEditDeviceDialogAsync" />
+    <DeviceFilterPanel @ref="_deviceFilterPanel" CanEditDevice="_canEditDevice" FilterModel="_filterModel"
+                       CollapsedFilterPanel="_collapsedFilterPanel" DeviceCategories="_deviceCategories"
+                       OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
+                       OnRefreshGrid="RefreshGridAsync" OnOpenEditDeviceDialog="OpenEditDeviceDialogAsync" />
 
-<GridDevices @ref="_gridDevices" CanEditDevice="_canEditDevice" FilterModel="_filterModel" OnOpenEditDeviceDialog="OpenEditDeviceDialogAsync" />
+    <GridDevices @ref="_gridDevices" CanEditDevice="_canEditDevice" FilterModel="_filterModel" OnOpenEditDeviceDialog="OpenEditDeviceDialogAsync" />
+</RadzenStack>
 
 @code {
     private bool _canEditDevice = true;

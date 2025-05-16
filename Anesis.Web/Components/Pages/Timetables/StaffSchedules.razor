@@ -6,23 +6,25 @@
 
 <PageTitle>Staff Schedules</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Staff Schedules</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">Staff Schedules</RadzenText>
 
-<RadzenTabs RenderMode="TabRenderMode.Client">
-    <Tabs>
-        <RadzenTabsItem Text="Location">
-            <TimelineCalendarByLocation CanScheduleStaff="_canScheduleStaff" FilterModel="_filterLocModel"
-            ActiveLocations="_activeLocations" GeneralSettings="_generalSettings" StaffScheduleSettings="_staffScheduleSettings"
-            OnFilterLocationForTimeline="FilterLocationForTimelineAsync" OnToggleHiddenWeekends="ToggleLocHiddenWeekendsAsync" />
-        </RadzenTabsItem>
+    <RadzenTabs RenderMode="TabRenderMode.Client">
+        <Tabs>
+            <RadzenTabsItem Text="Location">
+                <TimelineCalendarByLocation CanScheduleStaff="_canScheduleStaff" FilterModel="_filterLocModel"
+                                            ActiveLocations="_activeLocations" GeneralSettings="_generalSettings" StaffScheduleSettings="_staffScheduleSettings"
+                                            OnFilterLocationForTimeline="FilterLocationForTimelineAsync" OnToggleHiddenWeekends="ToggleLocHiddenWeekendsAsync" />
+            </RadzenTabsItem>
 
-        <RadzenTabsItem Text="Employee">
-            <TimelineCalendarByEmployee CanScheduleStaff="_canScheduleStaff" FilterModel="_filterEmpModel"
-            ActiveEmployees="_activeEmployees" GeneralSettings="_generalSettings" StaffScheduleSettings="_staffScheduleSettings"
-            OnFilterEmployeeForTimeline="FilterEmployeeForTimelineAsync" OnToggleHiddenWeekends="ToggleEmpHiddenWeekendsAsync" />
-        </RadzenTabsItem>
-    </Tabs>
-</RadzenTabs>
+            <RadzenTabsItem Text="Employee">
+                <TimelineCalendarByEmployee CanScheduleStaff="_canScheduleStaff" FilterModel="_filterEmpModel"
+                                            ActiveEmployees="_activeEmployees" GeneralSettings="_generalSettings" StaffScheduleSettings="_staffScheduleSettings"
+                                            OnFilterEmployeeForTimeline="FilterEmployeeForTimelineAsync" OnToggleHiddenWeekends="ToggleEmpHiddenWeekendsAsync" />
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+</RadzenStack>
 
 <link href="https://cdn.jsdelivr.net/npm/@@event-calendar/build@3.6.2/event-calendar.min.css" rel="stylesheet" />
 <link href="css/staff-schedule.css" rel="stylesheet" />

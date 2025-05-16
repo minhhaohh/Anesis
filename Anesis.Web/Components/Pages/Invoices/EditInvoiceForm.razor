@@ -11,26 +11,26 @@
         width: 100%;
     }
 
-    .custom-table thead th, .custom-table tbody td {
-        padding: 4px 4px 4px 0 !important;
-    }
+        .custom-table thead th, .custom-table tbody td {
+            padding: 4px 4px 4px 0 !important;
+        }
 
-    .custom-table tbody {
-        display: block;
-        max-height: 300px;
-        overflow-y: auto;
-        width: 100%;
-    }
+        .custom-table tbody {
+            display: block;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+        }
 
-    .custom-table thead, .custom-table tbody tr {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
-    }
+            .custom-table thead, .custom-table tbody tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
 </style>
 
-<RadzenStack>
-    <RadzenTemplateForm TItem="InvoiceEditModel" Data="EditModel" Submit="SaveInvoiceAsync">
+<RadzenTemplateForm TItem="InvoiceEditModel" Data="EditModel" Submit="SaveInvoiceAsync">
+    <RadzenStack>
         <RadzenFieldset Text="Invoice Information">
             <RadzenRow Gap="4rem">
                 <RadzenColumn Size="12" SizeMD="6">
@@ -134,8 +134,26 @@
                                 <RadzenLabel Text="For Surgery Cases" Component="LinkedCases" class="rz-text-subtitle2" />
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenTextArea @bind-Value="EditModel.LinkedCases" Name="LinkedCases" Rows="3" Style="width: 100%;"
-                                                Placeholder="Select the surgery cases to link to current invoice" />
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <ChildContent>
+                                        @{
+                                            var linkedCaseStr = EditModel.LinkedCases.Select(x => $"#{x.SurgeryCaseId} - {x.InvoiceAmount.ToString("C2")}").StrJoin("\n");
+                                        }
+                                        <RadzenTextArea @bind-Value="linkedCaseStr" Name="LinkedCases" Rows="3" Style="width: 100%;"
+                                                        Placeholder="Select the surgery cases to link to current invoice" Disabled />
+                                    </ChildContent>
+                                    <End>
+                                        @if (EditModel.LinkedCases.Count > 0)
+                                        {
+                                            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger"
+                                                          Icon="delete" Style="height: 76px;"
+                                                          Click="RemoveAllSurgeryCases" />
+                                        }
+                                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary"
+                                                      Icon="more_vert" Style="height: 76px;"
+                                                      Click="OpenSelectSurgeryCasesAsync" />
+                                    </End>
+                                </RadzenFormField>
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
@@ -342,14 +360,14 @@
                 </tbody>
             </table>
         </RadzenFieldset>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                           Text="Save" Icon="save" />
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                           Text="Close" Click="() => _dialogService.Close()" />
         </RadzenStack>
-    </RadzenTemplateForm>
-</RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]
@@ -424,6 +442,43 @@
     private async Task RefreshGridAsync()
     {
         await OnRefreshGrid.InvokeAsync();
+    }
+
+    private async Task OpenSelectSurgeryCasesAsync()
+    {
+        var title = "Select Surgery Cases";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "InvoiceId", EditModel.Id },
+                { "IsBulk", EditModel.IsBulk },
+                { "LinkedCases", EditModel.LinkedCases },
+                { "ActiveAscLocations", ActiveLocations },
+                { "OnSelectSurgeryCase", EventCallback.Factory.Create<InvoiceLinkSurgeryCaseModel>(this, SelectSurgeryCase) },
+                { "OnRemoveSurgeryCase", EventCallback.Factory.Create<int>(this, RemoveSurgeryCase) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.ExtraLarge,
+            };
+
+        await _dialogService.OpenAsync<SelectSurgeryCasesForm>(title, paramsDic, options);
+    }
+
+    private void SelectSurgeryCase(InvoiceLinkSurgeryCaseModel selectedCase)
+    {
+        EditModel.LinkedCases.Add(selectedCase);
+    }
+
+    private void RemoveSurgeryCase(int surgeryCaseId)
+    {
+        var caseToRemove = EditModel.LinkedCases.FirstOrDefault(x => x.SurgeryCaseId == surgeryCaseId);
+
+        EditModel.LinkedCases.Remove(caseToRemove);
+    }
+
+    private void RemoveAllSurgeryCases()
+    {
+        EditModel.LinkedCases.Clear();
     }
 
     private void AddMoreItemRows()

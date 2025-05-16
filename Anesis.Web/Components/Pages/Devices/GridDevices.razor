@@ -87,7 +87,7 @@
     [Parameter]
     public EventCallback<int> OnOpenEditDeviceDialog { get; set; }
 
-    private string _gridStyle = "";
+    private string _gridStyle = "max-height: 600px;";
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
     private ResponseModel<List<DeviceWithCostViewModel>> _data = new();
@@ -96,16 +96,12 @@
     private RadzenDataGrid<DeviceWithCostViewModel> _grid;
 
     // OVERRIDE METHODS
-    protected override void OnParametersSet()
-    {
-        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 640px;";
-    }
 
     // PUBLIC METHODS
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 640px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 600px;";
     }
 
     public async Task RefreshGridAsync()

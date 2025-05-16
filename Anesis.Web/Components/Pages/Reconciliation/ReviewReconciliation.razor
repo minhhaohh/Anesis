@@ -4,23 +4,25 @@
 
 <PageTitle>Review Reconciliation</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Review Reconciliation</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">Review Reconciliation</RadzenText>
 
-<ReviewReconciliationFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
-                                 PaymentTypes="_paymentTypes" Reconciliations="_reconciliations"
-                                 OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
+    <ReviewReconciliationFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                     PaymentTypes="_paymentTypes" Reconciliations="_reconciliations"
+                                     OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
 
-<RadzenRow>
-    <RadzenColumn Size="12" SizeMD="6">
-        <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="false"
-                               FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="6">
-        <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="false"
-                              FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
-                              OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
-    </RadzenColumn>
-</RadzenRow>
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="6">
+            <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="false"
+                                   FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="false"
+                                  FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                  OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
 
 @code {
     private BatchTransactionFilterModel _batchFilterModel = new();

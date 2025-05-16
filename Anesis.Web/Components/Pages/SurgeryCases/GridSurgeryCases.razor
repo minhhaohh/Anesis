@@ -12,116 +12,102 @@
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.EcwChartNo)" Title="Patient" Width="10%">
             <Template Context="surgeryCase">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div title="Chart No"><strong>@surgeryCase.EcwChartNo</strong> (@surgeryCase.ChartNo)</div>
-                    <div class="rz-color-primary" title="Patient Name"><strong>@surgeryCase.FirstName, @surgeryCase.LastName</strong></div>
-                    <div><span title="Gender">@surgeryCase.Gender</span> | <span title="Date of birth">@surgeryCase.Dob.ToString("MM-dd-yyyy")</span></div>
-                </RadzenText>
+                <div title="Chart No"><strong>@surgeryCase.EcwChartNo</strong> (@surgeryCase.ChartNo)</div>
+                <div class="rz-color-primary" title="Patient Name"><strong>@surgeryCase.FirstName, @surgeryCase.LastName</strong></div>
+                <div><span title="Gender">@surgeryCase.Gender</span> | <span title="Date of birth">@surgeryCase.Dob.ToString("MM-dd-yyyy")</span></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.ProcedureName)" Title="Procedure" Width="20%">
             <Template Context="surgeryCase">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    @{
-                        var colorClass = SurgeryCaseStatusColors.GetColorClass(surgeryCase.CaseStatusStr);
-                    }
-                    <div><strong title="Procedure">@surgeryCase.ProcedureName</strong></div>
-                    <div><span title="Surgery Date">@surgeryCase.SurgeryDate.ToString("MM-dd-yyyy")</span> | <strong class="@colorClass" title="Status">@surgeryCase.CaseStatusStr</strong></div>
-                </RadzenText>
+                @{
+                    var colorClass = SurgeryCaseStatusColors.GetColorClass(surgeryCase.CaseStatusStr);
+                }
+                <div><strong title="Procedure">@surgeryCase.ProcedureName</strong></div>
+                <div><span title="Surgery Date">@surgeryCase.SurgeryDate.ToString("MM-dd-yyyy")</span> | <strong class="@colorClass" title="Status">@surgeryCase.CaseStatusStr</strong></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.PrimaryProviderName)" Title="Surgery By" Width="10%">
             <Template Context="surgeryCase">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div class="rz-color-series-4"><strong title="Surgeon">@surgeryCase.PrimaryProviderName</strong></div>
-                    <div><strong title="Location">@surgeryCase.LocationName</strong></div>
-                </RadzenText>
+                <div class="rz-color-series-4"><strong title="Surgeon">@surgeryCase.PrimaryProviderName</strong></div>
+                <div><strong title="Location">@surgeryCase.LocationName</strong></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Codes)" Title="Cpt Codes" Width="10%" Sortable="false">
             <Template Context="surgeryCase">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div>
-                        @if (surgeryCase.Codes == null || surgeryCase.Codes.Count == 0)
-                        {
-                            if (surgeryCase.CanManageCptCodes)
+                @if (surgeryCase.Codes == null || surgeryCase.Codes.Count == 0)
+                {
+                    if (surgeryCase.CanManageCptCodes)
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
+                                      Text="Manage CPT Codes" Click="async () => await OpenManageCptCodesDialogAsync(surgeryCase.Id)"
+                                      title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")" />
+                    }
+                }
+                else
+                {
+                    @if (surgeryCase.CanManageCptCodes)
+                    {
+                        <a href="javascript:;" class="rz-color-primary text-underline-none"
+                           onclick="@(async () => await OpenManageCptCodesDialogAsync(surgeryCase.Id))">
+                            <ul>
+                                @foreach (var cptCode in surgeryCase.Codes)
+                                {
+                                    <li>@cptCode</li>
+                                }
+                            </ul>
+                        </a>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var cptCode in surgeryCase.Codes)
                             {
-                                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
-                                              Text="Manage CPT Codes" Click="async () => await OpenManageCptCodesDialogAsync(surgeryCase.Id)"
-                                              title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")" />
+                                <li>@cptCode</li>
                             }
-                        }
-                        else
-                        {
-                            @if (surgeryCase.CanManageCptCodes)
-                            {
-                                <a href="javascript:;" class="rz-color-primary text-underline-none"
-                                   onclick="@(async () => await OpenManageCptCodesDialogAsync(surgeryCase.Id))">
-                                    <ul>
-                                        @foreach (var cptCode in surgeryCase.Codes)
-                                        {
-                                            <li>@cptCode</li>
-                                        }
-                                    </ul>
-                                </a>
-                            }
-                            else
-                            {
-                                <ul>
-                                    @foreach (var cptCode in surgeryCase.Codes)
-                                    {
-                                        <li>@cptCode</li>
-                                    }
-                                </ul>
-                            }
-                        }
-                    </div>
-                </RadzenText>
+                        </ul>
+                    }
+                }
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Devices)" Title="Devices" Width="15%" Sortable="false">
             <Template Context="surgeryCase">
-                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
-                    <div>
-                        @if (surgeryCase.PurchaseInvoiceId > 0)
-                        {
-                            <div>Inv. No: #<strong>@surgeryCase.InvoiceNumber</strong> - @surgeryCase.InvoiceAmount.ToString("C2")</div>
-                        }
-                        @if (surgeryCase.Devices == null || surgeryCase.Devices.Count == 0)
-                        {
-                            if (surgeryCase.CanManageDevices)
+                @if (surgeryCase.PurchaseInvoiceId > 0)
+                {
+                    <div>Inv. No: #<strong>@surgeryCase.InvoiceNumber</strong> - @surgeryCase.InvoiceAmount.ToString("C2")</div>
+                }
+                @if (surgeryCase.Devices == null || surgeryCase.Devices.Count == 0)
+                {
+                    if (surgeryCase.CanManageDevices)
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
+                                      Text="Manage Devices" Click="async () => await OpenManageDevicesDialogAsync(surgeryCase.Id)"
+                                      title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")" />
+                    }
+                }
+                else
+                {
+                    if (surgeryCase.CanManageDevices)
+                    {
+                        <a href="javascript:;" class="rz-color-primary text-underline-none"
+                           onclick="@(async () => await OpenManageDevicesDialogAsync(surgeryCase.Id))">
+                            <ul>
+                                @foreach (var device in surgeryCase.Devices)
+                                {
+                                    <li>@device</li>
+                                }
+                            </ul>
+                        </a>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var device in surgeryCase.Devices)
                             {
-                                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
-                                              Text="Manage Devices" Click="async () => await OpenManageDevicesDialogAsync(surgeryCase.Id)"
-                                              title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")" />
+                                <li>@device</li>
                             }
-                        }
-                        else
-                        {
-                            if (surgeryCase.CanManageDevices)
-                            {
-                                <a href="javascript:;" class="rz-color-primary text-underline-none"
-                                   onclick="@(async () => await OpenManageDevicesDialogAsync(surgeryCase.Id))">
-                                    <ul>
-                                        @foreach (var device in surgeryCase.Devices)
-                                        {
-                                            <li>@device</li>
-                                        }
-                                    </ul>
-                                </a>
-                            }
-                            else
-                            {
-                                <ul>
-                                    @foreach (var device in surgeryCase.Devices)
-                                    {
-                                        <li>@device</li>
-                                    }
-                                </ul>
-                            }
-                        }
-                    </div>
-                </RadzenText>
+                        </ul>
+                    }
+                }
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Id)" Width="10%" Sortable="false">
@@ -154,7 +140,7 @@
     [Parameter]
     public bool CollapsedFilterPanel { get; set; }
 
-    private string _gridStyle = "";
+    private string _gridStyle = "max-height: 472px;";
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
     private ResponseModel<List<SurgeryCaseViewModel>> _data = new();
@@ -162,17 +148,11 @@
     // COMPONENTS
     private RadzenDataGrid<SurgeryCaseViewModel> _grid;
 
-    // OVERRIDE METHODS
-    protected override void OnParametersSet()
-    {
-        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 500px;";
-    }
-
     // PUBLIC METHODS
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 500px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 472px;";
     }
 
     public async Task RefreshGridAsync()

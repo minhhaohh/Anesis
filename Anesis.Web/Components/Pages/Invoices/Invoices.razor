@@ -5,18 +5,20 @@
 
 <PageTitle>Invoices</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Invoices</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">Invoices</RadzenText>
 
-<InvoiceFilterPanel @ref="_invoiceFilterPanel" FilterModel="_filterModel" CollapsedFilterPanel="_collapsedFilterPanel"
-                    ActiveVendors="_activeVendors" Companies="_companies" ActiveLocations="_activeLocations"
-                    PaymentMethods="_paymentMethods" InvoiceStatus="_invoiceStatus"
-                    InvoiceOwners="_invoiceOwners" InvoiceReviewers="_invoiceReviewers"
-                    OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
-                    OnRefreshGrid="RefreshGridAsync" OnOpenEditInvoiceDialog="OpenEditInvoiceDialogAsync" />
+    <InvoiceFilterPanel @ref="_invoiceFilterPanel" FilterModel="_filterModel" CollapsedFilterPanel="_collapsedFilterPanel"
+                        ActiveVendors="_activeVendors" Companies="_companies" ActiveLocations="_activeLocations"
+                        PaymentMethods="_paymentMethods" InvoiceStatus="_invoiceStatus"
+                        InvoiceOwners="_invoiceOwners" InvoiceReviewers="_invoiceReviewers"
+                        OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
+                        OnRefreshGrid="RefreshGridAsync" OnOpenEditInvoiceDialog="OpenEditInvoiceDialogAsync" />
 
-<GridInvoices @ref="_gridInvoices" FilterModel="_filterModel" CollapsedFilterPanel="_collapsedFilterPanel"
-              OnOpenEditInvoiceDialog="OpenEditInvoiceDialogAsync"
-              OnOpenEditBasicInvoiceDialog="OpenEditBasicInvoiceDialogAsync" />
+    <GridInvoices @ref="_gridInvoices" FilterModel="_filterModel" CollapsedFilterPanel="_collapsedFilterPanel"
+                  OnOpenEditInvoiceDialog="OpenEditInvoiceDialogAsync"
+                  OnOpenEditBasicInvoiceDialog="OpenEditBasicInvoiceDialogAsync" />
+</RadzenStack>
 
 @code {
     private InvoiceFilterModel _filterModel = new();
@@ -33,6 +35,7 @@
     private InvoiceFilterPanel _invoiceFilterPanel;
     private GridInvoices _gridInvoices;
 
+    // OVERRIDE METHODS
     protected override async Task OnInitializedAsync()
     {
         _activeVendors = await GetActiveVendorsAsync() ?? new();

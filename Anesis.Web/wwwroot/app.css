@@ -24,17 +24,19 @@ html, body {
     padding-inline: 0 !important;
 }
 
-input::placeholder {
-    opacity: 0.5;
-    font-style: italic;
-}
-
-textarea::placeholder {
-    opacity: 0.5;
-    font-style: italic;
-}
-
+input::placeholder,
+textarea::placeholder,
 .rz-placeholder {
     opacity: 0.5;
     font-style: italic;
+}
+
+.rz-form-field-content input:disabled,
+.rz-form-field-content textarea:disabled {
+    box-shadow: var(--rz-input-disabled-shadow) !important;
+    background-color: var(--rz-input-disabled-background-color) !important;
+    border: var(--rz-input-disabled-border) !important;
+
+    color: var(--rz-input-value-color) !important;
+    opacity: 1 !important;
 }

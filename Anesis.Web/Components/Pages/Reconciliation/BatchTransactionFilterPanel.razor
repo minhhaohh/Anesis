@@ -1,7 +1,7 @@
 ﻿@inject DialogService _dialogService
 
-<RadzenFieldset Text="Batch Transactions">
-    <RadzenTemplateForm TItem="BatchTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+<RadzenTemplateForm TItem="BatchTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+    <RadzenFieldset Text="Batch Transactions">
         <RadzenRow>
             <RadzenColumn Size="12" SizeMD="3">
                 <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
@@ -31,8 +31,8 @@
                 </RadzenStack>
             </RadzenColumn>
         </RadzenRow>
-    </RadzenTemplateForm>
-</RadzenFieldset>
+    </RadzenFieldset>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

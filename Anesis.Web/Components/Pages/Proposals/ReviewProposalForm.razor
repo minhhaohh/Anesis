@@ -2,8 +2,8 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenStack>
-    <RadzenTemplateForm TItem="ProposalReviewModel" Data="ReviewModel" Submit="ReviewProposalAsync">
+<RadzenTemplateForm TItem="ProposalReviewModel" Data="ReviewModel" Submit="ReviewProposalAsync">
+    <RadzenStack>
         <RadzenFieldset Text="Proposal Information">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
@@ -35,7 +35,7 @@
                 </RadzenRow>
             </RadzenStack>
         </RadzenFieldset>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                           Text="Approve" Icon="check_circle" />
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger"
@@ -43,8 +43,8 @@
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                           Text="Close" Click="() => _dialogService.Close()" />
         </RadzenStack>
-    </RadzenTemplateForm>
-</RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

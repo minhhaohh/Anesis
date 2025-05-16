@@ -2,32 +2,33 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenStack Orientation="Orientation.Vertical" Gap="0.2rem" class="rz-mb-4">
-    <RadzenText TextStyle="TextStyle.Body2">
-        The current device cost is <strong class="rz-color-primary">@_currentCost.ToString("C2")</strong>,
-        effective date is <strong class="rz-color-primary">@_currentEffDate?.ToString("MM/dd/yyyy")</strong>.
-    </RadzenText>
-    <RadzenStack Orientation="Orientation.Horizontal">
-        <RadzenIcon Icon="error" IconColor="@Colors.Danger" />
-        <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">Notice: </RadzenText>
-    </RadzenStack>
-    <ul class="rz-m-0">
-        <li>
+
+<RadzenTemplateForm TItem="DeviceCostEditModel" Data="EditCostModel" Submit="SaveDeviceCostAsync">
+    <RadzenStack>
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.2rem">
             <RadzenText TextStyle="TextStyle.Body2">
-                If you want to <strong class="rz-color-danger">update</strong> current cost,
-                please change the value of <strong>Total Cost</strong>.
+                The current device cost is <strong class="rz-color-primary">@_currentCost.ToString("C2")</strong>,
+                effective date is <strong class="rz-color-primary">@_currentEffDate?.ToString("MM/dd/yyyy")</strong>.
             </RadzenText>
-        </li>
-        <li>
-            <RadzenText TextStyle="TextStyle.Body2">
-                If you want to <strong class="rz-color-danger">add</strong> a new cost,
-                please enter a new value for <strong>Total Cost</strong> and select a new <strong>Effective Date</strong>.
-            </RadzenText>
-        </li>
-    </ul>
-</RadzenStack>
-<RadzenStack>
-    <RadzenTemplateForm TItem="DeviceCostEditModel" Data="EditCostModel" Submit="SaveDeviceCostAsync">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenIcon Icon="error" IconColor="@Colors.Danger" />
+                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">Notice: </RadzenText>
+            </RadzenStack>
+            <ul class="rz-m-0">
+                <li>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        If you want to <strong class="rz-color-danger">update</strong> current cost,
+                        please change the value of <strong>Total Cost</strong>.
+                    </RadzenText>
+                </li>
+                <li>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        If you want to <strong class="rz-color-danger">add</strong> a new cost,
+                        please enter a new value for <strong>Total Cost</strong> and select a new <strong>Effective Date</strong>.
+                    </RadzenText>
+                </li>
+            </ul>
+        </RadzenStack>
         <RadzenFieldset Text="Device Cost">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
@@ -67,14 +68,14 @@
                 </RadzenRow>
             </RadzenStack>
         </RadzenFieldset>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                           Text="Save" Icon="save" />
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                           Text="Close" Click="() => _dialogService.Close()" />
         </RadzenStack>
-    </RadzenTemplateForm>
-</RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

@@ -2,10 +2,10 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<LinkInvoiceForm LinkInvoiceModel="LinkInvoiceModel" LocationId="LocationId" LocationName="@LocationName"
-                 HasCloseButton="false" OnRefreshGrid="OnRefreshGrid" />
-
 <RadzenStack>
+    <LinkInvoiceForm LinkInvoiceModel="LinkInvoiceModel" LocationId="LocationId" LocationName="@LocationName"
+                     HasCloseButton="false" OnRefreshGrid="OnRefreshGrid" />
+
     <RadzenTemplateForm TItem="CaseCostAddModel" Data="_addCastCostModel" Submit="AddCaseCostAsync">
         <RadzenFieldset Text="Add Device">
             <RadzenRow>
@@ -54,6 +54,7 @@
             </RadzenRow>
         </RadzenFieldset>
     </RadzenTemplateForm>
+
     <RadzenDataGrid @ref="_gridCaseCosts" TItem="CaseCostViewModel" IsLoading=_isLoading
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
@@ -112,7 +113,8 @@
             </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                       Text="Close" Click="() => _dialogService.Close()" />
     </RadzenStack>

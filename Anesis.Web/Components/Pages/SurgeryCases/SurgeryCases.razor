@@ -5,15 +5,17 @@
 
 <PageTitle>ASC Surgery Cases</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">ASC Surgery Cases</RadzenText>
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H5">ASC Surgery Cases</RadzenText>
 
-<SurgeryCaseFilterPanel @ref="_surgeryCaseFilterPanel" CollapsedFilterPanel="_collapsedFilterPanel" 
-                        FilterModel="_filterModel" SurgeryCaseStatus="_surgeryCaseStatus"
-                        ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
-                        ActiveProcedures="_activeProcedures" ActiveInsurances="_activeInsurances"
-                        OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
+    <SurgeryCaseFilterPanel @ref="_surgeryCaseFilterPanel" CollapsedFilterPanel="_collapsedFilterPanel"
+                            FilterModel="_filterModel" SurgeryCaseStatus="_surgeryCaseStatus"
+                            ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
+                            ActiveProcedures="_activeProcedures" ActiveInsurances="_activeInsurances"
+                            OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
 
-<GridSurgeryCases @ref="_gridSurgeryCases" FilterModel="_filterModel" />
+    <GridSurgeryCases @ref="_gridSurgeryCases" FilterModel="_filterModel" />
+</RadzenStack>
 
 @code {
     private SurgeryCaseFilterModel _filterModel = new();
