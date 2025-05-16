@@ -15,12 +15,11 @@
         <RadzenTable>
             <RadzenTableHeader>
                 <RadzenTableHeaderRow>
-                    <RadzenTableHeaderCell Style="width: 10%;">#ID</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 15%;">#ID</RadzenTableHeaderCell>
                     <RadzenTableHeaderCell Style="width: 15%;">Batch ID</RadzenTableHeaderCell>
                     <RadzenTableHeaderCell Style="width: 20%;">Batch Owner</RadzenTableHeaderCell>
-                    <RadzenTableHeaderCell Style="width: 15%;">Payment Type</RadzenTableHeaderCell>
                     <RadzenTableHeaderCell Style="width: 15%;">Trans. Type</RadzenTableHeaderCell>
-                    <RadzenTableHeaderCell Style="width: 25%;">Doc No</RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell Style="width: 35%;">Doc No</RadzenTableHeaderCell>
                 </RadzenTableHeaderRow>
             </RadzenTableHeader>
             <RadzenTableBody>
@@ -28,7 +27,6 @@
                     <RadzenTableCell>@batch.Id</RadzenTableCell>
                     <RadzenTableCell>@batch.BatchId</RadzenTableCell>
                     <RadzenTableCell>@batch.BatchOwner</RadzenTableCell>
-                    <RadzenTableCell>@batch.PaymentType</RadzenTableCell>
                     <RadzenTableCell>@batch.TransactionType</RadzenTableCell>
                     <RadzenTableCell>@batch.DocNo</RadzenTableCell>
                 </RadzenTableRow>
@@ -48,6 +46,7 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PostDate)" Title="Date" FormatString="{0:MM-dd-yyyy}" Width="15%" />
         <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentFrom)" Title="Payment From" Width="50%" />
+        <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentType)" Title="P. Type" Width="15%" />
         <RadzenDataGridColumn Property="@nameof(BatchTransactionViewModel.PaymentAmount)" Title="Amount" FormatString="{0:C2}" Width="15%" />
     </Columns>
 </RadzenDataGrid>

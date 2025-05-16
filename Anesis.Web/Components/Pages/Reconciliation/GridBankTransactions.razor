@@ -21,6 +21,20 @@
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                 PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 640px;"
                 RowRender="OnRowRender" CellContextMenu="OnCellContextMenu" class="bank-grid">
+    <Template Context="bank">
+        <RadzenTable>
+            <RadzenTableHeader>
+                <RadzenTableHeaderRow>
+                    <RadzenTableHeaderCell>Description</RadzenTableHeaderCell>
+                </RadzenTableHeaderRow>
+            </RadzenTableHeader>
+            <RadzenTableBody>
+                <RadzenTableRow>
+                    <RadzenTableCell>@bank.Description2</RadzenTableCell>
+                </RadzenTableRow>
+            </RadzenTableBody>
+        </RadzenTable>
+    </Template>
     <Columns>
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.ReconciledFlag)" Width="5%" CssClass="rz-py-0">
             <Template Context="bank">
@@ -29,9 +43,8 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Id)" Title="#ID" Width="10%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.PostDate)" Title="Date" FormatString="{0:MM-dd-yyyy}" Width="15%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Reference)" Title="Reference" Width="15%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Description2)" Title="Description" Width="20%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.TransactionType)" Title="Type" Width="10%" />
+        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Reference)" Title="Reference" Width="30%" />
+        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.TransactionType)" Title="Type" Width="12%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Debit)" Title="Debit" FormatString="{0:C2}" Width="12%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Credit)" Title="Credit" FormatString="{0:C2}" Width="12%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Balance)" Title="Balance" FormatString="{0:C2}" Width="12%" />
