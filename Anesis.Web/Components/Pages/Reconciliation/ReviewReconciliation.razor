@@ -1,0 +1,104 @@
+﻿@page "/review-reconciliation"
+@inject IApiService _apiService
+@inject NotificationService _notifyService
+
+<PageTitle>Review Reconciliation</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Review Reconciliation</RadzenText>
+
+<ReviewReconciliationFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                 PaymentTypes="_paymentTypes" Reconciliations="_reconciliations"
+                                 OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
+
+<RadzenRow>
+    <RadzenColumn Size="12" SizeMD="6">
+        <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="false"
+                               FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
+    </RadzenColumn>
+    <RadzenColumn Size="12" SizeMD="6">
+        <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="false"
+                              FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                              OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    private BatchTransactionFilterModel _batchFilterModel = new();
+    private BankTransactionFilterModel _bankFilterModel = new();
+    private BalanceSummaryViewModel _balanceSummaryModel = new();
+    private List<ReconciliationViewModel> _reconciliations = new();
+    private List<string> _paymentTypes = TransactionType.GetPaymentTypes().ToList();
+
+    // Components
+    private GridBatchTransactions _gridBatchTransactions;
+    private GridBankTransactions _gridBankTransactions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _reconciliations = await GetAllReconciliationsAsync() ?? new();
+
+        var lastTimeReconciliation = _reconciliations.First();
+        _bankFilterModel.ReconciliationId = lastTimeReconciliation.Id;
+        _batchFilterModel.ReconciliationId = lastTimeReconciliation.Id;
+    }
+
+    public async Task FilterBatchGridAsync(BatchTransactionFilterModel filterModel)
+    {
+        _batchFilterModel = filterModel;
+        await _gridBatchTransactions.FilterGridAsync(_batchFilterModel);
+    }
+
+    public async Task RefreshBatchGridAsync()
+    {
+        await _gridBatchTransactions.RefreshGridAsync();
+    }
+
+    public async Task FilterBankGridAsync(BankTransactionFilterModel filterModel)
+    {
+        _bankFilterModel = filterModel;
+        await _gridBankTransactions.FilterGridAsync(filterModel);
+    }
+
+    public async Task RefreshBankGridAsync()
+    {
+        await _gridBankTransactions.RefreshGridAsync();
+    }
+
+    public async Task FilterGridAsync(BankTransactionFilterModel filterBankModel)
+    {
+        var filterBatchModel = new BatchTransactionFilterModel()
+            {
+                BatchType = filterBankModel.BatchType,
+                ReconciliationId = filterBankModel.ReconciliationId
+            };
+        await FilterBatchGridAsync(filterBatchModel);
+        await FilterBankGridAsync(filterBankModel);
+    }
+
+    public async Task RefreshGridAsync()
+    {
+        var filterBatchModel = new BatchTransactionFilterModel()
+            {
+                BatchType = _bankFilterModel.BatchType,
+                ReconciliationId = _bankFilterModel.ReconciliationId
+            };
+        await FilterBatchGridAsync(filterBatchModel);
+        await RefreshBankGridAsync();
+    }
+
+    public async Task LoadBalanceSummaryAsync(BankTransactionFilterModel filterModel)
+    {
+        _balanceSummaryModel = (await _apiService.GetBalanceSummary(filterModel)).Data;
+    }
+
+    private async Task<List<ReconciliationViewModel>> GetAllReconciliationsAsync()
+    {
+        var reconciliationsRes = await _apiService.GetAllReconciliationsAsync();
+        if (!reconciliationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Reconciliations", reconciliationsRes.Messages);
+            return null;
+        }
+        return reconciliationsRes.Data;
+    }
+}

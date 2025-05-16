@@ -1,0 +1,76 @@
+﻿@inject DialogService _dialogService
+
+<style>
+    .custom-accordion a#rz-accordiontab-0 {
+        color: var(--rz-primary) !important;
+    }
+
+    .custom-table thead th, .custom-table tbody .rz-data-cell {
+        padding: 4px !important;
+    }
+</style>
+
+<RadzenStack>
+    @if (ChangeLogs.Count == 0)
+    {
+        <RadzenText Text="@NoChangeMessage" class="rz-color-danger" />
+    }
+    else
+    {
+        <RadzenTimeline>
+            <Items>
+                @foreach (var changeLog in ChangeLogs)
+                {
+                    <RadzenTimelineItem PointStyle="PointStyle.Primary">
+                        <LabelContent>
+                            <strong>@changeLog.ActionTime.ToString("MM-dd-yyyy HH:mm:ss")</strong> <i>(@changeLog.ChangedBy)</i>
+                        </LabelContent>
+                        <ChildContent>
+                            <div><strong>[@changeLog.ActionName]</strong> @(changeLog.Notes ?? changeLog.UserComment)</div>
+
+                            @if (changeLog.ChangedFields != null && changeLog.ChangedFields.Count > 0)
+                            {
+                                <RadzenAccordion>
+                                    <Items>
+                                        <RadzenAccordionItem Text="Show/Hide Changed Fields" Icon="manage_history" class="custom-accordion">
+                                            <RadzenTable class="custom-table">
+                                                <RadzenTableHeader>
+                                                    <RadzenTableHeaderRow>
+                                                        <RadzenTableHeaderCell>Field Name</RadzenTableHeaderCell>
+                                                        <RadzenTableHeaderCell>Before Change</RadzenTableHeaderCell>
+                                                        <RadzenTableHeaderCell>After Change</RadzenTableHeaderCell>
+                                                    </RadzenTableHeaderRow>
+                                                </RadzenTableHeader>
+                                                <RadzenTableBody>
+                                                    @foreach (var item in changeLog.ChangedFields)
+                                                    {
+                                                        <RadzenTableRow>
+                                                            <RadzenTableCell>@item.FieldName</RadzenTableCell>
+                                                            <RadzenTableCell>@item.BeforeChange</RadzenTableCell>
+                                                            <RadzenTableCell>@item.AfterChange</RadzenTableCell>
+                                                        </RadzenTableRow>
+                                                    }
+                                                </RadzenTableBody>
+                                            </RadzenTable>
+                                        </RadzenAccordionItem>
+                                    </Items>
+                                </RadzenAccordion>
+                            }
+                        </ChildContent>
+                    </RadzenTimelineItem>
+                }
+            </Items>
+        </RadzenTimeline>
+    }
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                      Text="Close" Click="() => _dialogService.Close()" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public List<ChangeLogViewModel> ChangeLogs { get; set; }
+    [Parameter]
+    public string NoChangeMessage { get; set; }
+}

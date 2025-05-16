@@ -1,0 +1,57 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject NavigationManager _navigationManager
+
+<RadzenProfileMenu Style="border: none;" Click="ProfileMenuClick">
+    <Template>
+        <RadzenStack Gap="0.5rem" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+            <RadzenIcon Icon="person" Style="font-size: 1.5rem;" />
+            <RadzenText Style="margin: 0; font-style: italic;">Hello @_userName!</RadzenText>
+        </RadzenStack>
+    </Template>
+    <ChildContent>
+        <RadzenProfileMenuItem Text="Quick Links" Value="quick-links" Path="quick-links" Icon="manufacturing" />
+        <RadzenProfileMenuItem Text="Change Password" Value="change-password" Path="change-password" Icon="rule_settings" />
+        <RadzenProfileMenuItem Text="Logout" Value="logout" Icon="logout" />
+    </ChildContent>
+</RadzenProfileMenu>
+
+@code {
+    // [CascadingParameter]
+    // private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    private string _userName = "haotm";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // var authState = await AuthenticationStateTask;
+
+        // _userName = authState.User.Identity.Name;
+    }
+
+    private async Task ProfileMenuClick(RadzenProfileMenuItem item)
+    {
+        if (item.Value == "logout")
+        {
+            await LogoutAsync();
+        }
+    }
+
+    private async Task LogoutAsync()
+    {
+        var logoutResponse = await _apiService.LogoutAsync();
+
+        if (logoutResponse.Success)
+        {
+            _notifyService.NotifySuccess("Logout", "Logout successful.");
+
+            await Task.Delay(1000);
+
+            _navigationManager.NavigateTo("/login", true);
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Logout", logoutResponse.Messages);
+        }
+    }
+}

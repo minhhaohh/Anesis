@@ -1,0 +1,35 @@
+﻿@page "/files"
+@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<PageTitle>Media Files</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Media Files</RadzenText>
+
+<MediaFileFilterPanel @ref="_mediaFileFilterPanel" FilterModel="_filterModel"
+                      FileCategories="_fileCategories" FileTypes="_fileTypes"
+                      OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
+
+<GridMediaFiles @ref="_gridMediaFiles" FilterModel="_filterModel" />
+
+@code {
+    public MediaFileFilterModel _filterModel = new();
+    public List<string> _fileCategories = MediaFileCategory.GetAll().ToList();
+    public List<string> _fileTypes = MediaFileType.GetAll().ToList();
+
+    // COMPONENTS
+    private MediaFileFilterPanel _mediaFileFilterPanel;
+    private GridMediaFiles _gridMediaFiles;
+
+    private async Task FilterGridAsync(MediaFileFilterModel filterModel)
+    {
+        _filterModel = filterModel;
+        await _gridMediaFiles.FilterGridAsync(_filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await _gridMediaFiles.RefreshGridAsync();
+    }
+}

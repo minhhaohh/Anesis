@@ -1,0 +1,112 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenFieldset Text="Original Batch Transaction">
+        <RadzenRow RowGap="0">
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Body2">Post Date:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PostDate.ToString("MM/dd/yyyy")</RadzenText>
+            </RadzenColumn>
+
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Body2">Batch Owner:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.BatchOwner</RadzenText>
+            </RadzenColumn>
+
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Body2">Document No:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.DocNo</RadzenText>
+            </RadzenColumn>
+
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Body2">Payment From:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PaymentFrom</RadzenText>
+            </RadzenColumn>
+
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Body2">Payment Type:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PaymentType</RadzenText>
+            </RadzenColumn>
+
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Body2">Payment Amount:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PaymentAmount.ToString("C2")</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenFieldset>
+    <RadzenFieldset Text="Split Options">
+        <RadzenStack>
+            <RadzenRow>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenText TextStyle="TextStyle.Body2" class="required-near">Split Amount:</RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                        <Start>
+                            <RadzenIcon Icon="attach_money" />
+                        </Start>
+                        <ChildContent>
+                            <RadzenNumeric @bind-Value="_splitAmount" Name="SplitAmount" Style="width: 100%;" />
+                        </ChildContent>
+                    </RadzenFormField>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+    </RadzenFieldset>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary"
+        Text="Save" Icon="save" Click="SaveSplitTransactionAsync" />
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+        Text="Close" Click="() => _dialogService.Close()" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public BatchTransactionViewModel ViewModel { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    private decimal _splitAmount = 0;
+
+    // SUPPORT METHODS
+    private async Task SaveSplitTransactionAsync()
+    {
+        var splitModel = new BatchTransactionSplitModel
+            {
+                Id = ViewModel.Id,
+                SplitAmount = _splitAmount
+            };
+        var splitRes = await _apiService.SplitBatchTransactionAsync(splitModel);
+
+        if (!splitRes.Success)
+        {
+            _notifyService.NotifyErrors("Split Batch Transaction", splitRes.Messages);
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Split Batch Transaction", splitRes.Data);
+            _dialogService.Close(splitRes.Data);
+            await RefreshGridAsync();
+        }
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+}

@@ -1,0 +1,253 @@
+﻿@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<RadzenDataGrid @ref="_grid" TItem="ProposalViewModel" IsLoading="_isLoading"
+                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+                PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
+    <Columns>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.Id)" Title="#ID" Width="3%" CssClass="rz-text-subtitle2" />
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.EcwChartNo)" Title="Patient" Width="10%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    <div title="Chart No"><strong>@proposal.EcwChartNo</strong> (@proposal.ChartNo)</div>
+                    <div class="rz-color-primary" title="Patient Name"><strong>@proposal.FirstName, @proposal.LastName</strong></div>
+                    <div><span title="Gender">@proposal.Gender</span> | <span title="Date of birth">@proposal.Dob.ToString("MM-dd-yyyy")</span></div>
+                </RadzenText>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.AppointmentDate)" Title="Original Appointment" Width="10%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    <div class="rz-color-series-4"><strong title="Provider">@proposal.ProviderName</strong></div>
+                    <div><strong title="Location">@proposal.LocationName</strong> | <span title="Appointment Date">@proposal.AppointmentDate.ToString("MM-dd-yyyy")</span></div>
+                </RadzenText>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.ProcedureName)" Title="Proposed Procedure" Width="20%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    <div title="Procedure: @proposal.ProcedureName"><strong>@proposal.ProcedureName</strong></div>
+                    <div title="Diagnosis Code: @proposal.DiagnosisCode">Diagnosis Code: <strong>@proposal.DiagnosisCode</strong></div>
+                </RadzenText>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.ProposerName)" Title="Requested By" Width="10%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    <div class="rz-color-series-4"><strong title="Requested By">@proposal.ProposerName</strong></div>
+                    <div title="Requested Date">@proposal.CreatedDate.ToString("MM-dd-yyyy")</div>
+                </RadzenText>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.ReviewerName)" Title="Review By" Width="10%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    @if (proposal.ReviewerId > 0)
+                    {
+                        <div class="rz-color-series-4"><strong title="Reviewer">@proposal.ReviewerName</strong></div>
+                        <div title="Reviewer Notes: @proposal.ReviewerNotes">Notes: @proposal.ReviewerNotes</div>
+                    }
+                </RadzenText>
+                @if (proposal.CanReview && proposal.ReviewerId > 0)
+                {
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="rate_review"
+                                  Click="async () => await OpenReviewProposalDialogAsync(proposal.Id)"
+                                  title="@($"Review proposal #{proposal.Id}")" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.SurgeonName)" Title="Surgery By" Width="10%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    @if (proposal.SurgeonId > 0)
+                    {
+                        <div class="rz-color-series-4"><strong title="Surgeon">@proposal.SurgeonName</strong></div>
+                    }
+                </RadzenText>
+                @if (proposal.CanMarkAsOrdered)
+                {
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Size="ButtonSize.Small" Icon="task"
+                                  Click="async () => await ConfirmOrderProposalAsync(proposal.Id)"
+                                  title="@($"Mark proposal #{proposal.Id} as ordered")" />
+                }
+                else if (proposal.CanSchedule)
+                {
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Icon="calendar_month"
+                                  title="@($"Schedule surgery for proposal #{proposal.Id}")" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.RequestStatus)" Title="Status" Width="7%">
+            <Template Context="proposal">
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0">
+                    @{
+                        var colorClass = ProposalStatusColors.GetColorClass(proposal.RequestStatusStr);
+                    }
+                    <div class="@colorClass"><strong>@proposal.RequestStatusStr</strong></div>
+                </RadzenText>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(ProposalViewModel.Id)" Width="10%" Sortable="false">
+            <Template Context="proposal">
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Size="ButtonSize.Small" Icon="manage_history"
+                                  title="@($"View change logs of proposal #{proposal.Id}")" />
+                    @if (proposal.CanEdit)
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="edit"
+                                      Click="async () => await OpenEditProposalDialogAsync(proposal.Id)"
+                                      title="@($"Edit proposal #{proposal.Id}")" />
+                    }
+                    @if (proposal.CanMarkAsCompleted)
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Icon="check_circle"
+                                      Click="async () => await ConfirmCompleteProposalAsync(proposal.Id)"
+                                      title="@($"Mark proposal #{proposal.Id} as completed")" />
+                    }
+                    @if (proposal.CanCancel)
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="cancel"
+                                      Click="async () => await ConfirmCancelProposalAsync(proposal.Id)"
+                                      title="@($"Cancel proposal #{proposal.Id}")" />
+                    }
+                </RadzenStack>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    [Parameter]
+    public ProposalFilterModel FilterModel { get; set; }
+    [Parameter]
+    public bool CollapsedFilterPanel { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveProcedures { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnOpenEditProposalDialog { get; set; }
+
+    private string _gridStyle = "";
+    private int _pageSize = PageSize.Default();
+    private bool _isLoading = false;
+    private ResponseModel<List<ProposalViewModel>> _data = new();
+
+    // COMPONENTS
+    private RadzenDataGrid<ProposalViewModel> _grid;
+
+    // OVERRIDE METHODS
+    protected override void OnParametersSet()
+    {
+        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 500px;";
+    }
+
+    // PUBLIC METHODS
+    public void ResizeGrid(bool collapsedFilterPanel)
+    {
+        CollapsedFilterPanel = collapsedFilterPanel;
+        _gridStyle = CollapsedFilterPanel ? "max-height: 740px;" : "max-height: 500px;";
+    }
+
+    public async Task RefreshGridAsync()
+    {
+        await _grid.RefreshDataAsync();
+    }
+
+    public async Task FilterGridAsync(ProposalFilterModel filterModel)
+    {
+        FilterModel = filterModel;
+        await RefreshGridAsync();
+    }
+
+    // SUPPORT METHODS
+    private async Task LoadDataAsync(LoadDataArgs args)
+    {
+        _isLoading = true;
+
+        FilterModel.CountNumber = args.Top.Value;
+        FilterModel.StartIndex = args.Skip.Value;
+
+        FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
+        FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+
+        _data = await _apiService.SearchProposalsAsync(FilterModel);
+
+        _isLoading = false;
+    }
+
+    private async Task OpenEditProposalDialogAsync(int id)
+    {
+        await OnOpenEditProposalDialog.InvokeAsync(id);
+    }
+
+    private async Task OpenReviewProposalDialogAsync(int id)
+    {
+        var proposal = await GetProposalByIdAsync(id);
+        if (proposal == null)
+        {
+            return;
+        }
+
+        var reviewModel = proposal.ToReviewModel();
+        var title = $"Review Proposal #{id}";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "ReviewModel", reviewModel },
+                { "ActiveProcedures", ActiveProcedures},
+                { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.Default,
+            };
+
+        await _dialogService.OpenAsync<ReviewProposalForm>(title, paramsDic, options);
+    }
+
+    private async Task ConfirmOrderProposalAsync(int id)
+    {
+        var result = await _dialogService.Confirm(
+            $"Do you really want to mark proposal <b>#{id}</b> as <b>ordered<b>?",
+            $"Update Proposal #{id}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (result == null || result == false)
+            return;
+    }
+
+    private async Task ConfirmCompleteProposalAsync(int id)
+    {
+        var result = await _dialogService.Confirm(
+            $"Do you really want to mark proposal <b>#{id}</b> as <b>completed<b>?",
+            $"Update Proposal #{id}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (result == null || result == false)
+            return;
+    }
+
+    private async Task ConfirmCancelProposalAsync(int id)
+    {
+        var result = await _dialogService.Confirm(
+            $"Do you really want to <b>cancel</b> proposal <b>#{id}</b>?",
+            $"Cancel Proposal #{id}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (result == null || result == false)
+            return;
+    }
+
+    private async Task<ProposalViewModel> GetProposalByIdAsync(int id)
+    {
+        var proposalRes = await _apiService.GetProposalByIdAsync(id);
+
+        if (!proposalRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Proposal Information", proposalRes.Messages);
+            return null;
+        }
+
+        return proposalRes.Data;
+    }
+}

@@ -1,0 +1,26 @@
+﻿@inject NavigationManager _navigationManager
+
+
+@* <Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+    </Found>
+</Router>
+ *@
+<CascadingAuthenticationState> 
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+                <Authorizing>
+                    <h1>AUTHORIZING</h1>
+                </Authorizing>
+                <NotAuthorized>
+                    <h1>NOT AUTHORIZED</h1>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <h1>PAGE NOT FOUND</h1>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState> 

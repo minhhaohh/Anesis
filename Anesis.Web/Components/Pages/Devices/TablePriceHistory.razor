@@ -1,0 +1,41 @@
+﻿@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenTable>
+        <RadzenTableHeader>
+            <RadzenTableHeaderRow>
+                <RadzenTableHeaderCell>Base Cost</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell>Total Cost</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell>Effective Date</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell>End Date</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell>Updated By</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell>Updated Date</RadzenTableHeaderCell>
+            </RadzenTableHeaderRow>
+        </RadzenTableHeader>
+        <RadzenTableBody>
+            @foreach (var item in PriceHistory)
+            {
+                var isActive = item.EndDate == null;
+                var colorClass = isActive ? "rz-color-primary" : "";
+
+                <RadzenTableRow>
+                    <RadzenTableCell><span class="@colorClass">@item.VendorCost.ToString("C2")</span></RadzenTableCell>
+                    <RadzenTableCell><span class="@colorClass">@item.AppliedCost.ToString("C2")</span></RadzenTableCell>
+                    <RadzenTableCell><span class="@colorClass">@item.EffectiveDate.ToString("MM/dd/yyyy")</span></RadzenTableCell>
+                    <RadzenTableCell><span class="@colorClass">@item.EndDate?.ToString("MM/dd/yyyy")</span></RadzenTableCell>
+                    <RadzenTableCell><span class="@colorClass">@item.UpdatedBy</span></RadzenTableCell>
+                    <RadzenTableCell><span class="@colorClass">@item.UpdatedDate.ToString("MM/dd/yyyy")</span></RadzenTableCell>
+                </RadzenTableRow>
+            }
+        </RadzenTableBody>
+    </RadzenTable>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Text="Close"
+                      Click="(MouseEventArgs args) => _dialogService.Close()" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public List<DeviceCostViewModel> PriceHistory { get; set; }
+}

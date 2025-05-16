@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Blazor.SignaturePad" Version="9.0.0" />
+    <PackageReference Include="Radzen.Blazor" Version="6.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Anesis.ServiceDefaults\Anesis.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Anesis.Web.Data\Anesis.Web.Data.csproj" />
+  </ItemGroup>
+
+</Project>

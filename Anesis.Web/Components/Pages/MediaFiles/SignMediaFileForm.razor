@@ -1,0 +1,63 @@
+﻿@using SignaturePad
+
+@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenTemplateForm TItem="SignatureViewModel" Data="SignatureModel" Submit="SaveSignatureAsync">
+        <RadzenFieldset Text="Signature">
+            <RadzenStack Gap="1rem">
+                <SignaturePad @bind-Value="SignatureModel.Image" Disabled="_disabled" ShowClearButton="false"
+                              Options="new SignaturePadOptions() {LineWidth = 3}"
+                              Class="@(_disabled ? "rz-background-color-base-100" : "rz-background-color-white")"
+                              style="width: 100%; height: 200px" />
+            </RadzenStack>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+            @if (!_disabled)
+            {
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Text="Save" Icon="save" />
+            }
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Text="Close"
+                          Click="() => _dialogService.Close()" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public SignatureViewModel SignatureModel { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    private bool _disabled = false;
+
+    protected override void OnParametersSet()
+    {
+        _disabled = SignatureModel.Id > 0;
+    }
+
+    // SUPPORT METHODS
+    public async Task SaveSignatureAsync(SignatureViewModel model)
+    {
+        var signToFileRes = await _apiService.SignToMediaFileAsync(model);
+
+        if (!signToFileRes.Success)
+        {
+            _notifyService.NotifyErrors("Sign To Media File", signToFileRes.Messages);
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Sign To Media File", signToFileRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+}

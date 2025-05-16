@@ -1,0 +1,63 @@
+﻿@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="2">
+            <RadzenText TextStyle="TextStyle.Body2">Bank Transaction ID:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="4">
+            <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">@_bankTransactionId</RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTable>
+        <RadzenTableHeader>
+            <RadzenTableHeaderRow>
+                <RadzenTableHeaderCell Style="width: 10%;">Chart No</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 15%;">Patient Name</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">P. Type</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">Card Type</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 15%;">Card Name</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">Submit Date</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">Amount</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">Trans. Date</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">User Name</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">Batch No</RadzenTableHeaderCell>
+                <RadzenTableHeaderCell Style="width: 10%;">Location</RadzenTableHeaderCell>
+            </RadzenTableHeaderRow>
+        </RadzenTableHeader>
+        <RadzenTableBody>
+            @foreach (var item in CreditTransactions)
+            {
+                <RadzenTableRow>
+                    <RadzenTableCell>@item.ChartNo</RadzenTableCell>
+                    <RadzenTableCell>@item.PatientName</RadzenTableCell>
+                    <RadzenTableCell>@item.PaymentType</RadzenTableCell>
+                    <RadzenTableCell>@item.CardType</RadzenTableCell>
+                    <RadzenTableCell>@item.DbaName</RadzenTableCell>
+                    <RadzenTableCell>@item.SubmitDate.ToString("MM-dd-yyyy")</RadzenTableCell>
+                    <RadzenTableCell>@item.Amount.ToString("C2")</RadzenTableCell>
+                    <RadzenTableCell>@item.TransactionDate.ToString("MM-dd-yyyy")</RadzenTableCell>
+                    <RadzenTableCell>@item.TerminalId</RadzenTableCell>
+                    <RadzenTableCell>@item.BatchNumber</RadzenTableCell>
+                    <RadzenTableCell>@item.LocationId</RadzenTableCell>
+                </RadzenTableRow>
+            }
+        </RadzenTableBody>
+    </RadzenTable>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Text="Close"
+        Click="(MouseEventArgs args) => _dialogService.Close()" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public List<CreditTransactionViewModel> CreditTransactions { get; set; }
+
+    private int _bankTransactionId;
+
+    protected override void OnParametersSet()
+    {
+        _bankTransactionId = CreditTransactions.FirstOrDefault()?.BankTransactionId ?? 0;
+    }
+}

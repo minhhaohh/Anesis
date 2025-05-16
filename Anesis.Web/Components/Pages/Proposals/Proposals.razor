@@ -1,0 +1,187 @@
+﻿@page "/proposals"
+@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<PageTitle>Potential Procedures</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Potential Procedures</RadzenText>
+
+<ProposalFilterPanel @ref="_proposalFilterPanel" FilterModel="_filterModel" 
+CollapsedFilterPanel="_collapsedFilterPanel"  ProposalStatus="_proposalStatus"
+ActiveLocations="_activeLocations" ActiveAscLocations="_activeAscLocations"
+ActiveProviders="_activeProviders" ActiveDoctors="_activeDoctors"
+ActiveMidLevelProviders="_activeMidLevelProviders" ActiveProcedures="_activeProcedures"
+OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync" 
+OnRefreshGrid="RefreshGridAsync" OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
+
+<GridProposals @ref="_gridProposals" FilterModel="_filterModel"
+OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
+
+@code {
+    private ProposalFilterModel _filterModel = new();
+    private bool _collapsedFilterPanel = false;
+    private Dictionary<int, string> _proposalStatus = typeof(PotentialProcedureStatus).ToDictionary();
+    private Dictionary<int, string> _activeLocations = new();
+    private Dictionary<int, string> _activeAscLocations = new();
+    private Dictionary<int, string> _activeProviders = new();
+    private Dictionary<int, string> _activeDoctors = new();
+    private Dictionary<int, string> _activeMidLevelProviders = new();
+    private Dictionary<int, string> _activeProcedures = new();
+
+    // Components
+    private ProposalFilterPanel _proposalFilterPanel;
+    private GridProposals _gridProposals;
+
+    // OVERRIDE METHODS
+    protected override async Task OnInitializedAsync()
+    {
+        _activeLocations = await GetActiveLocationsAsync() ?? new();
+        _activeAscLocations = await GetActiveAscLocationsAsync() ?? new();
+        _activeProviders = await GetActiveProvidersAsync() ?? new();
+        _activeDoctors = await GetActiveDoctorsAsync() ?? new(); 
+        _activeMidLevelProviders = await GetActiveMidLevelProvidersAsync() ?? new();
+        _activeProcedures = await GetActiveProceduresAsync() ?? new();
+    }
+
+    // SUPPORT METHODS
+    private async Task<Dictionary<int, string>> GetActiveLocationsAsync()
+    {
+        var locationsRes = await _apiService.GetDropdownLocationsAsync(true);
+
+        if (!locationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Locations", locationsRes.Messages);
+            return null;
+        }
+
+        return locationsRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveAscLocationsAsync()
+    {
+        var locationsRes = await _apiService.GetDropdownAscLocationsAsync(true);
+
+        if (!locationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get ASC Locations", locationsRes.Messages);
+            return null;
+        }
+
+        return locationsRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveProvidersAsync()
+    {
+        var providersRes = await _apiService.GetDropdownProvidersAsync(true);
+
+        if (!providersRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Providers", providersRes.Messages);
+            return null;
+        }
+
+        return providersRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveDoctorsAsync()
+    {
+        var doctorsRes = await _apiService.GetDropdownDoctorsAsync(true);
+
+        if (!doctorsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Doctors", doctorsRes.Messages);
+            return null;
+        }
+
+        return doctorsRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveMidLevelProvidersAsync()
+    {
+        var providersRes = await _apiService.GetDropdownMidLevelProvidersAsync(true);
+
+        if (!providersRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Mid-Level Providers", providersRes.Messages);
+            return null;
+        }
+
+        return providersRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveProceduresAsync()
+    {
+        var proceduresRes = await _apiService.GetDropdownProceduresAsync(true);
+
+        if (!proceduresRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Procedures", proceduresRes.Messages);
+            return null;
+        }
+
+        return proceduresRes.Data;
+    }
+
+    private void ResizeGrid(bool collapsedFilterPanel)
+    {
+        _collapsedFilterPanel = collapsedFilterPanel;
+        _gridProposals.ResizeGrid(_collapsedFilterPanel);
+    }
+
+    private async Task FilterGridAsync(ProposalFilterModel filterModel)
+    {
+        _filterModel = filterModel;
+        await _gridProposals.FilterGridAsync(_filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await _gridProposals.RefreshGridAsync();
+    }
+
+    private async Task OpenEditProposalDialogAsync(int id)
+    {
+        var editModel = new ProposalEditModel();
+
+        if (id > 0)
+        {
+            var proposal = await GetProposalByIdAsync(id);
+            if (proposal == null)
+            {
+                return;
+            }
+            editModel = proposal.ToEditModel();
+        }
+
+        var title = id > 0 ? $"Edit Proposal #{id}" : "Create New Proposal";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "EditModel", editModel },
+                { "ActiveLocations", _activeLocations },
+                { "ActiveProviders", _activeProviders },
+                { "ActiveDoctors", _activeDoctors },
+                { "ActiveProcedures", _activeProcedures},
+                { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.Large,
+            };
+
+        await _dialogService.OpenAsync<EditProposalForm>(title, paramsDic, options);
+    }
+    
+    private async Task<ProposalViewModel> GetProposalByIdAsync(int id)
+    {
+        var proposalRes = await _apiService.GetProposalByIdAsync(id);
+
+        if (!proposalRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Proposal Information", proposalRes.Messages);
+            return null;
+        }
+
+        return proposalRes.Data;
+    }
+}

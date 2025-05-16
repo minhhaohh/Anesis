@@ -1,0 +1,433 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<style>
+    .custom-upload-input .rz-fileupload-buttonbar {
+        padding: 0 !important;
+    }
+
+    .custom-table {
+        width: 100%;
+    }
+
+    .custom-table thead th, .custom-table tbody td {
+        padding: 4px 4px 4px 0 !important;
+    }
+
+    .custom-table tbody {
+        display: block;
+        max-height: 300px;
+        overflow-y: auto;
+        width: 100%;
+    }
+
+    .custom-table thead, .custom-table tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+</style>
+
+<RadzenStack>
+    <RadzenTemplateForm TItem="InvoiceEditModel" Data="EditModel" Submit="SaveInvoiceAsync">
+        <RadzenFieldset Text="Invoice Information">
+            <RadzenRow Gap="4rem">
+                <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Vendor" Component="VendorId" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenDropDown @bind-Value="EditModel.VendorId" Name="VendorId" Data="ActiveVendors"
+                                                AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                                TextProperty="@nameof(CustomerViewModel.CustomerName)" ValueProperty="@nameof(CustomerViewModel.Id)"
+                                                Placeholder="---Select---" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Invoice Number" Component="InvoiceNo" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="EditModel.InvoiceNo" Name="InvoiceNo" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Invoice Date" Component="InvoiceDate" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenDatePicker @bind-Value="EditModel.InvoiceDate" Name="InvoiceDate"
+                                                  AllowClear="true" AllowInput="false"
+                                                  DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Due Date" Component="DueDate" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenDatePicker @bind-Value="EditModel.DueDate" Name="DueDate"
+                                                  AllowClear="true" AllowInput="false"
+                                                  DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Scanned File" Component="ScannedFileShortName" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <ChildContent>
+                                        <RadzenTextBox @bind-Value="EditModel.ScannedFileShortName" Name="ScannedFileShortName"
+                                                       Style="width: 100%; height: 34px;" Disabled />
+                                    </ChildContent>
+                                    <End>
+                                        <RadzenUpload Url="" Name="ScannedFileName" Icon="upload" ChooseText=""
+                                                      Style="width: 100%;" class="custom-upload-input" />
+                                    </End>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Purchase Order Number" Component="PurchaseOrderNo" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="EditModel.PurchaseOrderNo" Name="PurchaseOrderNo" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Company" Component="Company" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenDropDown @bind-Value="EditModel.Company" Name="Company"
+                                                Data="Companies" AllowClear="true"
+                                                Placeholder="---Select---" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenDropDown @bind-Value="EditModel.LocationId" Name="LocationId"
+                                                Data="ActiveLocations" AllowClear="true"
+                                                TextProperty="Value" ValueProperty="Key"
+                                                Placeholder="---Select---" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Comment" Component="UserComment" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextArea @bind-Value="EditModel.UserComment" Name="UserComment" Rows="3" Style="width: 100%;"
+                                                Placeholder="Add your comment here to provide more information to managers" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="For Surgery Cases" Component="LinkedCases" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextArea @bind-Value="EditModel.LinkedCases" Name="LinkedCases" Rows="3" Style="width: 100%;"
+                                                Placeholder="Select the surgery cases to link to current invoice" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Bulk Order" Component="IsBulk" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenCheckBox @bind-Value="EditModel.IsBulk" Name="IsBulk" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Subtotal" Component="Subtotal" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.Subtotal" Name="Subtotal"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Tax Amount" Component="TaxAmount" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.TaxAmount" Name="TaxAmount"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Shipping Fee" Component="ShippingFee" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.ShippingFee" Name="ShippingFee"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Additional Charges" Component="AdditionalCharges" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.AdditionalCharges" Name="AdditionalCharges"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Additional Notes" Component="FeeNotes" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="EditModel.FeeNotes" Name="FeeNotes" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Discount" Component="DiscountAmount" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.DiscountAmount" Name="DiscountAmount"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Total Amount" Component="TotalAmount" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.TotalAmount" Name="TotalAmount"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Amount To Pay" Component="AmountToPay" class="rz-text-subtitle2 required-near" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="EditModel.AmountToPay" Name="AmountToPay"
+                                                       Style="width: 100%; height: 34px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextArea @bind-Value="EditModel.Notes" Name="Notes" Rows="3" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenDropDown @bind-Value="EditModel.ReviewerId" Name="ReviewerId"
+                                                AllowClear="true" Data="InvoiceReviewers"
+                                                Placeholder="---Select---" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+        <RadzenFieldset Text="Invoice Items">
+            <div><strong class="rz-color-danger">Please enter at least 1 purchased item</strong></div>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%; text-align: start;">Item Name</th>
+                        <th style="width: 15%; text-align: start;">Quantity</th>
+                        <th style="width: 15%; text-align: start;">Unit Price</th>
+                        <th style="width: 35%; text-align: start;">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < EditModel.Items.Count; i++)
+                    {
+                        var item = EditModel.Items[i];
+                        var hiddenItem = i >= _hiddenItemIndex;
+                        var cssClass = hiddenItem ? "d-none" : "";
+
+                        <tr class="item-row @cssClass">
+                            <td style="width: 35%;">
+                                <RadzenTextBox @bind-Value="@item.ItemName" Style="width: 100%; height: 28px; font-size: 14px;" Placeholder="Item Name" />
+                            </td>
+                            <td style="width: 15%;">
+                                <RadzenNumeric @bind-Value="@item.Quantity" Style="width: 100%; height: 28px; font-size: 14px;" />
+                            </td>
+                            <td style="width: 15%;">
+                                <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                                    <Start>
+                                        <RadzenIcon Icon="attach_money" />
+                                    </Start>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="@item.UnitPrice" Style="width: 100%; height: 26px; font-size: 14px;" />
+                                    </ChildContent>
+                                </RadzenFormField>
+                            </td>
+                            <td style="width: 35%;">
+                                <RadzenTextBox @bind-Value="@item.Notes" Style="width: 100%; height: 28px; font-size: 14px;" Placeholder="Notes" />
+                            </td>
+                        </tr>
+                    }
+                    @if (_hiddenItemIndex < EditModel.Items.Count)
+                    {
+                        <RadzenButton Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small" Text="Add More Item Rows" Icon="add"
+                                      Click="AddMoreItemRows" class="rz-mt-2" />
+                    }
+
+                </tbody>
+            </table>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                          Text="Save" Icon="save" />
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                          Text="Close" Click="() => _dialogService.Close()" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public InvoiceEditModel EditModel { get; set; }
+    [Parameter]
+    public List<CustomerViewModel> ActiveVendors { get; set; }
+    [Parameter]
+    public List<string> Companies { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveLocations { get; set; }
+    [Parameter]
+    public List<string> InvoiceReviewers { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+
+    private int _hiddenItemIndex = 5;
+
+    // OVERRIDE METHODS
+    protected override void OnParametersSet()
+    {
+        var validItemsCount = EditModel.Items.Count(x => x.Id > 0);
+        _hiddenItemIndex = validItemsCount > 5 ? validItemsCount : 5;
+    }
+
+    // SUPPORT METHODS
+    private async Task SaveInvoiceAsync(InvoiceEditModel invoice)
+    {
+        if (invoice.Id > 0)
+        {
+            await UpdateInvoiceAsync(invoice);
+        }
+        else
+        {
+            await CreateInvoiceAsync(invoice);
+        }
+    }
+
+    private async Task UpdateInvoiceAsync(InvoiceEditModel invoice)
+    {
+        var updateInvoiceRes = await _apiService.UpdateInvoiceAsync(invoice);
+
+        if (updateInvoiceRes.Success)
+        {
+            _notifyService.NotifySuccess("Update Invoice Information", updateInvoiceRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Update Invoice Information", updateInvoiceRes.Messages);
+        }
+    }
+
+    private async Task CreateInvoiceAsync(InvoiceEditModel invoice)
+    {
+        var createInvoiceRes = await _apiService.CreateInvoiceAsync(invoice);
+
+        if (createInvoiceRes.Success)
+        {
+            _notifyService.NotifySuccess("Create New Invoice", createInvoiceRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Create New Invoice", createInvoiceRes.Messages);
+        }
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+
+    private void AddMoreItemRows()
+    {
+        _hiddenItemIndex = EditModel.Items.Count;
+    }
+}

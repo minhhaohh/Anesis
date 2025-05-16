@@ -1,0 +1,40 @@
+html, body {
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+}
+
+.d-none {
+    display: none !important;
+}
+
+.required-near:after {
+    content: " *";
+    font-weight: bold;
+    color: red
+}
+
+.text-underline-none {
+    text-decoration: none;
+}
+
+.custom-input-group .rz-form-field-content {
+    margin-block: 0 !important;
+}
+
+.custom-input-group .rz-form-field-start, .custom-input-group .rz-form-field-end {
+    padding-inline: 0 !important;
+}
+
+input::placeholder {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+textarea::placeholder {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.rz-placeholder {
+    opacity: 0.5;
+    font-style: italic;
+}

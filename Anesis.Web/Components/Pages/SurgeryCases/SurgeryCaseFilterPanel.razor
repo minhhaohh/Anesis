@@ -1,0 +1,171 @@
+﻿<RadzenFieldset Text="Filter Panel" AllowCollapse="true"
+                Collapse="async () => await ToggleFilterPanelAsync(true)"
+                Expand="async () => await ToggleFilterPanelAsync(false)">
+    <RadzenTemplateForm TItem="SurgeryCaseFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="From Date" Component="FromDate" class="rz-text-subtitle2" />
+                    <RadzenDatePicker @bind-Value="FilterModel.FromDate" Name="FromDate"
+                                      AllowClear="true" AllowInput="false"
+                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+
+                    <RadzenLabel Text="To Date" Component="ToDate" class="rz-text-subtitle2" />
+                    <RadzenDatePicker @bind-Value="FilterModel.ToDate" Name="ToDate"
+                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Chart No" Component="EcwChartNo" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.EcwChartNo" Name="EcwChartNo"
+                                   PlaceHolder="Chart No" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Patient Name" Component="FirstName" class="rz-text-subtitle2" />
+                    <RadzenRow>
+                        <RadzenColumn Size="12" SizeMD="6">
+                            <RadzenTextBox @bind-Value="FilterModel.FirstName" Name="FirstName"
+                                           Placeholder="First Name" Style="width: 100%;" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="6">
+                            <RadzenTextBox @bind-Value="FilterModel.LastName" Name="LastName"
+                                           Placeholder="Last Name" Style="width: 100%;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Procedure" Component="ProcedureId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.ProcedureId" Name="ProcedureId" Data="ActiveProcedures"
+                                    AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Insurance" Component="InsuranceId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.InsuranceId" Name="InsuranceId" Data="ActiveInsurances"
+                                    AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Provider" Component="PrimaryProviderId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.PrimaryProviderId" Name="PrimaryProviderId"
+                                    Data="ActiveDoctors" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.LocationId" Name="LocationId"
+                                    Data="ActiveAscLocations" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Status" Component="CaseStatus" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.CaseStatus" Name="CaseStatus"
+                                    Data="SurgeryCaseStatus" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Linked Invoice No" Component="LinkedInvoiceNo" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.LinkedInvoiceNo" Name="LinkedInvoiceNo"
+                                   PlaceHolder="Linked Invoice No" Style="width: 100%;" 
+                                   Change="(changedValue) => { if (changedValue.HasValue()) { FilterModel.LinkedInvoice = true; FilterModel.NotLinkInvoice = false; } }" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem" Style="height: 100%;">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.HasDevices" TValue="bool" Name="HasDevices"
+                                        Change="(isChecked) => { if (isChecked) { FilterModel.NoDevices = false; } }" />
+                        <RadzenLabel Text="Has Devices" Component="HasDevices" class="rz-text-subtitle2" />
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.NoDevices" TValue="bool" Name="NoDevices"
+                                        Change="(isChecked) => { if (isChecked) { FilterModel.HasDevices = false; } }" />
+                        <RadzenLabel Text="No Devices" Component="NoDevices" class="rz-text-subtitle2" />
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.LinkedInvoice" TValue="bool" Name="LinkedInvoice"
+                                        Change="(isChecked) => { if (isChecked) { FilterModel.NotLinkInvoice = false; } }" />
+                        <RadzenLabel Text="Linked Invoice" Component="LinkedInvoice" class="rz-text-subtitle2" />
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.NotLinkInvoice" TValue="bool" Name="NotLinkInvoice"
+                                        Change="(isChecked) => { if (isChecked) { FilterModel.LinkedInvoice = false; } }" />
+                        <RadzenLabel Text="Not Link Invoice" Component="NotLinkInvoice" class="rz-text-subtitle2" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" Style="height: 100%;">
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                                  Text="Filter" Icon="filter_alt" />
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning"
+                                  Text="Clear" Icon="ink_eraser" Click="ClearFilterAsync" />
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info"
+                                  Text="Refresh" Icon="refresh" Click="RefreshGridAsync" />
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenTemplateForm>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public bool CollapsedFilterPanel { get; set; }
+    [Parameter]
+    public SurgeryCaseFilterModel FilterModel { get; set; }
+    [Parameter]
+    public Dictionary<int, string> SurgeryCaseStatus { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveAscLocations { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveDoctors { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveProcedures { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveInsurances { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnResizeGrid { get; set; }
+    [Parameter]
+    public EventCallback<SurgeryCaseFilterModel> OnFilterGrid { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+
+    // SUPPORT METHODS
+    private async Task ToggleFilterPanelAsync(bool collapsed)
+    {
+        CollapsedFilterPanel = collapsed;
+        await ResizeGridAsync(CollapsedFilterPanel);
+    }
+
+    private async Task ResizeGridAsync(bool collapsed)
+    {
+        await OnResizeGrid.InvokeAsync(collapsed);
+    }
+
+    private async Task FilterGridAsync(SurgeryCaseFilterModel filterModel)
+    {
+        FilterModel = filterModel;
+        await OnFilterGrid.InvokeAsync(filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+
+    private async Task ClearFilterAsync()
+    {
+        var model = new SurgeryCaseFilterModel();
+        await FilterGridAsync(model);
+    }
+}

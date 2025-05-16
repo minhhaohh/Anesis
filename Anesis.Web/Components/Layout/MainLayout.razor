@@ -1,0 +1,54 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager _navigationManager
+
+@* <AuthorizeView>
+    <Authorized> *@
+        <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
+            <RadzenHeader>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="2">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center">
+                            <RadzenSidebarToggle Click="ToggleNavMenu" Style="margin: 0;" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenStack>
+
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="2">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center">
+                            <RadzenAppearanceToggle />
+                            <ProfileMenu />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenHeader>
+            <NavMenu Collapsed="_collapsed" />
+            <RadzenBody>
+                <div class="rz-p-4">
+                    @Body
+                </div>
+            </RadzenBody>
+        </RadzenLayout>
+@*     </Authorized>
+    <NotAuthorized>
+        @{
+            var returnUrl = _navigationManager.ToAbsoluteUri(_navigationManager.Uri).PathAndQuery;
+
+            _navigationManager.NavigateTo($"/login?ReturnUrl={returnUrl}", true);
+        }
+    </NotAuthorized>
+</AuthorizeView> *@
+
+<RadzenComponents @rendermode="InteractiveServer" />
+
+@code {
+    private bool _collapsed = false;
+
+    // SUPPORT METHODS
+    private void ToggleNavMenu()
+    {
+        _collapsed = !_collapsed;
+    }
+}

@@ -1,0 +1,501 @@
+﻿@page "/staff-schedules"
+@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+@inject IJSRuntime _jsRunTime
+
+<PageTitle>Staff Schedules</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Staff Schedules</RadzenText>
+
+<RadzenTabs RenderMode="TabRenderMode.Client">
+    <Tabs>
+        <RadzenTabsItem Text="Location">
+            <TimelineCalendarByLocation CanScheduleStaff="_canScheduleStaff" FilterModel="_filterLocModel"
+            ActiveLocations="_activeLocations" GeneralSettings="_generalSettings" StaffScheduleSettings="_staffScheduleSettings"
+            OnFilterLocationForTimeline="FilterLocationForTimelineAsync" OnToggleHiddenWeekends="ToggleLocHiddenWeekendsAsync" />
+        </RadzenTabsItem>
+
+        <RadzenTabsItem Text="Employee">
+            <TimelineCalendarByEmployee CanScheduleStaff="_canScheduleStaff" FilterModel="_filterEmpModel"
+            ActiveEmployees="_activeEmployees" GeneralSettings="_generalSettings" StaffScheduleSettings="_staffScheduleSettings"
+            OnFilterEmployeeForTimeline="FilterEmployeeForTimelineAsync" OnToggleHiddenWeekends="ToggleEmpHiddenWeekendsAsync" />
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+
+<link href="https://cdn.jsdelivr.net/npm/@@event-calendar/build@3.6.2/event-calendar.min.css" rel="stylesheet" />
+<link href="css/staff-schedule.css" rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@@event-calendar/build@3.6.2/event-calendar.min.js"></script>
+<script src="js/staff-schedule.js"></script>
+
+@code {
+    private bool _canScheduleStaff = true;
+    private GeneralSettingsModel _generalSettings = new();
+    private StaffScheduleSettingsModel _staffScheduleSettings = new();
+    private Dictionary<int, string> _activeLocations = new();
+    private Dictionary<int, string> _activeEmployees = new();
+    private TimeSpan _businessStartTime;
+    private TimeSpan _businessEndTime;
+
+    private StaffScheduleFilterModel _filterLocModel = new() { ResourceType = ScheduleResourceType.Location };
+    private StaffScheduleFilterModel _filterEmpModel = new() { ResourceType = ScheduleResourceType.Employee };
+
+    private DotNetObjectReference<StaffSchedules> _dotNetHelper;
+
+    // OVERRIDE METHODS
+    protected override async Task OnInitializedAsync()
+    {
+        _generalSettings = await GetGeneralSettingsAsync() ?? new();
+        _staffScheduleSettings = await GetStaffScheduleSettingsAsync() ?? new();
+        _activeLocations = await GetActiveLocationsAsync() ?? new();
+        _activeEmployees = await GetActiveEmployeesAsync() ?? new();
+
+        _businessStartTime = TimeSpan.Parse(_generalSettings.BusinessStartTime);
+        _businessEndTime = TimeSpan.Parse(_generalSettings.BusinessEndTime);
+
+        _filterLocModel.ResourceIdList = _activeLocations.Keys.ToList();
+        _filterEmpModel.ResourceIdList = _activeEmployees.Keys.ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Wait for the JS to load
+            await Task.Delay(1000);
+
+            // Set the DotNet helper for JS interop
+            await SetDotNetHelperAsync();
+
+            // Init location timeline
+            await InitTimelineInstanceAsync(StaffScheduleElements.TimelineLocationId);
+            await LoadTimelineResourcesAsync(StaffScheduleElements.TimelineLocationId, _activeLocations);
+
+            // Init employee timeline
+            await InitTimelineInstanceAsync(StaffScheduleElements.TimelineEmployeeId);
+            await LoadTimelineResourcesAsync(StaffScheduleElements.TimelineEmployeeId, _activeEmployees);
+        }
+    }
+
+    // SUPPORT METHODS
+    private async Task<GeneralSettingsModel> GetGeneralSettingsAsync()
+    {
+        var settingsRes = await _apiService.GetGeneralSettingsAsync();
+
+        if (!settingsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get General Settings", settingsRes.Messages);
+            return null;
+        }
+
+        return settingsRes.Data;
+    }
+
+    private async Task<StaffScheduleSettingsModel> GetStaffScheduleSettingsAsync()
+    {
+        var settingsRes = await _apiService.GetStaffScheduleSettingsAsync();
+
+        if (!settingsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Staff Schedule Settings", settingsRes.Messages);
+            return null;
+        }
+
+        return settingsRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveLocationsAsync()
+    {
+        var locationsRes = await _apiService.GetDropdownLocationsAsync(true);
+
+        if (!locationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Locations", locationsRes.Messages);
+            return null;
+        }
+
+        return locationsRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveEmployeesAsync()
+    {
+        var employeesRes = await _apiService.GetDropdownEmployeesAsync(true);
+
+        if (!employeesRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Employees", employeesRes.Messages);
+            return null;
+        }
+
+        return employeesRes.Data;
+    }
+
+    private async Task<List<CalendarEventViewModel>> GetTimelineLocEventsAsync()
+    {
+        var eventsRes = await _apiService.SearchStaffSchedulesAsync(_filterLocModel);
+
+        if (!eventsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Staff Schedules", eventsRes.Messages);
+            return null;
+        }
+
+        return eventsRes.Data;
+    }
+
+    private async Task<List<CalendarEventViewModel>> GetTimelineEmpEventsAsync()
+    {
+        var eventsRes = await _apiService.SearchStaffSchedulesAsync(_filterEmpModel);
+
+        if (!eventsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Staff Schedules", eventsRes.Messages);
+            return null;
+        }
+
+        return eventsRes.Data;
+    }
+
+    private void StyleTimelineEvents(List<CalendarEventViewModel> events)
+    {
+        foreach (var item in events)
+        {
+            var defaultEventType = StaffScheduleEventColors.DefaultEventType;
+
+            item.ClassName = StaffScheduleEventColors.GetColorClass(item.GetExtendProperty("EventType"), defaultEventType);
+        }
+    }
+
+    private async Task OpenScheduleStaffDialogAsync(int id = 0)
+    {
+        var editModel = new StaffScheduleEditModel();
+
+        if (id > 0)
+        {
+            var scheduleRes = await _apiService.GetStaffScheduleByIdAsync(id);
+
+            if (!scheduleRes.Success)
+            {
+                _notifyService.NotifyErrors("Get Staff Schedule", scheduleRes.Messages);
+                return;
+            }
+
+            editModel = scheduleRes.Data.ToStaffScheduleEditModel();
+        }
+
+        await OpenScheduleStaffDialogAsync(editModel);
+    }
+
+    private async Task OpenScheduleStaffDialogAsync(StaffScheduleEditModel editModel)
+    {
+        var title = "Schedule Staff";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "EditModel", editModel },
+                { "BusinessStartTime", _businessStartTime },
+                { "BusinessEndTime", _businessEndTime },
+                { "ActiveLocations", _activeLocations },
+                { "ActiveEmployees", _activeEmployees },
+                { "StaffScheduleSaveOptions", StaffScheduleSaveOption.All().ToList() },
+                { "OnRefreshTimelineLocEvents", EventCallback.Factory.Create(this, RefreshTimelineLocEventsAsync) },
+                { "OnRefreshTimelineEmpEvents", EventCallback.Factory.Create(this, RefreshTimelineEmpEventsAsync) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.Large,
+            };
+
+        await _dialogService.OpenAsync<ScheduleStaffForm>(title, paramsDic, options);
+    }
+
+    private async Task<bool> UpdateStaffSchedulesAsync(StaffScheduleEditModel model)
+    {
+        var scheduleStaffRes = await _apiService.UpdateStaffSchedulesAsync(model);
+
+        if (scheduleStaffRes.Success)
+        {
+            _notifyService.NotifySuccess("Update Staff Schedules", scheduleStaffRes.Data);
+            _dialogService.Close();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Update Staff Schedules", scheduleStaffRes.Messages);
+        }
+
+        return scheduleStaffRes.Success;
+    }
+
+    // EXECUTE JS METHODS
+    private async Task SetDotNetHelperAsync()
+    {
+        _dotNetHelper = DotNetObjectReference.Create(this);
+        await _jsRunTime.InvokeVoidAsync(StaffScheduleElements.SetDotNetHelperFunc, _dotNetHelper);
+        await Task.Delay(500);
+    }
+
+    private async Task InitTimelineInstanceAsync(string elementId)
+    {
+        var initInstanceFunc = StaffScheduleElements.GetInitTimelineInstanceFunc(elementId);
+
+        var slotSettings = new
+        {
+            slotDuration = _staffScheduleSettings.SlotDuration,
+            slotMinTime = _generalSettings.BusinessStartTime,
+            slotMaxTime = _generalSettings.BusinessEndTime,
+            slotWidth = _staffScheduleSettings.SlotWidth,
+        };
+        await _jsRunTime.InvokeVoidAsync(initInstanceFunc, elementId, _canScheduleStaff, slotSettings);
+        await Task.Delay(500);
+    }
+
+    private async Task LoadTimelineResourcesAsync(string elementId, Dictionary<int, string> resources)
+    {
+        var resourceList = new List<object>();
+
+        if (elementId == StaffScheduleElements.TimelineLocationId)
+        {
+            resourceList.Add(new { id = StaffScheduleElements.ResourceTimeOffId, title = "Time Off" });
+        }
+        else if (elementId == StaffScheduleElements.TimelineEmployeeId)
+        {
+            resourceList.Add(new { id = StaffScheduleElements.ResourceHolidayId, title = "Holiday" });
+        }
+
+        resourceList.AddRange(resources.Select(x => new { id = x.Key, title = x.Value }));
+
+        await _jsRunTime.InvokeVoidAsync(StaffScheduleElements.UpdateTimelineResourcesFunc, elementId, resourceList);
+        await Task.Delay(500);
+
+        await RefreshTimelineEventsAsync(elementId);
+    }
+
+    private async Task RefreshTimelineLocEventsAsync()
+    {
+        await RefreshTimelineEventsAsync(StaffScheduleElements.TimelineLocationId);
+    }
+
+    private async Task RefreshTimelineEmpEventsAsync()
+    {
+        await RefreshTimelineEventsAsync(StaffScheduleElements.TimelineEmployeeId);
+    }
+
+    private async Task RefreshTimelineEventsAsync(string elementId)
+    {
+        await _jsRunTime.InvokeVoidAsync(StaffScheduleElements.RefreshTimelineFunc, elementId);
+        await Task.Delay(500);
+    }
+
+    private async Task ToggleLocHiddenWeekendsAsync(bool isChecked)
+    {
+        _filterLocModel.IsHiddenWeekends = isChecked;
+
+        await ToggleHiddenWeekendsAsync(StaffScheduleElements.TimelineLocationId, _filterLocModel.HiddenDaysOfWeek);
+    }
+
+    private async Task ToggleEmpHiddenWeekendsAsync(bool isChecked)
+    {
+        _filterEmpModel.IsHiddenWeekends = isChecked;
+
+        await ToggleHiddenWeekendsAsync(StaffScheduleElements.TimelineEmployeeId, _filterEmpModel.HiddenDaysOfWeek);
+    }
+
+    private async Task ToggleHiddenWeekendsAsync(string elementId, List<int> hiddenDaysOfWeek)
+    {
+        await _jsRunTime.InvokeVoidAsync(StaffScheduleElements.UpdateTimelineHiddenDaysFunc, elementId, hiddenDaysOfWeek);
+        await Task.Delay(500);
+
+        await RefreshTimelineEventsAsync(elementId);
+    }
+
+    private async Task FilterLocationForTimelineAsync(int? locationId)
+    {
+        var resources = new Dictionary<int, string>();
+
+        if (locationId > 0)
+        {
+            _filterLocModel.ResourceIdList = new List<int> { locationId.Value };
+            var location = _activeLocations.FirstOrDefault(x => x.Key == locationId);
+            resources = new Dictionary<int, string>() { [location.Key] = location.Value };
+        }
+        else
+        {
+            _filterLocModel.ResourceIdList = _activeLocations.Keys.ToList();
+            resources = _activeLocations;
+        }
+
+        await LoadTimelineResourcesAsync(StaffScheduleElements.TimelineLocationId, resources);
+
+    }
+
+    private async Task FilterEmployeeForTimelineAsync(int? employeeId)
+    {
+        var resources = new Dictionary<int, string>();
+
+        if (employeeId > 0)
+        {
+            _filterLocModel.ResourceIdList = new List<int> { employeeId.Value };
+            var employee = _activeEmployees.FirstOrDefault(x => x.Key == employeeId);
+            resources = new Dictionary<int, string>() { [employee.Key] = employee.Value };
+        }
+        else
+        {
+            _filterLocModel.ResourceIdList = _activeEmployees.Keys.ToList();
+            resources = _activeEmployees;
+        }
+
+        await LoadTimelineResourcesAsync(StaffScheduleElements.TimelineEmployeeId, resources);
+    }
+
+    [JSInvokable]
+    public async Task<List<CalendarEventViewModel>> OnGetTimelineLocationEvents(string start, string end)
+    {
+        // Add a fake location to show time off events
+        if (!_filterLocModel.ResourceIdList.Contains(StaffScheduleElements.ResourceTimeOffId))
+        {
+            _filterLocModel.ResourceIdList.Add(StaffScheduleElements.ResourceTimeOffId);
+        }
+        _filterLocModel.FromDate = DateTime.Parse(start);
+        _filterLocModel.ToDate = DateTime.Parse(end);
+
+        var events = await GetTimelineLocEventsAsync() ?? new();
+        StyleTimelineEvents(events);
+
+        return events;
+    }
+
+    [JSInvokable]
+    public async Task<List<CalendarEventViewModel>> OnGetTimelineEmployeeEvents(string start, string end)
+    {
+        // Add a fake employee to show holiday events
+        if (!_filterLocModel.ResourceIdList.Contains(StaffScheduleElements.ResourceHolidayId))
+        {
+            _filterLocModel.ResourceIdList.Add(StaffScheduleElements.ResourceHolidayId);
+        }
+        _filterEmpModel.FromDate = DateTime.Parse(start);
+        _filterEmpModel.ToDate = DateTime.Parse(end);
+
+        var events = await GetTimelineEmpEventsAsync() ?? new();
+        StyleTimelineEvents(events);
+
+        return events;
+    }
+
+    [JSInvokable]
+    public async Task OnManualScheduleButtonClick()
+    {
+        await OpenScheduleStaffDialogAsync();
+    }
+
+    [JSInvokable]
+    public async Task OnEventClick(string id)
+    {
+        await OpenScheduleStaffDialogAsync(id.ToInt());
+    }
+
+    [JSInvokable]
+    public async Task OnSelect(string locationId, string fromDate, string toDate, string startTime, string endTime)
+    {
+        var editModel = new StaffScheduleEditModel()
+            {
+                LocationId = locationId.ToInt(),
+                FromDate = fromDate.HasValue() ? DateTime.Parse(fromDate) : null,
+                ToDate = toDate.HasValue() ? DateTime.Parse(toDate) : null,
+                StartTime = startTime.HasValue() ? TimeSpan.Parse(startTime) : _businessStartTime,
+                EndTime = endTime.HasValue() ? TimeSpan.Parse(endTime) : _businessEndTime,
+            };
+
+        // Make sure the start and end time are within business hours
+        editModel.StartTime = editModel.StartTime < _businessStartTime ? _businessStartTime : editModel.StartTime;
+        editModel.EndTime = editModel.EndTime > _businessEndTime ? _businessEndTime : editModel.EndTime;
+
+        await OpenScheduleStaffDialogAsync(editModel);
+    }
+
+    [JSInvokable]
+    public async Task OnEventResize(string id, string locationId, int employeeId,
+        string fromDate, string toDate, string startTime, string endTime, string notes)
+    {
+        var editModel = new StaffScheduleEditModel()
+            {
+                Id = id.ToInt(),
+                LocationId = locationId.ToInt(),
+                EmployeeIds = new List<int> { employeeId },
+                FromDate = fromDate.HasValue() ? DateTime.Parse(fromDate) : null,
+                ToDate = toDate.HasValue() ? DateTime.Parse(toDate) : null,
+                StartTime = startTime.HasValue() ? TimeSpan.Parse(startTime) : _businessStartTime,
+                EndTime = endTime.HasValue() ? TimeSpan.Parse(endTime) : _businessEndTime,
+                Notes = notes,
+            };
+
+        // Make sure the start and end time are within business hours
+        editModel.StartTime = editModel.StartTime < _businessStartTime ? _businessStartTime : editModel.StartTime;
+        editModel.EndTime = editModel.EndTime > _businessEndTime ? _businessEndTime : editModel.EndTime;
+
+        if (editModel.FromDate != editModel.ToDate)
+        {
+            editModel.EndTime = _businessEndTime;
+            editModel.ToDate = editModel.FromDate;
+        }
+
+        if (!await UpdateStaffSchedulesAsync(editModel))
+        {
+            throw new Exception("Schedule Failed!");
+        }
+
+        // // Refresh the timeline to show the updated event
+        // await RefreshTimelineEventsAsync(StaffScheduleElements.TimelineLocationId);
+    }
+
+    [JSInvokable]
+    public async Task OnEventDrop(string id, string locationId, int employeeId,
+        string fromDate, string toDate, string startTime, string endTime, string notes)
+    {
+        var editModel = new StaffScheduleEditModel()
+            {
+                Id = id.ToInt(),
+                LocationId = locationId.ToInt(),
+                EmployeeIds = new List<int> { employeeId },
+                FromDate = fromDate.HasValue() ? DateTime.Parse(fromDate) : null,
+                ToDate = toDate.HasValue() ? DateTime.Parse(toDate) : null,
+                StartTime = startTime.HasValue() ? TimeSpan.Parse(startTime) : _businessStartTime,
+                EndTime = endTime.HasValue() ? TimeSpan.Parse(endTime) : _businessEndTime,
+                Notes = notes,
+            };
+
+        // Make sure the start and end time are within business hours
+        editModel.StartTime = editModel.StartTime < _businessStartTime ? _businessStartTime : editModel.StartTime;
+        editModel.EndTime = editModel.EndTime > _businessEndTime ? _businessEndTime : editModel.EndTime;
+
+        if (editModel.FromDate != editModel.ToDate)
+        {
+            if (_filterLocModel.HiddenDaysOfWeek.Contains((int)editModel.FromDate.Value.DayOfWeek)
+                || editModel.StartTime > _businessEndTime)
+            {
+                editModel.FromDate = editModel.ToDate;
+                editModel.StartTime = _businessStartTime;
+            }
+            else
+            {
+                editModel.ToDate = editModel.FromDate;
+                editModel.EndTime = _businessEndTime;
+            }
+        }
+
+        if (!await UpdateStaffSchedulesAsync(editModel))
+        {
+            throw new Exception("Schedule Failed!");
+        }
+
+        // Refresh the timeline to show the updated event
+        await RefreshTimelineEventsAsync(StaffScheduleElements.TimelineLocationId);
+    }
+
+    [JSInvokable]
+    public void OnNotifyError(string message)
+    {
+        _notifyService.NotifyError("Schedule Staff", message);
+    }
+}

@@ -1,0 +1,39 @@
+﻿<style>
+    .balance-summary .rz-fieldset-content {
+        padding: 16px 8px;
+    }
+</style>
+
+<RadzenFieldset Text="Balance Summary" class="balance-summary">
+    <RadzenRow JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenColumn Size="12" SizeMD="4">
+            <RadzenLabel Text="Total:" class="rz-text-subtitle2 rz-color-danger" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="8" class="rz-text-align-right">
+            <RadzenLabel Text="@BalanceSummaryModel.BankTotal.ToString("C2")" class="rz-text-subtitle2 rz-color-danger" />
+        </RadzenColumn>
+    </RadzenRow>
+
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="4">
+            <RadzenLabel Text="Matched:" class="rz-text-subtitle2 rz-color-success" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="8" class="rz-text-align-right">
+            <RadzenLabel Text="@BalanceSummaryModel.MatchedTotal.ToString("C2")" class="rz-text-subtitle2 rz-color-success" />
+        </RadzenColumn>
+    </RadzenRow>
+
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="4">
+            <RadzenLabel Text="Diff:" class="rz-text-subtitle2 rz-color-primary" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="8" class="rz-text-align-right">
+            <RadzenLabel Text="@BalanceSummaryModel.Different.ToString("C2")" class="rz-text-subtitle2 rz-color-primary" />
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public BalanceSummaryViewModel BalanceSummaryModel { get; set; }
+}

@@ -1,0 +1,216 @@
+﻿using Anesis.Web.Data.DTO;
+
+namespace Anesis.Web.Data.Models
+{
+    public class ProposalFilterModel : PageableSearchModelBase
+    {
+        public int? ProposerId { get; set; }
+
+        public string EcwChartNo { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public DateTime? AppointmentDate { get; set; }
+
+        public int? ProviderId { get; set; }
+
+        public int? LocationId { get; set; }
+
+        public int? ProcedureId { get; set; }
+
+        public int? ReviewerId { get; set; }
+
+        public DateTime? SurgeryDate { get; set; }
+
+        public int? SurgeonId { get; set; }
+
+        public int? SurgeryLocationId { get; set; }
+
+        public bool UnpostedChartNote { get; set; }
+
+        public int? RequestStatus { get; set; }
+
+        public bool ExcludeCancelled { get; set; }
+
+        public ProposalFilterModel()
+        {
+            ExcludeCancelled = true;
+        }
+    }
+
+    public class ProposalViewModel
+    {
+        public int Id { get; set; }
+
+        public int ProposerId { get; set; }
+
+        public string ProposerName { get; set; }
+
+        public int PatientId { get; set; }
+
+        public string ChartNo { get; set; }
+
+        public string EcwChartNo { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Gender { get; set; }
+
+        public DateTime Dob { get; set; }
+
+        public DateTime AppointmentDate { get; set; }
+
+        public int ProviderId { get; set; }
+
+        public string ProviderName { get; set; }
+
+        public int LocationId { get; set; }
+
+        public string LocationName { get; set; }
+
+        public int ProcedureId { get; set; }
+
+        public string ProcedureName { get; set; }
+
+        public bool ChartNotePosted { get; set; }
+
+        public string DiagnosisCode { get; set; }
+
+        public int RequestStatus { get; set; }
+
+        public string RequestStatusStr { get; set; }
+
+        public DateTime? ReviewedDate { get; set; }
+
+        public int? ReviewerId { get; set; }
+
+        public string ReviewerName { get; set; }
+
+        public string ReviewStatus { get; set; }
+
+        public string ReviewerNotes { get; set; }
+
+        public bool IsReviewer { get; set; }
+
+        public string ScheduledBy { get; set; }
+
+        public DateTime? SurgeryDate { get; set; }
+
+        public TimeSpan? SurgeryTime { get; set; }
+
+        public string SurgeryTimeStr { get; set; }
+
+        public int? SurgeonId { get; set; }
+
+        public string SurgeonName { get; set; }
+
+        public int? SurgeryLocationId { get; set; }
+
+        public string SurgeryLocationName { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public string UpdatedBy { get; set; }
+
+        public DateTime UpdatedDate { get; set; }
+
+        public string Notes { get; set; }
+
+        public bool CanEdit { get; set; }
+
+        public bool CanCancel { get; set; }
+
+        public bool CanReview { get; set; }
+
+        public bool CanMarkAsOrdered { get; set; }
+
+        public bool CanSchedule { get; set; }
+
+        public bool CanMarkAsCompleted { get; set; }
+
+        public ProposalEditModel ToEditModel()
+        {
+            return new ProposalEditModel()
+            {
+                Id = Id,
+                PatientId = PatientId,
+                EcwChartNo = EcwChartNo,
+                FirstName = FirstName,
+                LastName = LastName,
+                Gender = Gender,
+                Dob = Dob,
+                AppointmentDate = AppointmentDate,
+                ProviderId = ProviderId,
+                LocationId = LocationId,
+                ProcedureId = ProcedureId,
+                ChartNotePosted = ChartNotePosted,
+                DiagnosisCode = DiagnosisCode,
+                ReviewerId = ReviewerId,
+                Notes = Notes
+            };
+        }
+
+        public ProposalReviewModel ToReviewModel()
+        {
+            return new ProposalReviewModel()
+            {
+                Id = Id,
+                ProcedureId = ProcedureId,
+                DiagnosisCode = DiagnosisCode,
+                ReviewerNotes = ReviewerNotes
+            };
+        }
+    }
+
+    public class ProposalEditModel
+    {
+        public int? Id { get; set; }
+
+        public int? PatientId { get; set; }
+
+        public string EcwChartNo { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Gender { get; set; }
+
+        public DateTime? Dob { get; set; }
+
+        public DateTime? AppointmentDate { get; set; }
+
+        public int? ProviderId { get; set; }
+
+        public int? LocationId { get; set; }
+
+        public int? ProcedureId { get; set; }
+
+        public bool ChartNotePosted { get; set; }
+
+        public string DiagnosisCode { get; set; }
+
+        public int? ReviewerId { get; set; }
+
+        public string Notes { get; set; }
+
+        public string ReasonChange { get; set; }
+    }
+
+    public class ProposalReviewModel
+    {
+        public int Id { get; set; }
+
+        public int? ProcedureId { get; set; }
+
+        public string DiagnosisCode { get; set; }
+
+        public string ReviewerNotes { get; set; }
+    }
+}

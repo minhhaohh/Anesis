@@ -1,0 +1,77 @@
+﻿@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+@inject IJSRuntime _jsRunTime
+
+<style>
+    @($"#{TimelineElementId}") .ec-content .ec-days, @($"#{TimelineElementId}") .ec-content .ec-resource {
+        min-height: 60px;
+    }
+
+    @($"#{TimelineElementId}") .ec-resource-week-view .ec-time, @($"#{TimelineElementId}") .ec-resource-week-view .ec-line {
+        width: @(StaffScheduleSettings.SlotWidth + "px !important");
+    }
+</style>
+
+<RadzenStack>
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" Gap=" 0.5rem">
+                <RadzenLabel Text="Employee" Component="EmployeeId" class="rz-text-subtitle2" />
+                <RadzenDropDown @bind-Value="_selectedEmployeeId" Name="EmployeeId"
+                                Data="ActiveEmployees" AllowClear="true" AllowFiltering="true"
+                                TextProperty="Value" ValueProperty="Key"
+                                Placeholder="---All---"
+                                Change="async (selectedValue) => await FilterEmployeeForTimelineAsync((int?)selectedValue)" />
+
+                <RadzenSwitch @bind-Value="FilterModel.IsHiddenWeekends" Name="HiddenWeekendsLoc"
+                              Change="async (isChecked) => await ToggleHiddenWeekendsAsync(isChecked)" />
+                <RadzenLabel Text="Hidden Weekends" Component="HiddenWeekendsLoc" class="rz-text-subtitle2 rz-color-danger" />
+            </RadzenStack>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenBadge Text="Time Off" class="rz-p-2 event-time-off" />
+                <RadzenBadge Text="Holiday" class="rz-p-2 event-holiday" />
+                <RadzenBadge Text="Manager" class="rz-p-2 event-manager" />
+                <RadzenBadge Text="Doctor" class="rz-p-2 event-doctor" />
+                <RadzenBadge Text="MA/FD" class="rz-p-2 event-employee" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <div id="@TimelineElementId" class="rz-mt-4"></div>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public bool CanScheduleStaff { get; set; }
+    [Parameter]
+    public StaffScheduleFilterModel FilterModel { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveEmployees { get; set; }
+    [Parameter]
+    public GeneralSettingsModel GeneralSettings { get; set; }
+    [Parameter]
+    public StaffScheduleSettingsModel StaffScheduleSettings { get; set; }
+
+    [Parameter]
+    public EventCallback<int?> OnFilterEmployeeForTimeline { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnToggleHiddenWeekends { get; set; }
+
+    private int? _selectedEmployeeId = null;
+
+    private const string TimelineElementId = StaffScheduleElements.TimelineEmployeeId;
+
+    // SUPPORT METHODS
+    private async Task FilterEmployeeForTimelineAsync(int? selectedValue)
+    {
+        await OnFilterEmployeeForTimeline.InvokeAsync(selectedValue);
+    }
+
+    private async Task ToggleHiddenWeekendsAsync(bool isChecked)
+    {
+        await OnToggleHiddenWeekends.InvokeAsync(isChecked);
+    }
+}

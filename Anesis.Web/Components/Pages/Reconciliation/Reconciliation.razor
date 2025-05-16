@@ -1,0 +1,106 @@
+﻿@page "/reconciliation"
+@inject IApiService _apiService
+@inject NotificationService _notifyService
+
+<PageTitle>Reconciliation</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Reconciliation</RadzenText>
+
+<RadzenRow>
+    <RadzenColumn Size="12" SizeMD="6">
+        <BatchTransactionFilterPanel FilterModel="_batchFilterModel" LastTimeReconciliation="_lastTimeReconciliation"
+                                     ActiveLocations="_activeLocations" PaymentTypes="_paymentTypes"
+                                     OnFilterGrid="FilterBatchGridAsync" OnRefreshGrid="RefreshBatchGridAsync" />
+        <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="true" 
+                               FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
+    </RadzenColumn>
+    <RadzenColumn Size="12" SizeMD="6">
+        <BankTransactionFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                    LastTimeReconciliation="_lastTimeReconciliation" PaymentTypes="_paymentTypes"
+                                    OnFilterGrid="FilterBankGridAsync" OnRefreshGrid="RefreshBankGridAsync" />
+        <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="true"
+                              FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                              OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    private BatchTransactionFilterModel _batchFilterModel = new();
+    private BankTransactionFilterModel _bankFilterModel = new();
+    private BalanceSummaryViewModel _balanceSummaryModel = new();
+    private ReconciliationViewModel _lastTimeReconciliation = new();
+    private Dictionary<int, string> _activeLocations = new();
+    private List<string> _paymentTypes = TransactionType.GetPaymentTypes().ToList();
+
+    // COMPONENTS
+    private GridBatchTransactions _gridBatchTransactions;
+    private GridBankTransactions _gridBankTransactions;
+
+    // OVERRIDE METHODS
+    protected override async Task OnInitializedAsync()
+    {
+        _lastTimeReconciliation = await GetLastTimeReconciliationAsync() ?? new();
+        _activeLocations = await GetActiveLocationsAsync() ?? new();
+
+        var lastTime = _lastTimeReconciliation.ReconciledThru;
+        _batchFilterModel.FromDate = (new DateTime(lastTime.Year, lastTime.Month, 1)).AddMonths(-6);
+        _bankFilterModel.ReconciledDate = lastTime.ToLastDateOfNextMonth();
+
+        await RefreshBatchGridAsync();
+        await RefreshBankGridAsync();
+    }
+
+    // SUPPORT METHODS
+    private async Task<ReconciliationViewModel> GetLastTimeReconciliationAsync()
+    {
+        var reconciliationRes = await _apiService.GetLastTimeReconciliationAsync();
+
+        if (!reconciliationRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Last Time Reconciliation", reconciliationRes.Messages);
+            return null;
+        }
+        
+        return reconciliationRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveLocationsAsync()
+    {
+        var locationsRes = await _apiService.GetDropdownLocationsAsync(true);
+
+        if (!locationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Locations", locationsRes.Messages);
+            return null;
+        }
+
+        return locationsRes.Data;
+    }
+
+    public async Task FilterBatchGridAsync(BatchTransactionFilterModel filterModel)
+    {
+        _batchFilterModel = filterModel;
+        await _gridBatchTransactions.FilterGridAsync(_batchFilterModel);
+    }
+
+    public async Task RefreshBatchGridAsync()
+    {
+        await _gridBatchTransactions.RefreshGridAsync();
+    }
+
+    public async Task FilterBankGridAsync(BankTransactionFilterModel filterModel)
+    {
+        _bankFilterModel = filterModel;
+        await _gridBankTransactions.FilterGridAsync(_bankFilterModel);
+    }
+
+    public async Task RefreshBankGridAsync()
+    {
+        await _gridBankTransactions.RefreshGridAsync();
+    }
+
+    public async Task LoadBalanceSummaryAsync(BankTransactionFilterModel filterModel)
+    {
+        _balanceSummaryModel = (await _apiService.GetBalanceSummary(filterModel)).Data;
+    }
+}

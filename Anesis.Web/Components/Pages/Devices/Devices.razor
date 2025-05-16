@@ -1,0 +1,76 @@
+﻿@page "/devices"
+@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<PageTitle>Devices & Costs</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Devices & Costs</RadzenText>
+
+<DeviceFilterPanel @ref="_deviceFilterPanel" CanEditDevice="_canEditDevice" FilterModel="_filterModel"
+                   CollapsedFilterPanel="_collapsedFilterPanel" DeviceCategories="_deviceCategories"
+                   OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
+                   OnRefreshGrid="RefreshGridAsync" OnOpenEditDeviceDialog="OpenEditDeviceDialogAsync" />
+
+<GridDevices @ref="_gridDevices" CanEditDevice="_canEditDevice" FilterModel="_filterModel" OnOpenEditDeviceDialog="OpenEditDeviceDialogAsync" />
+
+@code {
+    private bool _canEditDevice = true;
+    private DeviceFilterModel _filterModel = new();
+    private bool _collapsedFilterPanel = false;
+    private Dictionary<int, string> _deviceCategories = typeof(DeviceCategory).ToDictionary();
+
+    // COMPONENTS
+    private DeviceFilterPanel _deviceFilterPanel;
+    private GridDevices _gridDevices;
+
+    // SUPPORT METHODS
+    private void ResizeGrid(bool collapsedFilterPanel)
+    {
+        _collapsedFilterPanel = collapsedFilterPanel;
+        _gridDevices.ResizeGrid(_collapsedFilterPanel);
+    }
+
+    private async Task FilterGridAsync(DeviceFilterModel filterModel)
+    {
+        _filterModel = filterModel;
+        await _gridDevices.FilterGridAsync(_filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await _gridDevices.RefreshGridAsync();
+    }
+
+    private async Task OpenEditDeviceDialogAsync(int id)
+    {
+        var editModel = new DeviceWithCostEditModel();
+
+        if (id > 0)
+        {
+            var deviceRes = await _apiService.GetDeviceByIdAsync(id);
+
+            if (!deviceRes.Success)
+            {
+                _notifyService.NotifyErrors("Get Device Information", deviceRes.Messages);
+                return;
+            }
+
+            editModel = deviceRes.Data.ToDeviceWithCostEditModel();
+        }
+
+        var title = id > 0 ? $"Edit Device #{id}" : "Create New Device";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "EditModel", editModel },
+                { "DeviceCategories", _deviceCategories },
+                { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.Default,
+            };
+
+        await _dialogService.OpenAsync<EditDeviceForm>(title, paramsDic, options);
+    }
+}

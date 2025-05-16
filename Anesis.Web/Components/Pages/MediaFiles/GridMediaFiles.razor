@@ -1,0 +1,152 @@
+﻿@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<RadzenDataGrid @ref="_grid" TItem="MediaFileViewModel" IsLoading=_isLoading
+                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+                PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+                PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 640px;">
+    <Columns>
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Id)" Title="#ID"
+                              Width="5%" CssClass="rz-text-subtitle2" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Category)" Title="Category" Width="10%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.FileName)" Title="File Name" Width="20%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.FileExt)" Title="File Ext" Width="5%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Signed)" Title="Signed" Width="5%" Sortable="false">
+            <Template Context="file">
+                @if (file.Signed)
+                {
+                    <RadzenIcon Icon="check" IconColor="@Colors.Success" />
+                }
+                else
+                {
+                    <RadzenIcon Icon="close" IconColor="@Colors.Danger" />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.CreatedBy)" Title="Created By" Width="10%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.CreatedDate)" Title="Created Time" FormatString="{0:MM-dd-yyyy HH:mm}" Width="10%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Notes)" Title="Notes" Width="15%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Id)" Width="10%" Sortable="false">
+            <Template Context="file">
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
+
+                    @if (file.Signed)
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                                      Size="ButtonSize.Small" Icon="signature"
+                                      Click="async () => await OpenSignFileDialogAsync(file.Id)"
+                                      title="@($"View signature from file #{file.Id}")" />
+                    }
+                    else
+                    {
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info"
+                                      Size="ButtonSize.Small" Icon="signature"
+                                      Click="async () => await OpenSignFileDialogAsync(file.Id)"
+                                      title="@($"Sign to file #{file.Id}")" />
+                    }
+                    
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="delete"
+                                  Click="async () => await ConfirmDeleteFileAsync(file.Id)"
+                                  title="@($"Delete file #{file.Id}")" />
+                </RadzenStack>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    [Parameter]
+    public MediaFileFilterModel FilterModel { get; set; }
+
+    private int _pageSize = PageSize.Default();
+    private bool _isLoading = false;
+    private ResponseModel<List<MediaFileViewModel>> _data = new();
+
+    // COMPONENTS
+    private RadzenDataGrid<MediaFileViewModel> _grid;
+
+    // PUBLIC METHODS
+    public async Task RefreshGridAsync()
+    {
+        await _grid.RefreshDataAsync();
+    }
+
+    public async Task FilterGridAsync(MediaFileFilterModel filterModel)
+    {
+        FilterModel = filterModel;
+        await RefreshGridAsync();
+    }
+
+    // SUPPORT METHODS
+    private async Task LoadDataAsync(LoadDataArgs args)
+    {
+        _isLoading = true;
+
+        FilterModel.CountNumber = args.Top.Value;
+        FilterModel.StartIndex = args.Skip.Value;
+
+        FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
+        FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+
+        _data = await _apiService.SearchMediaFilesAsync(FilterModel);
+
+        _isLoading = false;
+    }
+
+    private async Task OpenSignFileDialogAsync(int fileId)
+    {
+        var title = $"Sign to media file #{fileId}";
+        var signatureModel = new SignatureViewModel() { FileId = fileId };
+        var res = await _apiService.GetSignatureFromMediaFileAsync(fileId);
+
+        if (res.Success)
+        {
+            signatureModel = res.Data;
+
+            if (signatureModel.Image == null || signatureModel.Image.Count() == 0)
+            {
+                signatureModel.Image = System.Text.Encoding.UTF8.GetBytes(signatureModel.ImageBase64);
+            }
+        }
+
+        var paramsDic = new Dictionary<string, object>()
+        {
+            { "SignatureModel", signatureModel },
+            { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
+        };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.Default,
+            };
+
+        await _dialogService.OpenAsync<SignMediaFileForm>(title, paramsDic, options);
+    }
+
+    private async Task ConfirmDeleteFileAsync(int id)
+    {
+        var result = await _dialogService.Confirm(
+            $"Do you really want to delete file <b>#{id}</b>?", $"Delete File #{id}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+        if (result == null || result == false)
+        {
+            return;
+        }
+
+        var deleteFileRes = await _apiService.DeleteMediaFileAsync(id);
+
+        if (deleteFileRes.Success)
+        {
+            _notifyService.NotifySuccess("Delete Media File", deleteFileRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Delete Media File", deleteFileRes.Messages);
+        }
+    }
+}

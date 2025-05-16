@@ -1,0 +1,107 @@
+﻿@page "/surgery-cases"
+@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<PageTitle>ASC Surgery Cases</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">ASC Surgery Cases</RadzenText>
+
+<SurgeryCaseFilterPanel @ref="_surgeryCaseFilterPanel" CollapsedFilterPanel="_collapsedFilterPanel" 
+                        FilterModel="_filterModel" SurgeryCaseStatus="_surgeryCaseStatus"
+                        ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
+                        ActiveProcedures="_activeProcedures" ActiveInsurances="_activeInsurances"
+                        OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
+
+<GridSurgeryCases @ref="_gridSurgeryCases" FilterModel="_filterModel" />
+
+@code {
+    private SurgeryCaseFilterModel _filterModel = new();
+    private bool _collapsedFilterPanel = false;
+    private Dictionary<int, string> _surgeryCaseStatus = typeof(SurgeryCaseStatus).ToDictionary();
+    private Dictionary<int, string> _activeAscLocations = new();
+    private Dictionary<int, string> _activeDoctors = new();
+    private Dictionary<int, string> _activeProcedures = new();
+    private Dictionary<int, string> _activeInsurances = new();
+
+    // COMPONENTS
+    private SurgeryCaseFilterPanel _surgeryCaseFilterPanel;
+    private GridSurgeryCases _gridSurgeryCases;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _activeAscLocations = await GetActiveAscLocationsAsync() ?? new();
+        _activeDoctors = await GetActiveDoctorsAsync() ?? new();
+        _activeProcedures = await GetActiveProceduresAsync() ?? new();
+        _activeInsurances = await GetActiveInsurancesAsync() ?? new();
+    }
+
+    private void ResizeGrid(bool collapsedFilterPanel)
+    {
+        _collapsedFilterPanel = collapsedFilterPanel;
+        _gridSurgeryCases.ResizeGrid(_collapsedFilterPanel);
+    }
+
+    private async Task FilterGridAsync(SurgeryCaseFilterModel filterModel)
+    {
+        _filterModel = filterModel;
+        await _gridSurgeryCases.FilterGridAsync(_filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await _gridSurgeryCases.RefreshGridAsync();
+    }
+
+    public async Task<Dictionary<int, string>> GetActiveAscLocationsAsync()
+    {
+        var ascLocationsRes = await _apiService.GetDropdownAscLocationsAsync(true);
+
+        if (!ascLocationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get ASC Locations", ascLocationsRes.Messages);
+            return null;
+        }
+
+        return ascLocationsRes.Data;
+    }
+
+    public async Task<Dictionary<int, string>> GetActiveDoctorsAsync()
+    {
+        var activeDoctorsRes = await _apiService.GetDropdownDoctorsAsync(true);
+
+        if (!activeDoctorsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Doctors", activeDoctorsRes.Messages);
+            return null;
+        }
+
+        return activeDoctorsRes.Data;
+    }
+
+    public async Task<Dictionary<int, string>> GetActiveProceduresAsync()
+    {
+        var activeProceduresRes = await _apiService.GetDropdownProceduresAsync(true);
+
+        if (!activeProceduresRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Procedures", activeProceduresRes.Messages);
+            return null;
+        }
+
+        return activeProceduresRes.Data;
+    }
+
+    public async Task<Dictionary<int, string>> GetActiveInsurancesAsync()
+    {
+        var activeInsurancesRes = await _apiService.GetDropdownInsurancesAsync(true);
+
+        if (!activeInsurancesRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Insurances", activeInsurancesRes.Messages);
+            return null;
+        }
+
+        return activeInsurancesRes.Data;
+    }
+}

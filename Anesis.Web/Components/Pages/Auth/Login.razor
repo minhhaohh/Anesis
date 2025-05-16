@@ -1,0 +1,57 @@
+﻿@page "/login"
+@layout Layout.EmptyLayout
+@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject NavigationManager _navigationManager
+
+<RadzenCard class="rz-mx-auto rz-p-md-12" style="max-width: 600px; margin-top: 200px;">
+    <RadzenImage Path="images/anesis-logo-full.png" Style="width: 100%; margin-bottom: 40px;" AlternateText="Anesis" />
+    <RadzenStack>
+        <RadzenTemplateForm Data=@("LoginWithRemember")>
+            <RadzenLogin AllowRememberMe="true" AllowResetPassword="true" AllowRegister="false" FormFieldVariant="Variant.Filled"
+            Login="LoginAsync" ResetPassword="GoToResetPasswordPage" />
+        </RadzenTemplateForm>
+    </RadzenStack>
+</RadzenCard>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    [Parameter]
+    public string ReturnUrl { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var authState = AuthenticationStateTask.Result;
+
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            _navigationManager.NavigateTo(ReturnUrl ?? "/", true);
+        }
+    }
+
+    // SUPPORT METHODS
+    private async Task LoginAsync(LoginArgs args)
+    {
+        var loginModel = new UserLoginModel() { UserName = args.Username, Password = args.Password, RememberMe = args.RememberMe };
+        var loginResponse = await _apiService.LoginAsync(loginModel);
+
+        if (loginResponse.Success)
+        {
+            _notifyService.NotifySuccess("Login", "Login successful.");
+
+            await Task.Delay(1000);
+            _navigationManager.NavigateTo(ReturnUrl ?? "/", true);
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Login", loginResponse.Messages);
+        }
+    }
+
+    private void GoToResetPasswordPage()
+    {
+        _navigationManager.NavigateTo("/reset-password", true);
+    }
+}

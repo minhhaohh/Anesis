@@ -1,0 +1,180 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenTemplateForm TItem="CaseCptCodeAddModel" Data="_addCaseCptCodeModel" Submit="AddCaseCptCodeAsync">
+        <RadzenFieldset Text="Add CPT Code">
+            <RadzenRow>
+                <RadzenColumn Size="12" SizeMD="5">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="CPT Code" Component="CptCode" class="rz-text-subtitle2 required-near" />
+                        <RadzenTextBox @bind-Value="_addCaseCptCodeModel.CptCode" Name="CptCode" Style="width: 100%;" />
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Quantity" Component="Quantity" class="rz-text-subtitle2 required-near" />
+                        <RadzenNumeric @bind-Value="_addCaseCptCodeModel.Quantity" TValue="int?" Name="Quantity" Style="width: 100%;" />
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="5">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
+                        <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                            <Start>
+                            </Start>
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="_addCaseCptCodeModel.Notes" Name="Notes" Style="width: 100%;" />
+                            </ChildContent>
+                            <End>
+                                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Success"
+                                              Text="Add" Icon="add" />
+                            </End>
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+    <RadzenDataGrid @ref="_gridCaseCptCodes" TItem="CaseCptCodeViewModel" IsLoading=_isLoading
+                    Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                    AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+                    PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                    PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+                    PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 400px;">
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.CptCode)" Title="CPT Code" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.Quantity)" Title="Quantity" Width="15%">
+                <Template Context="caseCptCode">
+                    <RadzenStack Orientation="Orientation.Horizontal">
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                                      Shade="Shade.Lighter" Icon="remove"
+                                      Click="async () => await ChangeCaseCptCodeQuantityAsync(caseCptCode.Id, caseCptCode.Quantity - 1)" />
+                        <RadzenText Text="@caseCptCode.Quantity.ToString()" class="rz-m-0" />
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"
+                                      Shade="Shade.Lighter" Icon="add"
+                                      Click="async () => await ChangeCaseCptCodeQuantityAsync(caseCptCode.Id, caseCptCode.Quantity + 1)" />
+                    </RadzenStack>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.WorkRvu)" Title="Work Rvu" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.RvuEffectiveDate)" Title="Rvu Date" FormatString="{0:MM-dd-yyyy}" Width="12%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.CmsAllowedAmt)" Title="CMS-Based Amt" FormatString="{0:C2}" Width="13%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.ContractedPct)" Title="% Contract" FormatString="{0:P2}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.AllowedAmtValue)" Title="Allowed Amt" FormatString="{0:C2}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.CollectedAmount)" Title="Collected Amt" FormatString="{0:C2}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.Id)" Width="5%" Sortable="false">
+                <Template Context="caseCptCode">
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="delete"
+                                      Click="async () => await ConfirmDeleteCaseCptCodeAsync(caseCptCode.Id, caseCptCode.SurgeryCaseId, caseCptCode.CptCode)"
+                                      title="@($"Delete CPT code #{caseCptCode.CptCode} from surgery case #{caseCptCode.SurgeryCaseId}")" />
+                    </RadzenStack>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                      Text="Close" Click="() => _dialogService.Close()" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public int CaseId { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    private CaseCptCodeFilterModel _filterCastCptCodeModel = new();
+    private CaseCptCodeAddModel _addCaseCptCodeModel = new();
+
+    private int _pageSize = PageSize.Default();
+    private bool _isLoading = false;
+    private ResponseModel<List<CaseCptCodeViewModel>> _data = new();
+
+    // COMPONENTS
+    private RadzenDataGrid<CaseCptCodeViewModel> _gridCaseCptCodes;
+
+    protected override void OnParametersSet()
+    {
+        _filterCastCptCodeModel.CaseId = CaseId;
+        _addCaseCptCodeModel.CaseId = CaseId;
+    }
+
+    // SUPPORT METHODS
+    private async Task LoadDataAsync(LoadDataArgs args)
+    {
+        _isLoading = true;
+
+        _filterCastCptCodeModel.CountNumber = args.Top.Value;
+        _filterCastCptCodeModel.StartIndex = args.Skip.Value;
+
+        _filterCastCptCodeModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
+        _filterCastCptCodeModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+
+        _data = await _apiService.SearchCaseCptCodesAsync(_filterCastCptCodeModel);
+
+        _isLoading = false;
+    }
+
+    private async Task AddCaseCptCodeAsync(CaseCptCodeAddModel caseCostAddModel)
+    {
+        var addCaseCptCodeRes = await _apiService.AddCaseCptCodeAsync(caseCostAddModel);
+
+        if (!addCaseCptCodeRes.Success)
+        {
+            _notifyService.NotifyErrors("Add CPT Code To Surgery Case", addCaseCptCodeRes.Messages);
+            return;
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Add CPT Code To Surgery Case", addCaseCptCodeRes.Data);
+            await _gridCaseCptCodes.RefreshDataAsync();
+            await RefreshGridAsync();
+
+            // Reset Add CPT Code Form
+            _addCaseCptCodeModel = new() { CaseId = CaseId };
+        }
+    }
+
+    private async Task ChangeCaseCptCodeQuantityAsync(int id, int newQuantity)
+    {
+        if (newQuantity <= 0)
+        {
+            _notifyService.NotifyError("Change Number Of CPT Code", "The Quantity must be greater than 0.");
+            return;
+        }
+
+        var changeQuantityRes = await _apiService.ChangeCaseCptCodeQuantityAsync(id, newQuantity);
+
+        if (!changeQuantityRes.Success)
+        {
+            _notifyService.NotifyErrors("Change Number Of CPT Code", changeQuantityRes.Messages);
+            return;
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Change Number Of CPT Code", changeQuantityRes.Data);
+            await _gridCaseCptCodes.RefreshDataAsync();
+            await RefreshGridAsync();
+        }
+    }
+
+    private async Task ConfirmDeleteCaseCptCodeAsync(int id, int caseId, int cptCode)
+    {
+        var result = await _dialogService.Confirm(
+            $"Do you really want to delete CPT code #<b>{cptCode}</b> from surgery case <b>#{caseId}</b>?",
+            $"Delete CPT Code From Surgery Case #{caseId}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (result == null || result == false)
+            return;
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+}

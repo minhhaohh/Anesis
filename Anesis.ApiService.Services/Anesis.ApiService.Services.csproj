@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="AutoMapper" Version="14.0.0" />
+	<PackageReference Include="DocX" Version="4.0.25103.5784" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="PDFsharp" Version="6.1.1" />
+	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Anesis.ApiService.EntityFrameworkCore\Anesis.ApiService.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

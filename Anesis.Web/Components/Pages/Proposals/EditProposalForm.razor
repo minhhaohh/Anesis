@@ -1,0 +1,192 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenTemplateForm TItem="ProposalEditModel" Data="EditModel" Submit="SaveProposalAsync">
+        <RadzenFieldset Text="Proposal Information">
+            <RadzenRow>
+                <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Chart No" Component="EcwChartNo" class="rz-text-subtitle2 required-near" />
+                        <RadzenTextBox @bind-Value="EditModel.EcwChartNo" Name="EcwChartNo" Style="width: 100%;"
+                                       Change="CheckPatientExistedAsync" />
+
+                        <RadzenRow Gap="0.5rem">
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenLabel Text="First Name" Component="FirstName" class="rz-text-subtitle2" />
+                                    <RadzenTextBox @bind-Value="EditModel.FirstName" Name="FirstName" Style="width: 100%;" Disabled />
+                                </RadzenStack>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenLabel Text="Last Name" Component="FirstName" class="rz-text-subtitle2" />
+                                    <RadzenTextBox @bind-Value="EditModel.LastName" Name="LastName" Style="width: 100%;" Disabled />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                        <RadzenRow Gap="0.5rem">
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenLabel Text="Gender" Component="Gender" class="rz-text-subtitle2" />
+                                    <RadzenTextBox @bind-Value="EditModel.Gender" Name="Gender" Style="width: 100%;" Disabled />
+                                </RadzenStack>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenLabel Text="Date of Birth" Component="Dob" class="rz-text-subtitle2" />
+                                    <RadzenDatePicker @bind-Value="EditModel.Dob" Name="Dob"
+                                                      AllowClear="true" AllowInput="false"
+                                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" Disabled />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                        <RadzenLabel Text="Appointment Provider" Component="ProviderId" class="rz-text-subtitle2 required-near" />
+                        <RadzenDropDown @bind-Value="EditModel.ProviderId" Name="ProviderId"
+                                        Data="ActiveProviders" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+
+                        <RadzenLabel Text="Appointment Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
+                        <RadzenDropDown @bind-Value="EditModel.LocationId" Name="LocationId"
+                                        Data="ActiveLocations" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+
+                        <RadzenLabel Text="Appointment Date" Component="AppointmentDate" class="rz-text-subtitle2 required-near" />
+                        <RadzenDatePicker @bind-Value="EditModel.AppointmentDate" Name="AppointmentDate"
+                                          AllowClear="true" AllowInput="false"
+                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenCheckBox @bind-Value="EditModel.ChartNotePosted" Name="ChartNotePosted" />
+                            <RadzenLabel Text="Chart Note Is Posted" Component="ChartNotePosted" class="rz-text-subtitle2" />
+                        </RadzenStack>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Proposed Procedure" Component="ProcedureId" class="rz-text-subtitle2 required-near" />
+                        <RadzenDropDown @bind-Value="EditModel.ProcedureId" Name="ProcedureId" Data="ActiveProcedures"
+                                        AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+
+                        <RadzenLabel Text="Diagnosis Code" Component="DiagnosisCode" class="rz-text-subtitle2 required-near" />
+                        <RadzenTextBox @bind-Value="EditModel.DiagnosisCode" Name="DiagnosisCode" Style="width: 100%;" />
+
+                        <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2 required-near" />
+                        <RadzenDropDown @bind-Value="EditModel.ReviewerId" Name="ReviewerId"
+                                        Data="ActiveDoctors" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+
+                        <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
+                        <RadzenTextArea @bind-Value="EditModel.Notes" Name="Notes" Rows="3" Style="width: 100%;" />
+
+                        @if (EditModel.Id > 0)
+                        {
+                            <RadzenLabel Text="Reason For Change" Component="ReasonChange" class="rz-text-subtitle2 required-near" />
+                            <RadzenTextArea @bind-Value="EditModel.ReasonChange" Name="ReasonChange" Rows="3"
+                                            Style="width: 100%;" Placeholder="Please provide the reason for change" />
+                        }
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                          Text="Save" Icon="save" />
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                          Text="Close" Click="() => _dialogService.Close()" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public ProposalEditModel EditModel { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveLocations { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveProviders { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveDoctors { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveProcedures { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    // SUPPORT METHODS
+    private async Task CheckPatientExistedAsync(string chartNo)
+    {
+        var patientRes = await _apiService.GetPatientByChartNoAsync(chartNo);
+
+        if (patientRes.Success)
+        {
+            var patient = patientRes.Data;
+
+            EditModel.PatientId = patient.Id;
+            EditModel.FirstName = patient.FirstName;
+            EditModel.LastName = patient.LastName;
+            EditModel.Dob = patient.Dob;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Get Patient Information", patientRes.Messages);
+        }
+    }
+
+    private async Task SaveProposalAsync(ProposalEditModel proposal)
+    {
+        if (proposal.Id > 0)
+        {
+            await UpdateProposalAsync(proposal);
+        }
+        else
+        {
+            await CreateProposalAsync(proposal);
+        }
+    }
+
+    private async Task UpdateProposalAsync(ProposalEditModel proposal)
+    {
+        var updateProposalRes = await _apiService.UpdateProposalAsync(proposal);
+
+        if (updateProposalRes.Success)
+        {
+            _notifyService.NotifySuccess("Update Proposal Information", updateProposalRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Update Proposal Information", updateProposalRes.Messages);
+        }
+    }
+
+    private async Task CreateProposalAsync(ProposalEditModel proposal)
+    {
+        var createProposalRes = await _apiService.CreateProposalAsync(proposal);
+
+        if (createProposalRes.Success)
+        {
+            _notifyService.NotifySuccess("Create New Proposal", createProposalRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Create New Proposal", createProposalRes.Messages);
+        }
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+}

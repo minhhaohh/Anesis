@@ -1,0 +1,74 @@
+﻿<RadzenRow>
+    <RadzenColumn Size="12" SizeMD="9">
+        <RadzenFieldset Text="Filter Panel">
+            <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.BatchType" Name="PaymentType"
+                                        AllowClear="true" Data="PaymentTypes"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Reconciliation" Component="ReconciledId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.ReconciliationId" Name="ReconciledId" 
+                                        Data="Reconciliations"
+                                        TextProperty="@nameof(ReconciliationViewModel.DateThruAndBy)"
+                                        ValueProperty="@nameof(ReconciliationViewModel.Id)" 
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
+                            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                                          Text="Filter" Icon="filter_alt" />
+                            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning"
+                                          Text="Clear" Icon="ink_eraser" Click="ClearFilterAsync" />
+                            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info"
+                                          Text="Refresh" Icon="refresh" Click="RefreshGridAsync" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenTemplateForm>
+        </RadzenFieldset>
+    </RadzenColumn>
+    <RadzenColumn Size="12" SizeMD="3">
+        <BalanceSummary BalanceSummaryModel="BalanceSummaryModel" />
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [Parameter]
+    public BankTransactionFilterModel FilterModel { get; set; }
+    [Parameter]
+    public BalanceSummaryViewModel BalanceSummaryModel { get; set; }
+    [Parameter]
+    public List<ReconciliationViewModel> Reconciliations { get; set; }
+    [Parameter]
+    public List<string> PaymentTypes { get; set; }
+
+    [Parameter]
+    public EventCallback<BankTransactionFilterModel> OnFilterGrid { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    // SUPPORT METHODS
+    private async Task FilterGridAsync(BankTransactionFilterModel filterModel)
+    {
+        FilterModel = filterModel;
+        await OnFilterGrid.InvokeAsync(filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+
+    private async Task ClearFilterAsync()
+    {
+        var model = new BankTransactionFilterModel()
+            {
+                ReconciliationId = Reconciliations.First().Id,
+            };
+        await FilterGridAsync(model);
+    }
+}

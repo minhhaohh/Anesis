@@ -1,0 +1,105 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenStack>
+    <RadzenTemplateForm TItem="BatchAdjustmentCreateModel" Data="CreateModel" Submit="CreateBatchAdjustmentAsync">
+        <RadzenFieldset Text="Batch Adjustment">
+            <RadzenStack Gap="1rem">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Post Date" Component="PostDate" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="CreateModel.PostDate" Name="PostDate"
+                                          AllowClear="true" AllowInput="false"
+                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" Disabled />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Batch Owner" Component="BatchOwner" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox @bind-Value="CreateModel.BatchOwner" Name="BatchOwner" Style="width: 100%;" Disabled />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="CreateModel.LocationId" Name="LocationId"
+                                        Data="ActiveLocations" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Description" Component="Description" class="rz-text-subtitle2" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox @bind-Value="CreateModel.Description" Name="Description" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="PaymentType" Component="PaymentType" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="CreateModel.PaymentType" Name="PaymentType"
+                                        Data="PaymentTypes" AllowClear="true"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Amount" Component="Amount" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                            <Start>
+                                <RadzenIcon Icon="attach_money" />
+                            </Start>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="CreateModel.Amount" Name="Amount" Style="width: 100%;" />
+                            </ChildContent>
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                          Text="Save" Icon="save" />
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                          Text="Close" Click="() => _dialogService.Close()" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public BatchAdjustmentCreateModel CreateModel { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveLocations { get; set; }
+    [Parameter]
+    public List<string> PaymentTypes { get; set; }
+
+    // SUPPORT METHODS
+    private async Task CreateBatchAdjustmentAsync(BatchAdjustmentCreateModel batchAdjustment)
+    {
+        var createAdjustmentRes = await _apiService.CreateBatchAdjustmentAsync(batchAdjustment);
+
+        if (createAdjustmentRes.Success)
+        {
+            _notifyService.NotifySuccess("Create Batch Transaction Adjustment", createAdjustmentRes.Data);
+            _dialogService.Close();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Create Batch Transaction Adjustment", createAdjustmentRes.Messages);
+        }
+    }
+}

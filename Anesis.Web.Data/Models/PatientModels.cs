@@ -1,0 +1,33 @@
+﻿namespace Anesis.Web.Data.Models
+{
+    public class PatientViewModel
+    {
+        public int Id { get; set; }
+
+        public string ChartNo { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string MiddleName { get; set; }
+
+        public string LastName { get; set; }
+
+        public DateTime Dob { get; set; }
+
+        public string Gender { get; set; }
+
+        public string County { get; set; }
+
+        public string ZipCode { get; set; }
+
+        public string SiteId { get; set; }
+
+        public int RiskLevelId { get; set; }
+
+        public string RiskLevelName { get; set; }
+
+        public string EcwChartNo { get; set; }
+
+        public int? EcwSiteId { get; set; }
+    }
+}

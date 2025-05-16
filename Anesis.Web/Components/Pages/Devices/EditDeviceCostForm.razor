@@ -1,0 +1,117 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="0.2rem" class="rz-mb-4">
+    <RadzenText TextStyle="TextStyle.Body2">
+        The current device cost is <strong class="rz-color-primary">@_currentCost.ToString("C2")</strong>,
+        effective date is <strong class="rz-color-primary">@_currentEffDate?.ToString("MM/dd/yyyy")</strong>.
+    </RadzenText>
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenIcon Icon="error" IconColor="@Colors.Danger" />
+        <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">Notice: </RadzenText>
+    </RadzenStack>
+    <ul class="rz-m-0">
+        <li>
+            <RadzenText TextStyle="TextStyle.Body2">
+                If you want to <strong class="rz-color-danger">update</strong> current cost,
+                please change the value of <strong>Total Cost</strong>.
+            </RadzenText>
+        </li>
+        <li>
+            <RadzenText TextStyle="TextStyle.Body2">
+                If you want to <strong class="rz-color-danger">add</strong> a new cost,
+                please enter a new value for <strong>Total Cost</strong> and select a new <strong>Effective Date</strong>.
+            </RadzenText>
+        </li>
+    </ul>
+</RadzenStack>
+<RadzenStack>
+    <RadzenTemplateForm TItem="DeviceCostEditModel" Data="EditCostModel" Submit="SaveDeviceCostAsync">
+        <RadzenFieldset Text="Device Cost">
+            <RadzenStack Gap="1rem">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Total Cost" Component="AppliedCost" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                            <Start>
+                                <RadzenIcon Icon="attach_money" />
+                            </Start>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="EditCostModel.AppliedCost" Name="AppliedCost" Style="width: 100%;" />
+                            </ChildContent>
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Effective Date" Component="EffectiveDate" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="EditCostModel.EffectiveDate" Name="EffectiveDate"
+                                          AllowClear="true" AllowInput="false"
+                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                        <RadzenCheckBox @bind-Value="EditCostModel.OverwriteEffDate" Name="OverwriteEffDate" />
+                        <RadzenLabel Text="Overwrite effective date, do not add new effective date." Component="OverwriteEffDate" class="rz-color-danger" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextArea @bind-Value="EditCostModel.Notes" Name="Notes" Rows="3" Style="width: 100%" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                          Text="Save" Icon="save" />
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                          Text="Close" Click="() => _dialogService.Close()" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public DeviceCostEditModel EditCostModel { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    private decimal _currentCost = 0;
+    private DateTime? _currentEffDate = null;
+
+    // OVERRIDE METHODS
+    protected override void OnParametersSet()
+    {
+        _currentCost = EditCostModel.AppliedCost;
+        _currentEffDate = EditCostModel.EffectiveDate;
+    }
+
+    // SUPPORT METHODS
+    private async Task SaveDeviceCostAsync(DeviceCostEditModel deviceCost)
+    {
+        var updateDeviceCostRes = await _apiService.UpdateDeviceCostAsync(deviceCost);
+
+        if (updateDeviceCostRes.Success)
+        {
+            _notifyService.NotifySuccess("Update Cost Of Device", updateDeviceCostRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Update Cost Of Device", updateDeviceCostRes.Messages);
+        }
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+}

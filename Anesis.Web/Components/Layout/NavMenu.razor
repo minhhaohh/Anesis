@@ -1,0 +1,37 @@
+﻿<RadzenSidebar Responsive="false" Style="width: max-content">
+    <RadzenPanelMenu Multiple="false" Style="@(Collapsed ? "" :"width:240px;")"
+                     DisplayStyle="Collapsed ? MenuItemDisplayStyle.Icon : MenuItemDisplayStyle.IconAndText">
+        <RadzenPanelMenuItem Text="ANESIS PAIN" Path="" Icon="logo_dev"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Dashboard" Path="" Icon="home"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Employees" Icon="groups">
+            <RadzenPanelMenuItem Text="Calendar" Path="calendar" Icon="calendar_month" class="rz-pl-6"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Staff Schedules" Path="staff-schedules" Icon="date_range" class="rz-pl-6"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Billing" Icon="account_balance_wallet">
+            <RadzenPanelMenuItem Text="Devices & Costs" Path="devices" Icon="devices" class="rz-pl-6"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Purchasing" Icon="store">
+            <RadzenPanelMenuItem Text="Invoices" Path="invoices" Icon="request_quote" class="rz-pl-6"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Revenue & Bonus" Icon="paid">
+            <RadzenPanelMenuItem Text="Reconciliation" Path="reconciliation" Icon="keyboard_onscreen" class="rz-pl-6"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Review Reconciliation" Path="review-reconciliation" Icon="keyboard_previous_language" class="rz-pl-6"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Potential Procedures" Path="proposals" Icon="procedure" class="rz-pl-6"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Report" Icon="query_stats">
+            <RadzenPanelMenuItem Text="ASC Surgery Cases" Path="surgery-cases" Icon="personal_injury" class="rz-pl-6"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Media" Icon="folder_open">
+            <RadzenPanelMenuItem Text="Media Files" Path="files" Icon="upload_file" class="rz-pl-6"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="System" Icon="Dns">
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Settings" Icon="settings">
+        </RadzenPanelMenuItem>
+    </RadzenPanelMenu>
+</RadzenSidebar>
+
+@code {
+    [Parameter]
+    public bool Collapsed { get; set; }
+}

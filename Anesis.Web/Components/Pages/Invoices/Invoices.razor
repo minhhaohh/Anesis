@@ -1,0 +1,170 @@
+﻿@page "/invoices"
+@inject IApiService _apiService
+@inject DialogService _dialogService
+@inject NotificationService _notifyService
+
+<PageTitle>Invoices</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H5" class="rz-mb-4">Invoices</RadzenText>
+
+<InvoiceFilterPanel @ref="_invoiceFilterPanel" FilterModel="_filterModel" CollapsedFilterPanel="_collapsedFilterPanel"
+                    ActiveVendors="_activeVendors" Companies="_companies" ActiveLocations="_activeLocations"
+                    PaymentMethods="_paymentMethods" InvoiceStatus="_invoiceStatus"
+                    InvoiceOwners="_invoiceOwners" InvoiceReviewers="_invoiceReviewers"
+                    OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
+                    OnRefreshGrid="RefreshGridAsync" OnOpenEditInvoiceDialog="OpenEditInvoiceDialogAsync" />
+
+<GridInvoices @ref="_gridInvoices" FilterModel="_filterModel" CollapsedFilterPanel="_collapsedFilterPanel"
+              OnOpenEditInvoiceDialog="OpenEditInvoiceDialogAsync"
+              OnOpenEditBasicInvoiceDialog="OpenEditBasicInvoiceDialogAsync" />
+
+@code {
+    private InvoiceFilterModel _filterModel = new();
+    private bool _collapsedFilterPanel = false;
+    private List<CustomerViewModel> _activeVendors = new();
+    private List<string> _companies = Companies.GetAll().ToList();
+    private Dictionary<int, string> _activeLocations = new();
+    private Dictionary<int, string> _paymentMethods = typeof(PaymentMethod).ToDictionary();
+    private Dictionary<int, string> _invoiceStatus = typeof(InvoiceStatus).ToDictionary();
+    private List<string> _invoiceOwners = new();
+    private List<string> _invoiceReviewers = new();
+
+    // COMPONENTS
+    private InvoiceFilterPanel _invoiceFilterPanel;
+    private GridInvoices _gridInvoices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _activeVendors = await GetActiveVendorsAsync() ?? new();
+        _activeLocations = await GetActiveLocationsAsync() ?? new();
+        _invoiceOwners = await GetInvoiceOwnersAsync() ?? new();
+    }
+
+    // SUPPORT METHODS
+    private async Task<List<CustomerViewModel>> GetActiveVendorsAsync()
+    {
+        var vendorsRes = await _apiService.GetAllVendorsAsync(true);
+
+        if (!vendorsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Vendors", vendorsRes.Messages);
+            return null;
+        }
+
+        return vendorsRes.Data;
+    }
+
+    private async Task<Dictionary<int, string>> GetActiveLocationsAsync()
+    {
+        var locationsRes = await _apiService.GetDropdownLocationsAsync(true);
+
+        if (!locationsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Locations", locationsRes.Messages);
+            return null;
+        }
+
+        return locationsRes.Data;
+    }
+
+    private async Task<List<string>> GetInvoiceOwnersAsync()
+    {
+        var ownersRes = await _apiService.GetDropdownInvoiceOwnersAsync();
+
+        if (!ownersRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Invoice Owners", ownersRes.Messages);
+            return null;
+        }
+
+        return ownersRes.Data;
+    }
+
+    private void ResizeGrid(bool collapsedFilterPanel)
+    {
+        _collapsedFilterPanel = collapsedFilterPanel;
+        _gridInvoices.ResizeGrid(_collapsedFilterPanel);
+    }
+
+    private async Task FilterGridAsync(InvoiceFilterModel filterModel)
+    {
+        _filterModel = filterModel;
+        await _gridInvoices.FilterGridAsync(_filterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await _gridInvoices.RefreshGridAsync();
+    }
+
+    private async Task OpenEditInvoiceDialogAsync(int id)
+    {
+        var editModel = new InvoiceEditModel();
+
+        if (id > 0)
+        {
+            var invoice = await GetInvoiceByIdAsync(id);
+            if (invoice == null)
+            {
+                return;
+            }
+            editModel = invoice.ToEditModel();
+        }
+
+        var title = id > 0 ? $"Edit Invoice #{id}" : "Create New Invoice";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "EditModel", editModel },
+                { "ActiveVendors", _activeVendors},
+                { "Companies", _companies },
+                { "ActiveLocations", _activeLocations },
+                { "InvoiceReviewers", _invoiceReviewers},
+                { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.ExtraLarge,
+            };
+
+        await _dialogService.OpenAsync<EditInvoiceForm>(title, paramsDic, options);
+    }
+
+    private async Task OpenEditBasicInvoiceDialogAsync(int id)
+    {
+        var invoice = await GetInvoiceByIdAsync(id);
+        if (invoice == null)
+        {
+            return;
+        }
+
+        var editBasicModel = invoice.ToBasicEditModel();
+        var title = $"Edit Invoice #{id}";
+        var paramsDic = new Dictionary<string, object>()
+            {
+                { "EditBasicModel", editBasicModel },
+                { "ActiveVendors", _activeVendors},
+                { "Companies", _companies },
+                { "ActiveLocations", _activeLocations },
+                { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
+            };
+        var options = new DialogOptions()
+            {
+                Width = ModalSize.Default,
+            };
+
+        await _dialogService.OpenAsync<EditBasicInvoiceForm>(title, paramsDic, options);
+    }
+
+    private async Task<InvoiceViewModel> GetInvoiceByIdAsync(int id)
+    {
+        var invoiceRes = await _apiService.GetInvoiceByIdAsync(id);
+
+        if (!invoiceRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Invoice Information", invoiceRes.Messages);
+            return null;
+        }
+
+        return invoiceRes.Data;
+    }
+}

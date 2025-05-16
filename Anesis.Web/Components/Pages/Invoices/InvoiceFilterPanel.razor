@@ -1,0 +1,168 @@
+﻿<RadzenFieldset Text="Filter Panel" AllowCollapse="true"
+                Collapse="async () => await ToggleFilterPanelAsync(true)"
+                Expand="async () => await ToggleFilterPanelAsync(false)">
+    <RadzenTemplateForm TItem="InvoiceFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="From Date" Component="FromDate" class="rz-text-subtitle2" />
+                    <RadzenDatePicker @bind-Value="FilterModel.FromDate" Name="FromDate"
+                                      AllowClear="true" AllowInput="false"
+                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+
+                    <RadzenLabel Text="To Date" Component="ToDate" class="rz-text-subtitle2" />
+                    <RadzenDatePicker @bind-Value="FilterModel.ToDate" Name="ToDate"
+                                      AllowClear="true" AllowInput="false"
+                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Invoice Number" Component="InvoiceNo" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.InvoiceNo" Name="InvoiceNo"
+                                   PlaceHolder="Invoice Number" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Vendor" Component="VendorId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.VendorId" Name="VendorId" Data="ActiveVendors"
+                                    AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                    TextProperty="@nameof(CustomerViewModel.CustomerName)" ValueProperty="@nameof(CustomerViewModel.Id)"
+                                    Placeholder="---All---" Style="width: 100%;">
+                    </RadzenDropDown>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Company" Component="Company" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.Company" Name="Company"
+                                    Data="Companies" AllowClear="true"
+                                    Placeholder="---All---" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.LocationId" Name="LocationId"
+                                    Data="ActiveLocations" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Owner" Component="CreatedBy" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.CreatedBy" Name="CreatedBy"
+                                    Data="InvoiceOwners" AllowClear="true"
+                                    Placeholder="---All---" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.ReviewerId" Name="ReviewerId"
+                                    Data="InvoiceReviewers" AllowClear="true"
+                                    Placeholder="---All---" Style="width: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenLabel Text="Payment Method" Component="PaymentMethod" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.PaymentMethod" Name="PaymentMethod"
+                                    Data="PaymentMethods" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+
+                    <RadzenLabel Text="Status" Component="InvoiceStatus" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.InvoiceStatus" Name="InvoiceStatus"
+                                    Data="InvoiceStatus" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;"
+                                    Change="(selectedValue) => { if ((int?)selectedValue > 0){ FilterModel.UnpaidInvoicesOnly = false; } }" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="2">
+                <RadzenStack Gap="0.5rem" Style="height: 100%;">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.UnpaidInvoicesOnly" TValue="bool" Name="UnpaidInvoicesOnly"
+                                        Change="(isChecked) => {if (isChecked){ FilterModel.InvoiceStatus = null; } }" />
+                        <RadzenLabel Text="Unpaid Invoices Only" Component="UnpaidInvoicesOnly" class="rz-text-subtitle2" />
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.BulkInvoicesOnly" TValue="bool" Name="BulkInvoicesOnly" />
+                        <RadzenLabel Text="Bulk Invoices Only" Component="BulkInvoicesOnly" class="rz-text-subtitle2" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" Style="height: 100%;">
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                                  Text="Filter" Icon="filter_alt" />
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning"
+                                  Text="Clear" Icon="ink_eraser" Click="ClearFilterAsync" />
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info"
+                                  Text="Refresh" Icon="refresh" Click="RefreshGridAsync" />
+                    <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success"
+                                  Text="New" Icon="add" Click="OpenCreateInvoiceDialogAsync"/>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenTemplateForm>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public InvoiceFilterModel FilterModel { get; set; }
+    [Parameter]
+    public bool CollapsedFilterPanel { get; set; }
+    [Parameter]
+    public List<CustomerViewModel> ActiveVendors { get; set; }
+    [Parameter]
+    public List<string> Companies { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveLocations { get; set; }
+    [Parameter]
+    public Dictionary<int, string> PaymentMethods { get; set; }
+    [Parameter]
+    public Dictionary<int, string> InvoiceStatus { get; set; }
+    [Parameter]
+    public List<string> InvoiceOwners { get; set; }
+    [Parameter]
+    public List<string> InvoiceReviewers { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnResizeGrid { get; set; }
+    [Parameter]
+    public EventCallback<InvoiceFilterModel> OnFilterGrid { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+    [Parameter]
+    public EventCallback<int> OnOpenEditInvoiceDialog { get; set; }
+
+
+    // SUPPORT METHODS
+    private async Task ToggleFilterPanelAsync(bool collapsed)
+    {
+        CollapsedFilterPanel = collapsed;
+        await ResizeGridAsync(CollapsedFilterPanel);
+    }
+
+    private async Task ResizeGridAsync(bool collapsed)
+    {
+        await OnResizeGrid.InvokeAsync(collapsed);
+    }
+
+    private async Task FilterGridAsync(InvoiceFilterModel filterModel)
+    {
+        FilterModel = filterModel;
+        await OnFilterGrid.InvokeAsync(FilterModel);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+
+    private async Task ClearFilterAsync()
+    {
+        var model = new InvoiceFilterModel();
+        await FilterGridAsync(model);
+    }
+
+    private async Task OpenCreateInvoiceDialogAsync()
+    {
+        await OnOpenEditInvoiceDialog.InvokeAsync(0);
+    }
+}

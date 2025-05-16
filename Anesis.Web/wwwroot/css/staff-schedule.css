@@ -1,0 +1,58 @@
+﻿.ec-timeline {
+    max-height: 600px;
+}
+
+.ec-days .ec-sat, .ec-days .ec-sun {
+    background-color: var(--rz-base) !important;
+}
+
+.ec-resource, .ec-day-head {
+    font-weight: 700;
+}
+
+.ec-timeline .ec-resizer {
+    max-width: 4px !important;
+    background-color: var(--rz-danger) !important;
+}
+
+.ec-resource-week-view .ec-event-title {
+    font-size: 1rem;
+}
+
+.ec-resource-month-view .ec-event-time {
+    font-size: 0.7rem;
+}
+
+.ec-resource-month-view .ec-event-title {
+    font-size: 0.8rem;
+}
+
+.event-clinic-closed {
+    height: 90%;
+    background-color: var(--rz-base-dark) !important;
+}
+
+.event-time-off {
+    background-color: var(--rz-warning) !important;
+}
+
+.event-holiday {
+    height: 90%;
+    background-color: var(--rz-danger) !important;
+}
+
+.event-manager {
+    background-color: var(--rz-series-4) !important;
+}
+
+.event-doctor {
+    background-color: var(--rz-success) !important;
+}
+
+.event-employee {
+    background-color: var(--rz-primary) !important;
+}
+
+.event-other-employee {
+    background-color: var(--rz-base-dark) !important;
+}

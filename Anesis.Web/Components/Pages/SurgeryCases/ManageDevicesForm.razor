@@ -1,0 +1,283 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<LinkInvoiceForm LinkInvoiceModel="LinkInvoiceModel" LocationId="LocationId" LocationName="@LocationName"
+                 HasCloseButton="false" OnRefreshGrid="OnRefreshGrid" />
+
+<RadzenStack>
+    <RadzenTemplateForm TItem="CaseCostAddModel" Data="_addCastCostModel" Submit="AddCaseCostAsync">
+        <RadzenFieldset Text="Add Device">
+            <RadzenRow>
+                <RadzenColumn Size="12" SizeMD="5">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Device" Component="SelectedDevice" class="rz-text-subtitle2 required-near" />
+                        <RadzenDropDown @bind-Value="_selectedDevice" TValue="DeviceWithCostViewModel" Name="SelectedDevice"
+                                        Data="_activeDevices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                        Placeholder="---Select---" Style="width: 100%;"
+                                        Change="SelectDeviceAddToCase">
+                            <ValueTemplate Context="device">
+                                <div>
+                                    #<strong>@device.Id</strong> - <strong>@device.Name</strong> (@device.VendorName)
+                                </div>
+                            </ValueTemplate>
+                            <Template Context="device">
+                                <div>
+                                    #<strong>@device.Id</strong> - <strong>@device.Name</strong> (@device.VendorName)
+                                </div>
+                            </Template>
+                        </RadzenDropDown>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Quantity" Component="Quantity" class="rz-text-subtitle2 required-near" />
+                        <RadzenNumeric @bind-Value="_addCastCostModel.Quantity" TValue="int?" Name="Quantity" Style="width: 100%;" />
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="5">
+                    <RadzenStack Gap="0.5rem">
+                        <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
+                        <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                            <Start>
+                            </Start>
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="_addCastCostModel.Notes" Name="Notes" Style="width: 100%;" />
+                            </ChildContent>
+                            <End>
+                                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Success"
+                                              Text="Add" Icon="add" />
+                            </End>
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+    <RadzenDataGrid @ref="_gridCaseCosts" TItem="CaseCostViewModel" IsLoading=_isLoading
+                    Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                    AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+                    PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                    PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+                    PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 400px;"
+                    CellClick="OnCellClick">
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.DeviceName)" Title="Device" Width="20%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.VendorName)" Title="Vendor" Width="15%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Quantity)" Title="Quantity" Width="10%">
+                <Template Context="caseCost">
+                    <RadzenStack Orientation="Orientation.Horizontal">
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                                      Shade="Shade.Lighter" Icon="remove"
+                                      Click="async () => await ChangeCaseCostQuantityAsync(caseCost.Id, caseCost.Quantity - 1)" />
+                        <RadzenText Text="@caseCost.Quantity.ToString()" class="rz-m-0" />
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"
+                                      Shade="Shade.Lighter" Icon="add"
+                                      Click="async () => await ChangeCaseCostQuantityAsync(caseCost.Id, caseCost.Quantity + 1)" />
+                    </RadzenStack>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.VendorCost)" Title="Vendor Cost" FormatString="{0:C2}" Width="10%" />
+            <RadzenDataGridColumn TItem="CaseCostViewModel" Property="@nameof(CaseCostViewModel.AppliedCost)" Title="Applied Cost"
+                                  IsInEditMode="IsEditing" Width="10%">
+                <Template Context="caseCost">
+                    <RadzenText Text="@caseCost.AppliedCost.ToString("C2")" />
+                </Template>
+                <EditTemplate Context="caseCost">
+                    <RadzenFormField Style="width: 100%;" class="custom-input-group">
+                        <Start>
+                            <RadzenIcon Icon="attach_money" />
+                        </Start>
+                        <ChildContent>
+                            <RadzenNumeric @bind-Value="caseCost.AppliedCost" TValue="decimal" Name="AppliedCost" Style="width: 100%;"
+                                           Change="async (newValue) => await ChangeCaseCostPriceAsync(caseCost.Id, newValue)" />
+                        </ChildContent>
+                        <End>
+                        </End>
+                    </RadzenFormField>
+                </EditTemplate>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.EffectiveDate)" Title="Effective Date" FormatString="{0:MM-dd-yyyy}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.UpdatedBy)" Title="Update By" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.UpdatedDate)" Title="Updated Date" FormatString="{0:MM-dd-yyyy}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Id)" Width="5%" Sortable="false">
+                <Template Context="caseCost">
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="delete"
+                                      Click="async () => await ConfirmDeleteCaseCostAsync(caseCost.Id, caseCost.SurgeryCaseId, caseCost.DeviceId)"
+                                      title="@($"Delete device #{caseCost.DeviceId} from surgery case #{caseCost.SurgeryCaseId}")" />
+                    </RadzenStack>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem" class="rz-mt-4">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                      Text="Close" Click="() => _dialogService.Close()" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public LinkInvoiceCaseModel LinkInvoiceModel { get; set; }
+    [Parameter]
+    public int CaseId { get; set; }
+    [Parameter]
+    public int LocationId { get; set; }
+    [Parameter]
+    public string LocationName { get; set; }
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    private List<DeviceWithCostViewModel> _activeDevices = new();
+    private DeviceWithCostViewModel _selectedDevice = null;
+    private CaseCostFilterModel _filterCastCostModel = new();
+    private CaseCostAddModel _addCastCostModel = new();
+
+    private int _pageSize = PageSize.Default();
+    private bool _isLoading = false;
+    private ResponseModel<List<CaseCostViewModel>> _data = new();
+
+    private string _columnEditing;
+    private CaseCostViewModel _caseCostToUpdate = new();
+
+    // COMPONENTS
+    private RadzenDataGrid<CaseCostViewModel> _gridCaseCosts;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _filterCastCostModel.CaseId = CaseId;
+        _addCastCostModel.CaseId = CaseId;
+
+        _activeDevices = (await _apiService.GetAllDevicesAsync(true)).Data;
+    }
+
+    // SUPPORT METHODS
+    private async Task LoadDataAsync(LoadDataArgs args)
+    {
+        _isLoading = true;
+
+        _filterCastCostModel.CountNumber = args.Top.Value;
+        _filterCastCostModel.StartIndex = args.Skip.Value;
+
+        _filterCastCostModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
+        _filterCastCostModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+
+        _data = await _apiService.SearchCaseCostsAsync(_filterCastCostModel);
+
+        _isLoading = false;
+    }
+
+    private async Task AddCaseCostAsync(CaseCostAddModel caseCostAddModel)
+    {
+        var addCaseCostRes = await _apiService.AddCaseCostAsync(caseCostAddModel);
+
+        if (!addCaseCostRes.Success)
+        {
+            _notifyService.NotifyErrors("Add Device To Surgery Case", addCaseCostRes.Messages);
+            return;
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Add Device To Surgery Case", addCaseCostRes.Data);
+            await _gridCaseCosts.RefreshDataAsync();
+            await RefreshGridAsync();
+
+            // Reset Add Case Cost Form
+            _selectedDevice = null;
+            _addCastCostModel = new() { CaseId = CaseId };
+        }
+    }
+
+    private async Task ChangeCaseCostQuantityAsync(int id, int newQuantity)
+    {
+        if (newQuantity <= 0)
+        {
+            _notifyService.NotifyError("Change Number Of Device", "The Quantity must be greater than 0.");
+            return;
+        }
+
+        var changeQuantityRes = await _apiService.ChangeCaseCostQuantityAsync(id, newQuantity);
+
+        if (!changeQuantityRes.Success)
+        {
+            _notifyService.NotifyErrors("Change Number Of Device", changeQuantityRes.Messages);
+            return;
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Change Number Of Device", changeQuantityRes.Data);
+            await _gridCaseCosts.RefreshDataAsync();
+            await RefreshGridAsync();
+        }
+    }
+
+    private async Task ChangeCaseCostPriceAsync(int id, decimal newPrice)
+    {
+        var changePriceRes = await _apiService.ChangeCaseCostPriceAsync(id, newPrice);
+
+        if (!changePriceRes.Success)
+        {
+            _notifyService.NotifyErrors("Change Applied Cost Of Device", changePriceRes.Messages);
+            return;
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Change Applied Cost Of Device", changePriceRes.Data);
+            await _gridCaseCosts.RefreshDataAsync();
+            await RefreshGridAsync();
+        }
+    }
+
+    private async Task ConfirmDeleteCaseCostAsync(int id, int caseId, int deviceId)
+    {
+        var result = await _dialogService.Confirm(
+            $"Do you really want to delete device #<b>{deviceId}</b> from surgery case <b>#{caseId}</b>?",
+            $"Delete Device From Surgery Case #{caseId}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (result == null || result == false)
+            return;
+    }
+
+    private void SelectDeviceAddToCase()
+    {
+        _addCastCostModel.DeviceId = _selectedDevice?.Id;
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+
+    private bool IsEditing(string columnName, CaseCostViewModel caseCost)
+    {
+        return _columnEditing == columnName && _caseCostToUpdate == caseCost;
+    }
+
+    private void OnCellClick(DataGridCellMouseEventArgs<CaseCostViewModel> args)
+    {
+        _columnEditing = args.Column.Property;
+
+        if (_columnEditing != nameof(CaseCostViewModel.AppliedCost))
+        {
+            return;
+        }
+
+        EditRow(args.Data);
+    }
+
+    private void EditRow(CaseCostViewModel caseCost)
+    {
+        _caseCostToUpdate = caseCost;
+
+        _gridCaseCosts.EditRow(caseCost);
+    }
+
+    private void UpdateRowGrid()
+    {
+        _gridCaseCosts.UpdateRow(_caseCostToUpdate);
+
+        _caseCostToUpdate = new();
+    }
+}
