@@ -2,7 +2,7 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenTemplateForm TItem="ProposalReviewModel" Data="_reviewModel" Submit="ApproveProposalAsync">
+<RadzenTemplateForm TItem="ProposalSetStatusModel" Data="_setStatusModel" Submit="CancelProposalAsync">
     <RadzenStack>
         <RadzenFieldset Text="Proposal Information">
             <RadzenStack Gap="1rem">
@@ -28,97 +28,72 @@
                         <RadzenText TextStyle="TextStyle.Body2">@patientInfo</RadzenText>
                     </RadzenColumn>
                 </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenText TextStyle="TextStyle.Subtitle2">Procedure</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenText TextStyle="TextStyle.Body2">@ViewModel.ProcedureName</RadzenText>
+                    </RadzenColumn>
+                </RadzenRow>
             </RadzenStack>
         </RadzenFieldset>
-        <RadzenFieldset Text="Reviewing Options">
+        <RadzenFieldset Text="Cancelling Options">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
                     <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Proposed Procedure" Component="ProcedureId" class="rz-text-subtitle2" />
+                        <RadzenLabel Text="Reason" Component="Reason" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenDropDown @bind-Value="_reviewModel.ProcedureId" Name="ProcedureId" Data="ActiveProcedures"
-                                        AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
-                                        TextProperty="Value" ValueProperty="Key"
-                                        Placeholder="---Select---" Style="width: 100%;" />
-                    </RadzenColumn>
-                </RadzenRow>
-                <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Diagnosis Code" Component="DiagnosisCode" class="rz-text-subtitle2" />
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox @bind-Value="_reviewModel.DiagnosisCode" Name="DiagnosisCode" Style="width: 100%;" />
-                    </RadzenColumn>
-                </RadzenRow>
-                <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Reviewer Notes" Component="ReviewerNotes" class="rz-text-subtitle2" />
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextArea @bind-Value="_reviewModel.ReviewerNotes" Name="ReviewerNotes" Rows="3" Style="width: 100%" />
+                        <RadzenTextArea @bind-Value="_setStatusModel.Reason" Name="Reason" Rows="3" Style="width: 100%" />
                     </RadzenColumn>
                 </RadzenRow>
             </RadzenStack>
         </RadzenFieldset>
+        <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">
+            Do you really want to cancel this proposal? Please enter the reason and click "Save" to confirm.
+        </RadzenText>
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
-                          Text="Approve" Icon="check_circle" />
-            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger"
-                          Text="Cancel" Icon="cancel"
-                          Click="async() => await CancelProposalAsync(_reviewModel)" />
+                          Text="Save" Icon="save" />
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                           Text="Close" Click="() => _dialogService.Close()" />
         </RadzenStack>
     </RadzenStack>
 </RadzenTemplateForm>
 
+
 @code {
     [Parameter]
     public ProposalViewModel ViewModel { get; set; }
-    [Parameter]
-    public Dictionary<int, string> ActiveProcedures { get; set; }
 
     [Parameter]
     public EventCallback OnRefreshGrid { get; set; }
 
-    private ProposalReviewModel _reviewModel = new();
+    private ProposalSetStatusModel _setStatusModel = new();
 
     // OVERRIDE METHODS
     protected override void OnParametersSet()
     {
-        _reviewModel.Id = ViewModel.Id;
-        _reviewModel.ProcedureId = ViewModel.ProcedureId;
-        _reviewModel.DiagnosisCode = ViewModel.DiagnosisCode;
+        _setStatusModel.Id = ViewModel.Id;
+        _setStatusModel.Status = (int)PotentialProcedureStatus.Cancelled;
     }
 
     // SUPPORT METHODS
-    public async Task ReviewProposalAsync(ProposalReviewModel reviewModel)
+    private async Task CancelProposalAsync(ProposalSetStatusModel model)
     {
-        var reviewRes = await _apiService.ReviewProposalAsync(reviewModel);
+        var setStatusRes = await _apiService.SetProposalStatusAsync(model);
 
-        if (reviewRes.Success)
+        if (setStatusRes.Success)
         {
-            _notifyService.NotifySuccess("Review Proposal", reviewRes.Data);
+            _notifyService.NotifySuccess("Set Proposal Status", setStatusRes.Data);
             _dialogService.Close();
             await RefreshGridAsync();
         }
         else
         {
-            _notifyService.NotifyErrors("Review Proposal", reviewRes.Messages);
+            _notifyService.NotifyErrors("Set Proposal Status", setStatusRes.Messages);
         }
-    }
-
-    private async Task ApproveProposalAsync(ProposalReviewModel reviewModel)
-    {
-        reviewModel.IsApproved = true;
-        await ReviewProposalAsync(reviewModel);
-    }
-
-    private async Task CancelProposalAsync(ProposalReviewModel reviewModel)
-    {
-        reviewModel.IsApproved = false;
-        await ReviewProposalAsync(reviewModel);
     }
 
     private async Task RefreshGridAsync()

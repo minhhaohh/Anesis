@@ -8,7 +8,7 @@
 <RadzenStack>
     <RadzenText TextStyle="TextStyle.H5">Potential Procedures</RadzenText>
 
-    <ProposalFilterPanel @ref="_proposalFilterPanel" FilterModel="_filterModel"
+    <ProposalFilterPanel @ref="_proposalFilterPanel" CanEditProposal="_canEditProposal" FilterModel="_filterModel"
                          CollapsedFilterPanel="_collapsedFilterPanel" ProposalStatus="_proposalStatus"
                          ActiveLocations="_activeLocations" ActiveAscLocations="_activeAscLocations"
                          ActiveProviders="_activeProviders" ActiveDoctors="_activeDoctors"
@@ -16,13 +16,16 @@
                          OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync"
                          OnRefreshGrid="RefreshGridAsync" OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
 
-    <GridProposals @ref="_gridProposals" FilterModel="_filterModel"
-                   OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
+    <GridProposals @ref="_gridProposals" CanEditProposal="_canEditProposal" FilterModel="_filterModel"
+        GeneralSettings="_generalSettings" ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
+                   ActiveProcedures="_activeProcedures" OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
 </RadzenStack>
 
 @code {
+    private bool _canEditProposal = true;
     private ProposalFilterModel _filterModel = new();
     private bool _collapsedFilterPanel = false;
+    private GeneralSettingsModel _generalSettings = new();
     private Dictionary<int, string> _proposalStatus = typeof(PotentialProcedureStatus).ToDictionary();
     private Dictionary<int, string> _activeLocations = new();
     private Dictionary<int, string> _activeAscLocations = new();
@@ -38,6 +41,7 @@
     // OVERRIDE METHODS
     protected override async Task OnInitializedAsync()
     {
+        _generalSettings = await GetGeneralSettingsAsync() ?? new();
         _activeLocations = await GetActiveLocationsAsync() ?? new();
         _activeAscLocations = await GetActiveAscLocationsAsync() ?? new();
         _activeProviders = await GetActiveProvidersAsync() ?? new();
@@ -47,6 +51,19 @@
     }
 
     // SUPPORT METHODS
+    private async Task<GeneralSettingsModel> GetGeneralSettingsAsync()
+    {
+        var settingsRes = await _apiService.GetGeneralSettingsAsync();
+
+        if (!settingsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get General Settings", settingsRes.Messages);
+            return null;
+        }
+
+        return settingsRes.Data;
+    }
+
     private async Task<Dictionary<int, string>> GetActiveLocationsAsync()
     {
         var locationsRes = await _apiService.GetDropdownLocationsAsync(true);

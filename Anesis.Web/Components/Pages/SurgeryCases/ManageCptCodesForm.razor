@@ -38,7 +38,7 @@
         </RadzenFieldset>
     </RadzenTemplateForm>
 
-    <RadzenDataGrid @ref="_gridCaseCptCodes" TItem="CaseCptCodeViewModel" IsLoading=_isLoading
+    <RadzenDataGrid @ref="_gridCaseCptCodes" TItem="CaseCptCodeViewModel" IsLoading="_isLoading"
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                     PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"

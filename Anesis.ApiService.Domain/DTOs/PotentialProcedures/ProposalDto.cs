@@ -1,5 +1,4 @@
 ﻿using Anesis.Shared.Constants;
-using Anesis.Shared.Extensions;
 
 namespace Anesis.ApiService.Domain.DTOs.PotentialProcedures
 {
@@ -53,17 +52,23 @@ namespace Anesis.ApiService.Domain.DTOs.PotentialProcedures
 
         public string ReviewerName { get; set; }
 
-        public string ReviewerNotes { get; set; }
+        public string ReviewStatus => ReviewerId > 0
+            ? RequestStatus == PotentialProcedureStatus.Pending
+                ? PotentialProcedureReviewStatus.Pending
+                : RequestStatus != PotentialProcedureStatus.Cancelled
+                    ? PotentialProcedureReviewStatus.Approved
+                    : ReviewedDate != null
+                        ? PotentialProcedureReviewStatus.Cancelled
+                        : ""
+            : "";
 
-        public bool IsReviewer => ReviewedDate.HasValue;
+        public string ReviewerNotes { get; set; }
 
         public string ScheduledBy { get; set; }
 
         public DateTime? SurgeryDate { get; set; }
 
         public TimeSpan? SurgeryTime { get; set; }
-
-        public string SurgeryTimeStr => SurgeryTime.ToTimeString() ?? "";
 
         public int? SurgeonId { get; set; }
 
@@ -82,27 +87,5 @@ namespace Anesis.ApiService.Domain.DTOs.PotentialProcedures
         public DateTime UpdatedDate { get; set; }
 
         public string Notes { get; set; }
-
-        public string NextStep
-            => RequestStatus == PotentialProcedureStatus.Pending
-            ? "Review"
-            : RequestStatus == PotentialProcedureStatus.Reviewed
-                ? "Mark as ordered"
-                : RequestStatus == PotentialProcedureStatus.Ordered
-                    ? "Schedule surgery"
-                    : "Mark as completed";
-
-        public bool CanEdit => RequestStatus == PotentialProcedureStatus.Pending || RequestStatus == PotentialProcedureStatus.Reviewed;
-
-        public bool CanCancel => RequestStatus != PotentialProcedureStatus.Cancelled && RequestStatus != PotentialProcedureStatus.Completed;
-
-        public bool CanReview => RequestStatus == PotentialProcedureStatus.Pending;
-
-        public bool CanMarkAsOrdered => RequestStatus == PotentialProcedureStatus.Reviewed;
-
-        public bool CanSchedule => RequestStatus == PotentialProcedureStatus.Ordered;
-
-        public bool CanMarkAsCompleted => RequestStatus == PotentialProcedureStatus.Scheduled;
-
     }
 }

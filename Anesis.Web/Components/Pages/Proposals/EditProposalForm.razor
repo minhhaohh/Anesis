@@ -75,8 +75,8 @@
                                         TextProperty="Value" ValueProperty="Key"
                                         Placeholder="---Select---" Style="width: 100%;" />
 
-                        <RadzenLabel Text="Diagnosis Code" Component="DiagnosisCode" class="rz-text-subtitle2 required-near" />
-                        <RadzenTextBox @bind-Value="EditModel.DiagnosisCode" Name="DiagnosisCode" Style="width: 100%;" />
+                        <RadzenLabel Text="Diagnosis Codes" Component="DiagnosisCode" class="rz-text-subtitle2 required-near" />
+                        <RadzenTextBox @bind-Value="EditModel.DiagnosisCode" Name="DiagnosisCode" Placeholder="Diagnosis Codes" Style="width: 100%;" />
 
                         <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2 required-near" />
                         <RadzenDropDown @bind-Value="EditModel.ReviewerId" Name="ReviewerId"
@@ -137,6 +137,11 @@
         }
         else
         {
+            EditModel.PatientId = null;
+            EditModel.FirstName = null;
+            EditModel.LastName = null;
+            EditModel.Dob = null;
+
             _notifyService.NotifyErrors("Get Patient Information", patientRes.Messages);
         }
     }

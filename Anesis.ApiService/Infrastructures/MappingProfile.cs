@@ -104,7 +104,7 @@ namespace Anesis.ApiService.Infrastructures
             CreateMap<PotentialProcedure, ProposalReviewDto>()
                 .ForMember(x => x.IsApproved, options => options.Ignore());
 
-            CreateMap<PotentialProcedure, ProposalScheduleDto>();
+            CreateMap<PotentialProcedure, ProposalScheduleSurgeryDto>();
         }
 
         public void CreateReconciliationMap()

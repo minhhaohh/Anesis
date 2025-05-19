@@ -5,10 +5,10 @@
 <RadzenStack>
     <RadzenText TextStyle="TextStyle.Body2" class="rz-color-danger">@_warningMessage</RadzenText>
 
-    <RadzenFieldset Text="Filter Panel" AllowCollapse="true"
-                    Collapse="() => ToggleFilterPanel(true)"
-                    Expand="() => ToggleFilterPanel(false)">
-        <RadzenTemplateForm TItem="SurgeryCaseFilterModel" Data="_filterModel" Submit="FilterGridAsync">
+    <RadzenTemplateForm TItem="SurgeryCaseFilterModel" Data="_filterModel" Submit="FilterGridAsync">
+        <RadzenFieldset Text="Filter Panel" AllowCollapse="true"
+                        Collapse="() => ToggleFilterPanel(true)"
+                        Expand="() => ToggleFilterPanel(false)">
             <RadzenRow>
                 <RadzenColumn Size="12" SizeMD="2">
                     <RadzenStack Gap="0.5rem">
@@ -64,8 +64,8 @@
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
-        </RadzenTemplateForm>
-    </RadzenFieldset>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
 
     <RadzenDataGrid @ref="_grid" TItem="SurgeryCaseViewModel" IsLoading="_isLoading"
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"

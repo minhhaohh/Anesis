@@ -9,19 +9,23 @@
 
     <RadzenRow>
         <RadzenColumn Size="12" SizeMD="6">
-            <BatchTransactionFilterPanel FilterModel="_batchFilterModel" LastTimeReconciliation="_lastTimeReconciliation"
-                                         ActiveLocations="_activeLocations" PaymentTypes="_paymentTypes"
-                                         OnFilterGrid="FilterBatchGridAsync" OnRefreshGrid="RefreshBatchGridAsync" />
-            <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="true"
-                                   FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
+            <RadzenStack>
+                <BatchTransactionFilterPanel FilterModel="_batchFilterModel" LastTimeReconciliation="_lastTimeReconciliation"
+                                             ActiveLocations="_activeLocations" PaymentTypes="_paymentTypes"
+                                             OnFilterGrid="FilterBatchGridAsync" OnRefreshGrid="RefreshBatchGridAsync" />
+                <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="true"
+                                       FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
+            </RadzenStack>
         </RadzenColumn>
         <RadzenColumn Size="12" SizeMD="6">
-            <BankTransactionFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
-                                        LastTimeReconciliation="_lastTimeReconciliation" PaymentTypes="_paymentTypes"
-                                        OnFilterGrid="FilterBankGridAsync" OnRefreshGrid="RefreshBankGridAsync" />
-            <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="true"
-                                  FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
-                                  OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
+            <RadzenStack>
+                <BankTransactionFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                            LastTimeReconciliation="_lastTimeReconciliation" PaymentTypes="_paymentTypes"
+                                            OnFilterGrid="FilterBankGridAsync" OnRefreshGrid="RefreshBankGridAsync" />
+                <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="true"
+                                      FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
+                                      OnLoadBalanceSummary="LoadBalanceSummaryAsync" />
+            </RadzenStack>
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>

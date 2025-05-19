@@ -18,10 +18,10 @@ namespace Anesis.ApiService.Controllers
 
         public ProposalsController(
             ILogger<ProposalsController> logger, 
-            IProposalService potentialProcService)
+            IProposalService proposalService)
         {
             _logger = logger;
-            _proposalService = potentialProcService;
+            _proposalService = proposalService;
         }
 
         [HttpGet]
@@ -40,6 +40,14 @@ namespace Anesis.ApiService.Controllers
             return proposal == null 
                 ? Result.Error($"Could not find proposal with ID #{id}")
                 : Result.Ok(proposal);
+        }
+
+        [HttpGet("ChangeLogs/{id}")]
+        public async Task<Result> GetChangeLogs([FromRoute] int id)
+        {
+            var changeLogs = await _proposalService.GetChangeLogsAsync(id);
+
+            return Result.Ok(changeLogs);
         }
 
         [HttpPost]
@@ -75,13 +83,29 @@ namespace Anesis.ApiService.Controllers
                 return validationResult.ToResponseWithErrors();
             }
 
-            if (!await _proposalService.UpdateAsync(id, model))
+            if (!await _proposalService.UpdateAsync(model))
             {
                 return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
             }
 
             return Result.Ok($"Updated proposal #{id} successful.");
         }
+
+
+        [HttpPatch("ToggleFlag/{id}")]
+        public async Task<Result> ToggleFlag([FromRoute] int id, [FromBody] FlagToggleDto model)
+        {
+            // Make sure proposal ID is from the route
+            model.Id = id;
+
+            if (!await _proposalService.ToggleFlagAsync(model))
+            {
+                return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
+            }
+
+            return Result.Ok($"Updated proposal #{id} successful.");
+        }
+
 
         [HttpPatch("Review/{id}")]
         public async Task<Result> Review([FromRoute] int id, [FromBody] ProposalReviewDto model)
@@ -97,7 +121,7 @@ namespace Anesis.ApiService.Controllers
                 return validationResult.ToResponseWithErrors();
             }
 
-            if (!await _proposalService.ReviewAsync(id, model))
+            if (!await _proposalService.ReviewAsync(model))
             {
                 return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
             }
@@ -105,41 +129,8 @@ namespace Anesis.ApiService.Controllers
             return Result.Ok($"{(model.IsApproved ? "Approved" : "Cancelled")} proposal #{id} successful.");
         }
 
-        [HttpPatch("MarkAsOrdered/{id}")]
-        public async Task<Result> MarkAsOrdered([FromRoute] int id)
-        {
-            if (!await _proposalService.SetStatusAsync(id, PotentialProcedureStatus.Ordered))
-            {
-                return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
-            }
-
-            return Result.Ok($"Marked proposal #{id} as ordered successful.");
-        }
-
-        [HttpPatch("MarkAsCompleted/{id}")]
-        public async Task<Result> MarkAsCompleted([FromRoute] int id)
-        {
-            if (!await _proposalService.SetStatusAsync(id,PotentialProcedureStatus.Completed))
-            {
-                return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
-            }
-
-            return Result.Ok($"Marked proposal #{id} as completed successful.");
-        }
-
-        [HttpPatch("MarkAsCancelled/{id}")]
-        public async Task<Result> MarkAsCancelled([FromRoute] int id, [FromBody] string reason)
-        {
-            if (!await _proposalService.SetStatusAsync(id, PotentialProcedureStatus.Cancelled, reason))
-            {
-                return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
-            }
-
-            return Result.Ok($"Marked proposal #{id} as cancelled successful.");
-        }
-
         [HttpPatch("ScheduleSurgery/{id}")]
-        public async Task<Result> ScheduleSurgery([FromRoute] int id, [FromBody] ProposalScheduleDto model)
+        public async Task<Result> ScheduleSurgery([FromRoute] int id, [FromBody] ProposalScheduleSurgeryDto model)
         {
             // Make sure proposal ID is from the route
             model.Id = id;
@@ -152,12 +143,34 @@ namespace Anesis.ApiService.Controllers
                 return validationResult.ToResponseWithErrors();
             }
 
-            if (!await _proposalService.ScheduleSurgeryAsync(id, model))
+            if (!await _proposalService.ScheduleSurgeryAsync(model))
             {
                 return Result.Error($"Something went wrong when scheduling surgery for proposal #{id}. Please try again.");
             }
 
             return Result.Ok($"Scheduled surgery for proposal #{id} successful.");
+        }
+
+        [HttpPatch("SetStatus/{id}")]
+        public async Task<Result> SetStatus([FromRoute] int id, [FromBody] ProposalSetStatusDto model)
+        {
+            // Make sure proposal ID is from the route
+            model.Id = id;
+
+            var validator = new ProposalSetStatusDtoValidator(_proposalService);
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ToResponseWithErrors();
+            }
+
+            if (!await _proposalService.SetStatusAsync(model))
+            {
+                return Result.Error($"Something went wrong when updating proposal #{id}. Please try again.");
+            }
+
+            return Result.Ok($"Updated proposal #{id} status to {(PotentialProcedureStatus)model.Status} successful.");
         }
     }
 }

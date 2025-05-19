@@ -127,11 +127,11 @@ namespace Anesis.ApiService.Controllers
             return Result.Ok($"Updated device #{id} successful.");
         }
 
-        [HttpPut("Costs/{id}")]
-		public async Task<Result> ChangeCost([FromRoute] int id, [FromBody] DeviceCostEditDto model)
+        [HttpPut("Costs/{deviceId}")]
+		public async Task<Result> ChangeCost([FromRoute] int deviceId, [FromBody] DeviceCostEditDto model)
 		{
             // Make sure device id is from the route
-            model.DeviceId = id;
+            model.DeviceId = deviceId;
 
             var validator = new DeviceCostEditDtoValidator(_deviceService);
             var validationResult = await validator.ValidateAsync(model);
@@ -145,10 +145,10 @@ namespace Anesis.ApiService.Controllers
             
             if (!await _deviceService.UpdateDeviceCostAsync(model))
             {
-                return Result.Error($"Something went wrong when updating device #{id}. Please try again.");
+                return Result.Error($"Something went wrong when updating device #{deviceId}. Please try again.");
             }
 
-            return Result.Ok($"Updated device #{id} successful.");
+            return Result.Ok($"Updated device #{deviceId} successful.");
         }
     }
 }

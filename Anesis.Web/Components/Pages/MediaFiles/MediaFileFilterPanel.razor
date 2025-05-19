@@ -1,5 +1,6 @@
-﻿<RadzenFieldset Text="Filter Panel">
-    <RadzenTemplateForm TItem="MediaFileFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+﻿<RadzenTemplateForm TItem="MediaFileFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+    <RadzenFieldset Text="Filter Panel"
+                    class="custom-fieldset">
         <RadzenRow>
             <RadzenColumn Size="12" SizeMD="2">
                 <RadzenLabel Text="Category" Component="Category" class="rz-text-subtitle2" />
@@ -29,8 +30,8 @@
                 </RadzenStack>
             </RadzenColumn>
         </RadzenRow>
-    </RadzenTemplateForm>
-</RadzenFieldset>
+    </RadzenFieldset>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

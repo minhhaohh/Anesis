@@ -2,11 +2,12 @@
 @inject DialogService _dialogService
 @inject NotificationService _notifyService
 
-<RadzenRow>
+<RadzenRow Gap="0">
     <RadzenColumn Size="12" SizeMD="9">
         <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
-            <RadzenFieldset Text="@($"Bank Transactions - Last Time Reconciliation: {LastTimeReconciliation.DateThruAndBy}")">
-                <RadzenRow>
+            <RadzenFieldset Text="@($"Bank Transactions - Last Time Reconciliation: {LastTimeReconciliation.DateThruAndBy}")"
+                            class="custom-fieldset">
+                <RadzenRow Gap="1rem">
                     <RadzenColumn Size="12" SizeMD="4">
                         <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
                         <RadzenDropDown @bind-Value="FilterModel.BatchType" Name="PaymentType" AllowClear="true"

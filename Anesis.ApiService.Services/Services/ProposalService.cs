@@ -1,4 +1,5 @@
 ﻿using Anesis.ApiService.Domain.DTOs.Common;
+using Anesis.ApiService.Domain.DTOs.GeneralChangeLogs;
 using Anesis.ApiService.Domain.DTOs.PotentialProcedures;
 using Anesis.ApiService.Domain.Entities;
 using Anesis.ApiService.Domain.Extensions;
@@ -8,7 +9,6 @@ using Anesis.Shared.Constants;
 using Anesis.Shared.Extensions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using PdfSharp.Pdf.Filters;
 
 namespace Anesis.ApiService.Services.Services
 {
@@ -17,12 +17,19 @@ namespace Anesis.ApiService.Services.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<PotentialProcedure> _potentialProcRepo;
+        private readonly IPatientService _patientService;
+        private readonly IChangeLogService _changeLogService;
 
-        public ProposalService(IMapper mapper, IUnitOfWork unitOfWork)
+        public ProposalService(IMapper mapper, 
+            IUnitOfWork unitOfWork,
+            IPatientService patientService,
+            IChangeLogService changeLogService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _potentialProcRepo = _unitOfWork.GetRepository<PotentialProcedure>();
+            _patientService = patientService;
+            _changeLogService = changeLogService;
         }
 
         public async Task<IPagedList<ProposalDto>> SearchAsync(ProposalFilterDto filter,
@@ -50,71 +57,135 @@ namespace Anesis.ApiService.Services.Services
 
             await _potentialProcRepo.InsertAsync(proposal, cancellationToken);
 
-            return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+            if (await _unitOfWork.SaveChangesAsync(cancellationToken) <= 0)
+            {
+                return false;
+            }
+
+            var patient = await _patientService.GetByIdAsync(model.PatientId.Value, cancellationToken);
+
+            await _changeLogService.AddChangeLogAsync<PotentialProcedure>(proposal.Id, "Create", model.Notes,
+                "*", proposal, null, false, $"Created new proposal for patient #{patient.EcwChartNo} {patient.FirstName} {patient.LastName}", cancellationToken);
+
+            return true;
         }
 
-        public async Task<bool> UpdateAsync(int id, ProposalEditDto model,
+        public async Task<bool> UpdateAsync(ProposalEditDto model,
             CancellationToken cancellationToken = default)
         {
-            var proposal = await FindByIdAsync(id, cancellationToken);
+            var proposal = await FindByIdAsync(model.Id, cancellationToken);
 
             if (proposal == null)
             {
                 return false;
             }
+
+            var modifyFields = model.GetModifiedFields(proposal);
 
             model.ApplyChangesTo(proposal);
 
             _potentialProcRepo.Update(proposal);
 
-            return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
-        }
-
-        public async Task<bool> ReviewAsync(int id, ProposalReviewDto model,
-            CancellationToken cancellationToken = default)
-        {
-            var proposal = await FindByIdAsync(id, cancellationToken);
-
-            if (proposal == null)
+            if (await _unitOfWork.SaveChangesAsync(cancellationToken) <= 0)
             {
                 return false;
             }
 
-            model.ApplyChangesTo(proposal);
+            await _changeLogService.AddChangeLogAsync<PotentialProcedure>(proposal.Id, "Update", model.ReasonChange,
+                modifyFields, proposal, null, false, $"Update proposal information", cancellationToken);
 
-            _potentialProcRepo.Update(proposal);
-
-            return await _unitOfWork.SaveChangesAsync() > 0;
+            return true;
         }
 
-        public async Task<bool> SetStatusAsync(int id, PotentialProcedureStatus status,
-            string reason = null, CancellationToken cancellationToken = default)
+        public async Task<bool> ToggleFlagAsync(
+            FlagToggleDto model, CancellationToken cancellationToken = default)
         {
-            var proposal = await FindByIdAsync(id, cancellationToken);
+            var flag = false;
+            var proposal = await FindByIdAsync(model.Id, cancellationToken);
 
-            if (proposal == null)
+            switch (model.FieldName)
             {
-                return false;
+                case nameof(PotentialProcedure.ChartNotePosted):
+                    proposal.ChartNotePosted = flag = !proposal.ChartNotePosted;
+                    break;
+                default:
+                    return false;
             }
 
-            proposal.RequestStatus = status;
             proposal.UpdatedBy = "haotm";
             proposal.UpdatedDate = DateTime.Now;
 
-            if (reason.HasValue())
+            _potentialProcRepo.Update(proposal);
+
+            if (await _unitOfWork.SaveChangesAsync(cancellationToken) <= 0)
             {
-                proposal.Notes = (proposal.Notes ?? "") + $"\n{status.ToString()} Reason: {reason}";
+                return false;
             }
+
+            await _changeLogService.AddChangeLogAsync<PotentialProcedure>(proposal.Id, "ToggleFlag", null,
+                null, proposal, null, false, $"Set '{model.FieldName}' = '{flag}'", cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> ReviewAsync(ProposalReviewDto model,
+            CancellationToken cancellationToken = default)
+        {
+            var proposal = await FindByIdAsync(model.Id, cancellationToken);
+
+            if (proposal == null)
+            {
+                return false;
+            }
+
+            var modifyFields = model.GetModifiedFields(proposal);
+
+            model.ApplyChangesTo(proposal);
 
             _potentialProcRepo.Update(proposal);
 
-            return await _unitOfWork.SaveChangesAsync() > 0;
+            if (await _unitOfWork.SaveChangesAsync(cancellationToken) <= 0)
+            {
+                return false;
+            }
+
+            await _changeLogService.AddChangeLogAsync<PotentialProcedure>(proposal.Id, "Review", model.ReviewerNotes,
+                modifyFields, proposal, null, false, $"Review proposal", cancellationToken);
+
+            return true;
         }
 
-        public async Task<bool> ScheduleSurgeryAsync(int id, ProposalScheduleDto model,
+        public async Task<bool> ScheduleSurgeryAsync(ProposalScheduleSurgeryDto model,
             CancellationToken cancellationToken = default)
         {
-            var proposal = await FindByIdAsync(id, cancellationToken);
+            var proposal = await FindByIdAsync(model.Id, cancellationToken);
+
+            if (proposal == null)
+            {
+                return false;
+            }
+
+            var isRescheduled = proposal.SurgeonId > 0;
+            var modifyFields = model.GetModifiedFields(proposal, isRescheduled);
+
+            model.ApplyChangesTo(proposal);
+
+            _potentialProcRepo.Update(proposal);
+
+            if (await _unitOfWork.SaveChangesAsync(cancellationToken) <= 0)
+            {
+                return false;
+            }
+
+            await _changeLogService.AddChangeLogAsync<PotentialProcedure>(proposal.Id, isRescheduled ? "RescheduleSurgery" : "ScheduleSurgery", model.Notes,
+                modifyFields, proposal, null, false, $"Schedule surgery case for proposal", cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> SetStatusAsync(ProposalSetStatusDto model, CancellationToken cancellationToken = default)
+        {
+            var proposal = await FindByIdAsync(model.Id, cancellationToken);
 
             if (proposal == null)
             {
@@ -125,7 +196,22 @@ namespace Anesis.ApiService.Services.Services
 
             _potentialProcRepo.Update(proposal);
 
-            return await _unitOfWork.SaveChangesAsync() > 0;
+            if (await _unitOfWork.SaveChangesAsync(cancellationToken) <= 0)
+            {
+                return false;
+            }
+
+            await _changeLogService.AddChangeLogAsync<PotentialProcedure>(proposal.Id, "SetStatus", model.Reason,
+                null, proposal, null, false, $"Set proposal status = '{(PotentialProcedureStatus)model.Status}'", cancellationToken);
+
+            return true;
+        }
+
+        public async Task<List<ChangeLogDto>> GetChangeLogsAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var excludeFields = new string[] { nameof(PotentialProcedure.UpdatedBy), nameof(PotentialProcedure.UpdatedDate) };
+
+            return await _changeLogService.GetChangeLogsAsync<PotentialProcedure>(id, excludeFields, cancellationToken);
         }
 
         // SUPPORT METHODS

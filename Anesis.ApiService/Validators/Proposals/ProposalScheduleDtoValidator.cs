@@ -4,13 +4,17 @@ using FluentValidation;
 
 namespace Anesis.ApiService.Validators.Proposals
 {
-    public class ProposalScheduleDtoValidator : AbstractValidator<ProposalScheduleDto>
+    public class ProposalScheduleDtoValidator : AbstractValidator<ProposalScheduleSurgeryDto>
     {
         private readonly IProposalService _proposalService;
 
         public ProposalScheduleDtoValidator(IProposalService potentialProcService)
         {
             _proposalService = potentialProcService;
+
+            RuleFor(x => x.Id)
+                .MustAsync(ProposalExistedAsync)
+                .WithMessage(x => $"Could not find proposal with ID #{x.Id}.");
 
             RuleFor(x => x.SurgeonId)
                 .NotNull()
@@ -27,13 +31,6 @@ namespace Anesis.ApiService.Validators.Proposals
             RuleFor(x => x.SurgeryTime)
                 .NotNull()
                 .WithMessage("The Surgery Time field is required.");
-
-            When(x => x.Id > 0, () =>
-            {
-                RuleFor(x => x.Id)
-                    .MustAsync(ProposalExistedAsync)
-                    .WithMessage(x => $"Could not find proposal with ID #{x.Id}.");
-            });
         }
 
         private async Task<bool> ProposalExistedAsync(int id, CancellationToken cancellationToken)

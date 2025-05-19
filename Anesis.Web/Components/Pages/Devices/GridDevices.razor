@@ -87,7 +87,7 @@
     [Parameter]
     public EventCallback<int> OnOpenEditDeviceDialog { get; set; }
 
-    private string _gridStyle = "max-height: 600px;";
+    private string _gridStyle = "max-height: 620px;";
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
     private ResponseModel<List<DeviceWithCostViewModel>> _data = new();
@@ -101,7 +101,7 @@
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 600px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 620px;";
     }
 
     public async Task RefreshGridAsync()
@@ -142,7 +142,7 @@
 
         if (updateDeviceRes.Success)
         {
-            _notifyService.NotifySuccess("Update Device Information", $"Updated device #{id} successful");
+            _notifyService.NotifySuccess("Update Device Information", updateDeviceRes.Data);
             await RefreshGridAsync();
         }
         else

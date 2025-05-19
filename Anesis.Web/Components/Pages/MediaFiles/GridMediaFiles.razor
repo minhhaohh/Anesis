@@ -2,7 +2,7 @@
 @inject DialogService _dialogService
 @inject NotificationService _notifyService
 
-<RadzenDataGrid @ref="_grid" TItem="MediaFileViewModel" IsLoading=_isLoading
+<RadzenDataGrid @ref="_grid" TItem="MediaFileViewModel" IsLoading="_isLoading"
                 Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"

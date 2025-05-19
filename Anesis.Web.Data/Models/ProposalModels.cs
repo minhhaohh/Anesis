@@ -1,4 +1,5 @@
-﻿using Anesis.Web.Data.DTO;
+﻿using Anesis.Shared.Constants;
+using Anesis.Web.Data.DTO;
 
 namespace Anesis.Web.Data.Models
 {
@@ -94,15 +95,11 @@ namespace Anesis.Web.Data.Models
 
         public string ReviewerNotes { get; set; }
 
-        public bool IsReviewer { get; set; }
-
         public string ScheduledBy { get; set; }
 
         public DateTime? SurgeryDate { get; set; }
 
         public TimeSpan? SurgeryTime { get; set; }
-
-        public string SurgeryTimeStr { get; set; }
 
         public int? SurgeonId { get; set; }
 
@@ -121,18 +118,6 @@ namespace Anesis.Web.Data.Models
         public DateTime UpdatedDate { get; set; }
 
         public string Notes { get; set; }
-
-        public bool CanEdit { get; set; }
-
-        public bool CanCancel { get; set; }
-
-        public bool CanReview { get; set; }
-
-        public bool CanMarkAsOrdered { get; set; }
-
-        public bool CanSchedule { get; set; }
-
-        public bool CanMarkAsCompleted { get; set; }
 
         public ProposalEditModel ToEditModel()
         {
@@ -153,17 +138,6 @@ namespace Anesis.Web.Data.Models
                 DiagnosisCode = DiagnosisCode,
                 ReviewerId = ReviewerId,
                 Notes = Notes
-            };
-        }
-
-        public ProposalReviewModel ToReviewModel()
-        {
-            return new ProposalReviewModel()
-            {
-                Id = Id,
-                ProcedureId = ProcedureId,
-                DiagnosisCode = DiagnosisCode,
-                ReviewerNotes = ReviewerNotes
             };
         }
     }
@@ -212,5 +186,31 @@ namespace Anesis.Web.Data.Models
         public string DiagnosisCode { get; set; }
 
         public string ReviewerNotes { get; set; }
+
+        public bool IsApproved { get; set; }
+    }
+
+    public class ProposalScheduleSurgeryModel
+    {
+        public int Id { get; set; }
+
+        public DateTime? SurgeryDate { get; set; }
+
+        public TimeSpan? SurgeryTime { get; set; }
+
+        public int? SurgeonId { get; set; }
+
+        public int? SurgeryLocationId { get; set; }
+
+        public string Notes { get; set; }
+    }
+
+    public class ProposalSetStatusModel
+    {
+        public int Id { get; set; }
+
+        public int Status { get; set; }
+
+        public string Reason { get; set; }
     }
 }

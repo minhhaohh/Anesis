@@ -85,7 +85,7 @@
                                                        Style="width: 100%; height: 34px;" Disabled />
                                     </ChildContent>
                                     <End>
-                                        <RadzenUpload Url="" Name="ScannedFileName" Icon="upload" ChooseText=""
+                                        <RadzenUpload Name="ScannedFileName" Icon="upload" ChooseText=""
                                                       Style="width: 100%;" class="custom-upload-input" />
                                     </End>
                                 </RadzenFormField>
@@ -147,11 +147,13 @@
                                         {
                                             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger"
                                                           Icon="delete" Style="height: 76px;"
-                                                          Click="RemoveAllSurgeryCases" />
+                                                          Click="RemoveAllSurgeryCases" 
+                                                          title="Remove all selected surgery cases"/>
                                         }
                                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary"
                                                       Icon="more_vert" Style="height: 76px;"
-                                                      Click="OpenSelectSurgeryCasesAsync" />
+                                                      Click="OpenSelectSurgeryCasesAsync" 
+                                                      title="Open select surgery cases dialog" />
                                     </End>
                                 </RadzenFormField>
                             </RadzenColumn>

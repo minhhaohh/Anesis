@@ -1,7 +1,8 @@
 ﻿<RadzenTemplateForm TItem="SurgeryCaseFilterModel" Data="FilterModel" Submit="FilterGridAsync">
     <RadzenFieldset Text="Filter Panel" AllowCollapse="true"
                     Collapse="async () => await ToggleFilterPanelAsync(true)"
-                    Expand="async () => await ToggleFilterPanelAsync(false)">
+                    Expand="async () => await ToggleFilterPanelAsync(false)"
+                    class="custom-fieldset">
         <RadzenRow>
             <RadzenColumn Size="12" SizeMD="2">
                 <RadzenStack Gap="0.5rem">

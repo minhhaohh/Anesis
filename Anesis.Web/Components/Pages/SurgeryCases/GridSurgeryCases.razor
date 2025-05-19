@@ -2,7 +2,7 @@
 @inject DialogService _dialogService
 @inject NotificationService _notifyService
 
-<RadzenDataGrid @ref="_grid" TItem="SurgeryCaseViewModel" IsLoading=_isLoading
+<RadzenDataGrid @ref="_grid" TItem="SurgeryCaseViewModel" IsLoading="_isLoading" Density="Density.Compact"
                 Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
@@ -140,7 +140,7 @@
     [Parameter]
     public bool CollapsedFilterPanel { get; set; }
 
-    private string _gridStyle = "max-height: 472px;";
+    private string _gridStyle = "max-height: 500px;";
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
     private ResponseModel<List<SurgeryCaseViewModel>> _data = new();
@@ -152,7 +152,7 @@
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 472px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 500px;";
     }
 
     public async Task RefreshGridAsync()

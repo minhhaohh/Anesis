@@ -80,7 +80,7 @@ namespace Anesis.ApiService.Services.Services
         {
             await _changeLogRepo.InsertAsync(new GeneralChangeLog()
             {
-                EntityType = nameof(T),
+                EntityType = typeof(T).Name,
                 EntityId = entityId,
                 ActionName = actionName,
                 ActionTime = DateTime.Now,

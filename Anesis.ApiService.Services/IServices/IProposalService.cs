@@ -1,4 +1,5 @@
 ﻿using Anesis.ApiService.Domain.DTOs.Common;
+using Anesis.ApiService.Domain.DTOs.GeneralChangeLogs;
 using Anesis.ApiService.Domain.DTOs.PotentialProcedures;
 using Anesis.Shared.Constants;
 
@@ -15,16 +16,20 @@ namespace Anesis.ApiService.Services.IServices
         Task<bool> CreateAsync(ProposalEditDto model, 
             CancellationToken cancellationToken = default);
 
-        Task<bool> UpdateAsync(int id, ProposalEditDto model, 
+        Task<bool> UpdateAsync(ProposalEditDto model, 
             CancellationToken cancellationToken = default);
 
-        Task<bool> ReviewAsync(int id, ProposalReviewDto model, 
+        Task<bool> ToggleFlagAsync(
+            FlagToggleDto model, CancellationToken cancellationToken = default);
+
+        Task<bool> ReviewAsync(ProposalReviewDto model, 
             CancellationToken cancellationToken = default);
 
-        Task<bool> SetStatusAsync(int id, PotentialProcedureStatus status, 
-            string reason = null, CancellationToken cancellationToken = default);
-
-        Task<bool> ScheduleSurgeryAsync(int id, ProposalScheduleDto model, 
+        Task<bool> ScheduleSurgeryAsync(ProposalScheduleSurgeryDto model, 
             CancellationToken cancellationToken = default);
+
+        Task<bool> SetStatusAsync(ProposalSetStatusDto model, CancellationToken cancellationToken = default);
+
+        Task<List<ChangeLogDto>> GetChangeLogsAsync(int id, CancellationToken cancellationToken = default);
     }
 }

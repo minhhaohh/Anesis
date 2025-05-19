@@ -1,7 +1,8 @@
-﻿<RadzenFieldset Text="Filter Panel" AllowCollapse="true"
-                Collapse="async () => await ToggleFilterPanelAsync(true)"
-                Expand="async () => await ToggleFilterPanelAsync(false)">
-    <RadzenTemplateForm TItem="InvoiceFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+﻿<RadzenTemplateForm TItem="InvoiceFilterModel" Data="FilterModel" Submit="FilterGridAsync">
+    <RadzenFieldset Text="Filter Panel" AllowCollapse="true"
+                    Collapse="async () => await ToggleFilterPanelAsync(true)"
+                    Expand="async () => await ToggleFilterPanelAsync(false)"
+                    class="custom-fieldset">
         <RadzenRow>
             <RadzenColumn Size="12" SizeMD="2">
                 <RadzenStack Gap="0.5rem">
@@ -95,12 +96,12 @@
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info"
                                   Text="Refresh" Icon="refresh" Click="RefreshGridAsync" />
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success"
-                                  Text="New" Icon="add" Click="OpenCreateInvoiceDialogAsync"/>
+                                  Text="New" Icon="add" Click="OpenCreateInvoiceDialogAsync" />
                 </RadzenStack>
             </RadzenColumn>
         </RadzenRow>
-    </RadzenTemplateForm>
-</RadzenFieldset>
+    </RadzenFieldset>
+</RadzenTemplateForm>
 
 @code {
     [Parameter]

@@ -16,6 +16,10 @@ html, body {
     text-decoration: none;
 }
 
+.custom-fieldset .rz-fieldset-content {
+    padding: 0.5rem !important;
+}
+
 .custom-input-group .rz-form-field-content {
     margin-block: 0 !important;
 }

@@ -55,7 +55,7 @@
         </RadzenFieldset>
     </RadzenTemplateForm>
 
-    <RadzenDataGrid @ref="_gridCaseCosts" TItem="CaseCostViewModel" IsLoading=_isLoading
+    <RadzenDataGrid @ref="_gridCaseCosts" TItem="CaseCostViewModel" IsLoading="_isLoading"
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                     PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"

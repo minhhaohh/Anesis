@@ -1,0 +1,152 @@
+﻿@inject IApiService _apiService
+@inject NotificationService _notifyService
+@inject DialogService _dialogService
+
+<RadzenTemplateForm TItem="ProposalScheduleSurgeryModel" Data="_scheduleModel" Submit="ScheduleSurgeryAsync">
+    <RadzenStack>
+        <RadzenFieldset Text="Proposal Information">
+            <RadzenStack Gap="1rem">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenText TextStyle="TextStyle.Subtitle2">Request</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        @{
+                            var requested = $"By: {ViewModel.ProposerName} - At: {ViewModel.CreatedDate.ToString("MM-dd-yyyy HH:mm")}";
+                        }
+                        <RadzenText TextStyle="TextStyle.Body2">@requested</RadzenText>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenText TextStyle="TextStyle.Subtitle2">Patient</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        @{
+                            var patientInfo = $"#{ViewModel.EcwChartNo} - {ViewModel.FirstName}, {ViewModel.LastName} - {ViewModel.Gender} - Dob: {ViewModel.Dob.ToString("MM/dd/yyyy")}";
+                        }
+                        <RadzenText TextStyle="TextStyle.Body2">@patientInfo</RadzenText>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenText TextStyle="TextStyle.Subtitle2">Procedure</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenText TextStyle="TextStyle.Body2">@ViewModel.ProcedureName</RadzenText>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+        <RadzenFieldset Text="Scheduling Options">
+            <RadzenStack Gap="1rem">
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Surgery Date" Component="SurgeryDate" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="_scheduleModel.SurgeryDate" Name="SurgeryDate"
+                                          AllowClear="true" AllowInput="false"
+                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Surgery Time" Component="SurgeryTime" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTimeSpanPicker @bind-Value="_scheduleModel.SurgeryTime" Name="SurgeryTime"
+                                              Min="BusinessStartTime" Max="BusinessEndTime"
+                                              AllowClear="true" ShowConfirmationButton="true" Placeholder="HH:mm:ss" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Surgeon" Component="SurgeonId" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="_scheduleModel.SurgeonId" Name="SurgeonId"
+                                        Data="ActiveDoctors" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Surgery Location" Component="SurgeryLocationId" class="rz-text-subtitle2 required-near" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="_scheduleModel.SurgeryLocationId" Name="SurgeryLocationId"
+                                        Data="ActiveAscLocations" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---Select---" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextArea @bind-Value="_scheduleModel.Notes" Name="Notes" Rows="3" Style="width: 100%" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
+            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
+                          Text="Save" Icon="save" />
+            <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
+                          Text="Close" Click="() => _dialogService.Close()" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter]
+    public ProposalViewModel ViewModel { get; set; }
+    [Parameter]
+    public TimeSpan BusinessStartTime { get; set; }
+    [Parameter]
+    public TimeSpan BusinessEndTime { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveAscLocations { get; set; }
+    [Parameter]
+    public Dictionary<int, string> ActiveDoctors { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshGrid { get; set; }
+
+    private ProposalScheduleSurgeryModel _scheduleModel = new();
+
+    // OVERRIDE METHODS
+    protected override void OnParametersSet()
+    {
+        _scheduleModel.Id = ViewModel.Id;
+        _scheduleModel.SurgeryDate = ViewModel.SurgeryDate;
+        _scheduleModel.SurgeryTime = ViewModel.SurgeryTime;
+        _scheduleModel.SurgeonId = ViewModel.SurgeonId;
+        _scheduleModel.SurgeryLocationId = ViewModel.SurgeryLocationId;
+    }
+
+    // SUPPORT METHODS
+    public async Task ScheduleSurgeryAsync(ProposalScheduleSurgeryModel scheduleModel)
+    {
+        var scheduleRes = await _apiService.ScheduleSurgeryAsync(scheduleModel);
+
+        if (scheduleRes.Success)
+        {
+            _notifyService.NotifySuccess("Schedule Surgery", scheduleRes.Data);
+            _dialogService.Close();
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Schedule Surgery", scheduleRes.Messages);
+        }
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        await OnRefreshGrid.InvokeAsync();
+    }
+}

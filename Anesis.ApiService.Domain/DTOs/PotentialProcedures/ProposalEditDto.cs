@@ -1,5 +1,6 @@
 ﻿using Anesis.ApiService.Domain.Entities;
 using Anesis.Shared.Constants;
+using Anesis.Shared.Extensions;
 
 namespace Anesis.ApiService.Domain.DTOs.PotentialProcedures
 {
@@ -67,6 +68,32 @@ namespace Anesis.ApiService.Domain.DTOs.PotentialProcedures
             proposal.UpdatedDate = DateTime.Now;
             proposal.UpdatedBy = "haotm";
             proposal.Notes = Notes;
+        }
+
+        public string GetModifiedFields(PotentialProcedure proposal)
+        {
+            var fields = new List<string>();
+
+            if (PatientId != proposal.PatientId)
+                fields.Add(nameof(proposal.PatientId));
+            if (AppointmentDate != proposal.AppointmentDate)
+                fields.Add(nameof(proposal.AppointmentDate));
+            if (ProviderId != proposal.ProviderId)
+                fields.Add(nameof(proposal.ProviderId));
+            if (LocationId != proposal.LocationId)
+                fields.Add(nameof(proposal.LocationId));
+            if (ProcedureId != proposal.ProcedureId)
+                fields.Add(nameof(proposal.ProcedureId));
+            if (ChartNotePosted != proposal.ChartNotePosted)
+                fields.Add(nameof(proposal.ChartNotePosted));
+            if (DiagnosisCode != proposal.DiagnosisCode)
+                fields.Add(nameof(proposal.DiagnosisCode));
+            if (ReviewerId != proposal.ReviewerId)
+                fields.Add(nameof(proposal.ReviewerId));
+            if (Notes != proposal.Notes)
+                fields.Add(nameof(proposal.Notes));
+
+            return fields.StrJoin(",");
         }
     }
 }
