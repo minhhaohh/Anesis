@@ -3,6 +3,8 @@
 @inject DialogService _dialogService
 
 <RadzenStack>
+    <SurgeryCaseInfo ViewModel="ViewModel" />
+
     <RadzenTemplateForm TItem="CaseCptCodeAddModel" Data="_addCaseCptCodeModel" Submit="AddCaseCptCodeAsync">
         <RadzenFieldset Text="Add CPT Code">
             <RadzenRow>
@@ -41,7 +43,7 @@
     <RadzenDataGrid @ref="_gridCaseCptCodes" TItem="CaseCptCodeViewModel" IsLoading="_isLoading"
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                    PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                    PageSizeOptions="PageSize.All()" PageSize="_pageSize"
                     PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                     PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 400px;">
         <Columns>
@@ -60,8 +62,8 @@
                     </RadzenStack>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.WorkRvu)" Title="Work Rvu" Width="10%" />
-            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.RvuEffectiveDate)" Title="Rvu Date" FormatString="{0:MM-dd-yyyy}" Width="12%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.WorkRvu)" Title="Work RVU" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.RvuEffectiveDate)" Title="RVU Date" FormatString="{0:MM-dd-yyyy}" Width="12%" />
             <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.CmsAllowedAmt)" Title="CMS-Based Amt" FormatString="{0:C2}" Width="13%" />
             <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.ContractedPct)" Title="% Contract" FormatString="{0:P2}" Width="10%" />
             <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.AllowedAmtValue)" Title="Allowed Amt" FormatString="{0:C2}" Width="10%" />
@@ -86,7 +88,7 @@
 
 @code {
     [Parameter]
-    public int CaseId { get; set; }
+    public SurgeryCaseViewModel ViewModel { get; set; }
     [Parameter]
     public EventCallback OnRefreshGrid { get; set; }
 
@@ -102,8 +104,8 @@
 
     protected override void OnParametersSet()
     {
-        _filterCastCptCodeModel.CaseId = CaseId;
-        _addCaseCptCodeModel.CaseId = CaseId;
+        _filterCastCptCodeModel.CaseId = ViewModel.Id;
+        _addCaseCptCodeModel.CaseId = ViewModel.Id;
     }
 
     // SUPPORT METHODS
@@ -138,7 +140,7 @@
             await RefreshGridAsync();
 
             // Reset Add CPT Code Form
-            _addCaseCptCodeModel = new() { CaseId = CaseId };
+            _addCaseCptCodeModel = new() { CaseId = ViewModel.Id };
         }
     }
 
@@ -165,11 +167,11 @@
         }
     }
 
-    private async Task ConfirmDeleteCaseCptCodeAsync(int id, int caseId, int cptCode)
+    private async Task ConfirmDeleteCaseCptCodeAsync(int id, int caseId, string cptCode)
     {
         var result = await _dialogService.Confirm(
-            $"Do you really want to delete CPT code #<b>{cptCode}</b> from surgery case <b>#{caseId}</b>?",
-            $"Delete CPT Code From Surgery Case #{caseId}",
+            $"Do you really want to delete CPT code #{cptCode} from surgery case #{caseId}?",
+            "Delete CPT Code",
             new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
         if (result == null || result == false)
             return;

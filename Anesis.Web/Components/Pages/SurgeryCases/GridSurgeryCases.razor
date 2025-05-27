@@ -3,11 +3,11 @@
 @inject NotificationService _notifyService
 
 <RadzenDataGrid @ref="_grid" TItem="SurgeryCaseViewModel" IsLoading="_isLoading" Density="Density.Compact"
-                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
-                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
-                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
+Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+PageSizeOptions="PageSize.All()" PageSize="_pageSize"
+PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     <Columns>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.EcwChartNo)" Title="Patient" Width="10%">
@@ -39,8 +39,8 @@
                     if (surgeryCase.CanManageCptCodes)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
-                                      Text="Manage CPT Codes" Click="async () => await OpenManageCptCodesDialogAsync(surgeryCase.Id)"
-                                      title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")" />
+                        Text="Manage CPT Codes" Click="async () => await OpenManageCptCodesDialogAsync(surgeryCase)"
+                        title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")" />
                     }
                 }
                 else
@@ -48,7 +48,8 @@
                     @if (surgeryCase.CanManageCptCodes)
                     {
                         <a href="javascript:;" class="rz-color-primary text-underline-none"
-                           onclick="@(async () => await OpenManageCptCodesDialogAsync(surgeryCase.Id))">
+                        title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")"
+                        onclick="@(async () => await OpenManageCptCodesDialogAsync(surgeryCase))">
                             <ul>
                                 @foreach (var cptCode in surgeryCase.Codes)
                                 {
@@ -80,8 +81,8 @@
                     if (surgeryCase.CanManageDevices)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
-                                      Text="Manage Devices" Click="async () => await OpenManageDevicesDialogAsync(surgeryCase.Id)"
-                                      title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")" />
+                        Text="Manage Devices" Click="async () => await OpenManageDevicesDialogAsync(surgeryCase)"
+                        title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")" />
                     }
                 }
                 else
@@ -89,7 +90,8 @@
                     if (surgeryCase.CanManageDevices)
                     {
                         <a href="javascript:;" class="rz-color-primary text-underline-none"
-                           onclick="@(async () => await OpenManageDevicesDialogAsync(surgeryCase.Id))">
+                        title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")"
+                        onclick="@(async () => await OpenManageDevicesDialogAsync(surgeryCase))">
                             <ul>
                                 @foreach (var device in surgeryCase.Devices)
                                 {
@@ -114,19 +116,19 @@
             <Template Context="surgeryCase">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Size="ButtonSize.Small" Icon="manage_history"
-                                  Click="async () => await OpenSurgeryCaseChangeLogsDialogAsync(surgeryCase.Id)"
-                                  title="@($"View change logs of surgery case #{surgeryCase.Id}")" />
+                    Click="async () => await OpenSurgeryCaseChangeLogsDialogAsync(surgeryCase.Id)"
+                    title="@($"View change logs of surgery case #{surgeryCase.Id}")" />
                     @if (surgeryCase.CanLinkInvoice)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Icon="link"
-                                      Click="async () => await OpenLinkInvoiceDialogAsync(surgeryCase.Id)"
-                                      title="@($"Link invoice for surgery case #{surgeryCase.Id}")" />
+                        Click="async () => await OpenLinkInvoiceDialogAsync(surgeryCase)"
+                        title="@($"Link invoice for surgery case #{surgeryCase.Id}")" />
                     }
                     @if (surgeryCase.CanEditCases)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Icon="check_circle"
-                                      Click="async () => await ConfirmCompleteSurgeryCaseAsync(surgeryCase.Id)"
-                                      title="@($"Mark surgery case #{surgeryCase.Id} as completed")" />
+                        Click="async () => await ConfirmAndSetCompletedSurgeryCaseAsync(surgeryCase)"
+                        title="@($"Mark surgery case #{surgeryCase.Id} as completed")" />
                     }
                 </RadzenStack>
             </Template>
@@ -182,10 +184,10 @@
         _isLoading = false;
     }
 
-    private async Task ConfirmCompleteSurgeryCaseAsync(int id)
+    private async Task ConfirmAndSetCompletedSurgeryCaseAsync(SurgeryCaseViewModel surgeryCase)
     {
-        var result = await _dialogService.Confirm(
-            $"Do you really want to mark surgery case <b>#{id}</b> as <b>completed<b>?", $"Update Surgery Case #{id}",
+        var confirmMessage = GetSetStatusConfirmMessage(surgeryCase, SurgeryCaseStatus.Completed);
+        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Surgery Case #{surgeryCase.Id}",
             new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
 
         if (result == null || result == false)
@@ -194,12 +196,12 @@
         }
     }
 
-    private async Task OpenManageCptCodesDialogAsync(int id)
+    private async Task OpenManageCptCodesDialogAsync(SurgeryCaseViewModel surgeryCase)
     {
-        var title = $"Manage CPT Codes For Surgery Case #{id}";
+        var title = $"Manage CPT Codes For Surgery Case #{surgeryCase.Id}";
         var paramsDic = new Dictionary<string, object>()
             {
-                { "CaseId", id },
+                { "ViewModel", surgeryCase },
                 { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
             };
         var options = new DialogOptions()
@@ -210,28 +212,12 @@
         await _dialogService.OpenAsync<ManageCptCodesForm>(title, paramsDic, options);
     }
 
-    private async Task OpenManageDevicesDialogAsync(int id)
+    private async Task OpenManageDevicesDialogAsync(SurgeryCaseViewModel surgeryCase)
     {
-        var surgeryCase = await GetSurgeryCaseByIdAsync(id);
-
-        if (surgeryCase == null)
-        {
-            return;
-        }
-
-        var linkInvoiceModel = new LinkInvoiceCaseModel()
-            {
-                CaseId = id,
-                InvoiceId = surgeryCase.PurchaseInvoiceId,
-                SeparateAmount = surgeryCase.InvoiceAmount
-            };
-        var title = $"Manage Devices For Surgery Case #{id}";
+        var title = $"Manage Devices For Surgery Case #{surgeryCase.Id}";
         var paramsDic = new Dictionary<string, object>()
             {
-                { "LinkInvoiceModel", linkInvoiceModel },
-                { "CaseId", id },
-                { "LocationId", surgeryCase.LocationId },
-                { "LocationName", surgeryCase.LocationName },
+                { "ViewModel", surgeryCase },
                 { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
             };
         var options = new DialogOptions()
@@ -242,23 +228,13 @@
         await _dialogService.OpenAsync<ManageDevicesForm>(title, paramsDic, options);
     }
 
-    private async Task OpenLinkInvoiceDialogAsync(int id)
+    private async Task OpenLinkInvoiceDialogAsync(SurgeryCaseViewModel surgeryCase)
     {
-        var surgeryCase = await GetSurgeryCaseByIdAsync(id);
-
-        if (surgeryCase == null)
-        {
-            return;
-        }
-
-        var linkInvoiceModel = surgeryCase.ToLinkInvoiceModel();
-        var title = $"Link Invoice To Surgery Case #{id}";
+        var title = $"Link Invoice To Surgery Case #{surgeryCase.Id}";
         var paramsDic = new Dictionary<string, object>()
             {
-                { "LinkInvoiceModel", linkInvoiceModel },
-                { "LocationId", surgeryCase.LocationId },
-                { "LocationName", surgeryCase.LocationName },
-                { "HasCloseButton", true },
+                { "ViewModel", surgeryCase },
+                { "IsDialog", true },
                 { "OnRefreshGrid", EventCallback.Factory.Create(this, RefreshGridAsync) },
             };
         var options = new DialogOptions()
@@ -290,6 +266,22 @@
             };
 
         await _dialogService.OpenAsync<ChangeLogHistory>(title, paramsDic, options);
+    }
+
+    private RenderFragment GetSetStatusConfirmMessage(SurgeryCaseViewModel surgeryCase, SurgeryCaseStatus status)
+    {
+        var statusColor = SurgeryCaseStatusColors.GetColorClass(status.ToString());
+
+        return __builder =>
+        {
+            <RadzenStack>
+                <SurgeryCaseInfo ViewModel="surgeryCase" />
+
+                <RadzenText TextStyle="TextStyle.Subtitle2" class="@statusColor">
+                    Do you really want to mark surgery case #@surgeryCase.Id as @status.ToString()?
+                </RadzenText>
+            </RadzenStack>
+        };
     }
 
     private async Task<SurgeryCaseViewModel> GetSurgeryCaseByIdAsync(int id)

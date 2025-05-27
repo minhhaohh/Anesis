@@ -4,40 +4,8 @@
 
 <RadzenTemplateForm TItem="ProposalScheduleSurgeryModel" Data="_scheduleModel" Submit="ScheduleSurgeryAsync">
     <RadzenStack>
-        <RadzenFieldset Text="Proposal Information">
-            <RadzenStack Gap="1rem">
-                <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">Request</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        @{
-                            var requested = $"By: {ViewModel.ProposerName} - At: {ViewModel.CreatedDate.ToString("MM-dd-yyyy HH:mm")}";
-                        }
-                        <RadzenText TextStyle="TextStyle.Body2">@requested</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
-                <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">Patient</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        @{
-                            var patientInfo = $"#{ViewModel.EcwChartNo} - {ViewModel.FirstName}, {ViewModel.LastName} - {ViewModel.Gender} - Dob: {ViewModel.Dob.ToString("MM/dd/yyyy")}";
-                        }
-                        <RadzenText TextStyle="TextStyle.Body2">@patientInfo</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
-                <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">Procedure</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Body2">@ViewModel.ProcedureName</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
-        </RadzenFieldset>
+        <ProposalInfo ViewModel="ViewModel" />
+
         <RadzenFieldset Text="Scheduling Options">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
@@ -92,6 +60,7 @@
                 </RadzenRow>
             </RadzenStack>
         </RadzenFieldset>
+
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                           Text="Save" Icon="save" />

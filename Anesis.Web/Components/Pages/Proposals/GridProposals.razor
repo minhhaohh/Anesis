@@ -3,11 +3,11 @@
 @inject NotificationService _notifyService
 
 <RadzenDataGrid @ref="_grid" TItem="ProposalViewModel" IsLoading="_isLoading" Density="Density.Compact"
-                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
-                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
-                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
+Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+PageSizeOptions="PageSize.All()" PageSize="_pageSize"
+PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     <Columns>
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.Id)" Title="#ID" Width="3%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(ProposalViewModel.EcwChartNo)" Title="Patient" Width="10%">
@@ -55,8 +55,8 @@
                 @if (proposal.RequestStatus == (int)PotentialProcedureStatus.Pending && proposal.ReviewerId > 0)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="rate_review"
-                                  Click="async () => await OpenReviewProposalDialogAsync(proposal.Id)"
-                                  title="@($"Review proposal #{proposal.Id}")" />
+                    Click="async () => await OpenReviewProposalDialogAsync(proposal.Id)"
+                    title="@($"Review proposal #{proposal.Id}")" />
                 }
             </Template>
         </RadzenDataGridColumn>
@@ -76,15 +76,15 @@
                 @if (proposal.RequestStatus == (int)PotentialProcedureStatus.Reviewed)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Size="ButtonSize.Small" Icon="task"
-                                  Click="async () => await ConfirmAndSetOrderedStatusAsync(proposal.Id)"
-                                  title="@($"Mark proposal #{proposal.Id} as ordered")" />
+                    Click="async () => await ConfirmAndSetOrderedStatusAsync(proposal.Id)"
+                    title="@($"Mark proposal #{proposal.Id} as ordered")" />
                 }
                 else if (proposal.RequestStatus == (int)PotentialProcedureStatus.Ordered
                 || proposal.RequestStatus == (int)PotentialProcedureStatus.Scheduled)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Icon="calendar_month"
-                                  Click="async() => await OpenScheduleSurgeryDialogAsync(proposal.Id)"
-                                  title="@($"Schedule surgery for proposal #{proposal.Id}")" />
+                    Click="async() => await OpenScheduleSurgeryDialogAsync(proposal.Id)"
+                    title="@($"Schedule surgery for proposal #{proposal.Id}")" />
                 }
             </Template>
         </RadzenDataGridColumn>
@@ -100,16 +100,16 @@
                 @if (proposal.ChartNotePosted)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.ExtraSmall"
-                                  Text="Posted" Icon="check" Disabled="!canToggleFlag"
-                                  Click="async() => await ToggleFlagAsync(proposal.Id, nameof(proposal.ChartNotePosted))"
-                                  title="The Patient's Chart Note is posted" />
+                    Text="Posted" Icon="check" Disabled="!canToggleFlag"
+                    Click="async() => await ToggleFlagAsync(proposal.Id, nameof(proposal.ChartNotePosted))"
+                    title="The Patient's Chart Note is posted" />
                 }
                 else
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall"
-                                  Text="Unposted" Icon="close" Disabled="!canToggleFlag"
-                                  Click="async() => await ToggleFlagAsync(proposal.Id, nameof(proposal.ChartNotePosted))"
-                                  title="The Patient's Chart Note is unposted" />
+                    Text="Unposted" Icon="close" Disabled="!canToggleFlag"
+                    Click="async() => await ToggleFlagAsync(proposal.Id, nameof(proposal.ChartNotePosted))"
+                    title="The Patient's Chart Note is unposted" />
                 }
             </Template>
         </RadzenDataGridColumn>
@@ -117,29 +117,29 @@
             <Template Context="proposal">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Size="ButtonSize.Small" Icon="manage_history"
-                                  Click="async() => await OpenInvoiceChangeLogsDialogAsync(proposal.Id)"
-                                  title="@($"View change logs of proposal #{proposal.Id}")" />
+                    Click="async() => await OpenInvoiceChangeLogsDialogAsync(proposal.Id)"
+                    title="@($"View change logs of proposal #{proposal.Id}")" />
                     @if (CanEditProposal
                     && (proposal.RequestStatus == (int)PotentialProcedureStatus.Pending
                     || proposal.RequestStatus == (int)PotentialProcedureStatus.Reviewed))
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="edit"
-                                      Click="async () => await OpenEditProposalDialogAsync(proposal.Id)"
-                                      title="@($"Edit proposal #{proposal.Id}")" />
+                        Click="async () => await OpenEditProposalDialogAsync(proposal.Id)"
+                        title="@($"Edit proposal #{proposal.Id}")" />
                     }
                     @if (proposal.RequestStatus == (int)PotentialProcedureStatus.Scheduled)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Icon="check_circle"
-                                      Click="async () => await ConfirmAndSetCompletedStatusAsync(proposal.Id)"
-                                      title="@($"Mark proposal #{proposal.Id} as completed")" />
+                        Click="async () => await ConfirmAndSetCompletedStatusAsync(proposal.Id)"
+                        title="@($"Mark proposal #{proposal.Id} as completed")" />
                     }
                     @if (proposal.RequestStatus != (int)PotentialProcedureStatus.Completed
                     && proposal.RequestStatus != (int)PotentialProcedureStatus.Cancelled)
                     {
 
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="cancel"
-                                      Click="async () => await OpenCancelProposalDialog(proposal.Id)"
-                                      title="@($"Cancel proposal #{proposal.Id}")" />
+                        Click="async () => await OpenCancelProposalDialog(proposal.Id)"
+                        title="@($"Cancel proposal #{proposal.Id}")" />
                     }
                 </RadzenStack>
             </Template>
@@ -334,9 +334,8 @@
             return;
         }
 
-        var result = await _dialogService.Confirm(
-            GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Ordered),
-            $"Set Status Of Proposal #{id}",
+        var confirmMessage = GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed);
+        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Proposal #{id}",
             new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
         if (result == null || result == false)
             return;
@@ -352,9 +351,8 @@
             return;
         }
 
-        var result = await _dialogService.Confirm(
-            GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed),
-            $"Set Status Of Proposal #{id}",
+        var confirmMessage = GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed);
+        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Proposal #{id}",
             new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
         if (result == null || result == false)
             return;
@@ -364,45 +362,15 @@
 
     private RenderFragment GetSetStatusConfirmMessage(ProposalViewModel proposal, PotentialProcedureStatus status)
     {
+        var statusColor = ProposalStatusColors.GetColorClass(status.ToString());
+
         return __builder =>
         {
             <RadzenStack>
-                <RadzenFieldset Text="Proposal Information">
-                    <RadzenStack Gap="1rem">
-                        <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenText TextStyle="TextStyle.Subtitle2">Request</RadzenText>
-                            </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
-                                @{
-                                    var requested = $"By: {proposal.ProposerName} - At: {proposal.CreatedDate.ToString("MM-dd-yyyy HH:mm")}";
-                                }
-                                <RadzenText TextStyle="TextStyle.Body2">@requested</RadzenText>
-                            </RadzenColumn>
-                        </RadzenRow>
-                        <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenText TextStyle="TextStyle.Subtitle2">Patient</RadzenText>
-                            </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
-                                @{
-                                    var patientInfo = $"#{proposal.EcwChartNo} - {proposal.FirstName}, {proposal.LastName} - {proposal.Gender} - Dob: {proposal.Dob.ToString("MM/dd/yyyy")}";
-                                }
-                                <RadzenText TextStyle="TextStyle.Body2">@patientInfo</RadzenText>
-                            </RadzenColumn>
-                        </RadzenRow>
-                        <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
-                                <RadzenText TextStyle="TextStyle.Subtitle2">Procedure</RadzenText>
-                            </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
-                                <RadzenText TextStyle="TextStyle.Body2">@proposal.ProcedureName</RadzenText>
-                            </RadzenColumn>
-                        </RadzenRow>
-                    </RadzenStack>
-                </RadzenFieldset>
-                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">
-                    Do you really want to mark this proposal as @status.ToString()?
+                <ProposalInfo ViewModel="proposal" />
+
+                <RadzenText TextStyle="TextStyle.Subtitle2" class="@statusColor">
+                    Do you really want to mark proposal #@proposal.Id as @status.ToString()?
                 </RadzenText>
             </RadzenStack>
         };

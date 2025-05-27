@@ -36,7 +36,7 @@
                                     Data="ProposalStatus" AllowClear="true"
                                     TextProperty="Value" ValueProperty="Key"
                                     Placeholder="---All---" Style="width: 100%;"
-                                    Change="(selectedValue) => { if ((int?)selectedValue > 0) { FilterModel.ExcludeCancelled = false; } }" />
+                                    Change="(selectedValue) => { if ((int?)selectedValue >= 0) { FilterModel.ExcludeCancelled = false; } }" />
                 </RadzenStack>
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="2">

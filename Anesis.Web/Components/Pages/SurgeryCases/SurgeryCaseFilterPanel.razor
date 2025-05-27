@@ -73,10 +73,9 @@
                                     TextProperty="Value" ValueProperty="Key"
                                     Placeholder="---All---" Style="width: 100%;" />
 
-                    <RadzenLabel Text="Linked Invoice No" Component="LinkedInvoiceNo" class="rz-text-subtitle2" />
-                    <RadzenTextBox @bind-Value="FilterModel.LinkedInvoiceNo" Name="LinkedInvoiceNo"
-                                   PlaceHolder="Linked Invoice No" Style="width: 100%;"
-                                   Change="(changedValue) => { if (changedValue.HasValue()) { FilterModel.LinkedInvoice = true; FilterModel.NotLinkInvoice = false; } }" />
+                    <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.VendorName" Name="VendorName"
+                                   PlaceHolder="Vendor Name" Style="width: 100%;" />
                 </RadzenStack>
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="2">

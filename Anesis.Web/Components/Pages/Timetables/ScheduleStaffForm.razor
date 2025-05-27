@@ -110,9 +110,38 @@
             </RadzenStack>
         </RadzenFieldset>
 
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.2rem">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenIcon Icon="error" IconColor="@Colors.Danger" />
+                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">Notice: </RadzenText>
+            </RadzenStack>
+            <ul class="rz-m-0">
+                <li>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        To create/delete schedules for multiple employees with the same date and time range, please select multiple employees in the Employee field.
+                    </RadzenText>
+                </li>
+                <li>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        To create/delete an employee schedule for a single day, please enter that date in the From Date field only, DO NOT ENTER value for the To Date field.
+                    </RadzenText>
+                </li>
+                <li>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        To create/delete employee schedules for multiple days, please enter a date range into the From Date, To Date fields and check the recurring days of the week (required).
+                    </RadzenText>
+                </li>
+            </ul>
+        </RadzenStack>
+
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                           Text="Save" Icon="save" />
+            @if (ShowDeleteButton)
+            {
+                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger"
+                              Text="Delete" Icon="delete" />
+            }
             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
                           Text="Close" Click="() => _dialogService.Close()" />
         </RadzenStack>
@@ -120,6 +149,8 @@
 </RadzenTemplateForm>
 
 @code {
+    [Parameter]
+    public bool ShowDeleteButton { get; set; }
     [Parameter]
     public StaffScheduleEditModel EditModel { get; set; }
     [Parameter]

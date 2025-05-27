@@ -1,4 +1,5 @@
-﻿using Anesis.ApiService.Domain.DTOs.Timetables;
+﻿using Anesis.ApiService.Domain.DTOs.GeneralChangeLogs;
+using Anesis.ApiService.Domain.DTOs.Timetables;
 
 namespace Anesis.ApiService.Services.IServices
 {
@@ -7,7 +8,9 @@ namespace Anesis.ApiService.Services.IServices
         Task<List<CalendarEventDto>> SearchStaffSchedulesAsync(
             StaffScheduleFilterDto filter, CancellationToken cancellationToken = default);
 
-        Task<CalendarEventDto> GetStaffScheduleEventByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<CalendarEventDto> GetStaffScheduleByIdAsync(int id, CancellationToken cancellationToken = default);
+
+        Task<List<ChangeLogDto>> GetStaffScheduleChangeLogsAsync(int id, CancellationToken cancellationToken = default);
 
         Task<bool> ScheduleEventsForStaffAsync(
             StaffScheduleEditDto model, CancellationToken cancellationToken = default);

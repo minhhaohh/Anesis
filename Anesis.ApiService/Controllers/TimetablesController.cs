@@ -34,11 +34,19 @@ namespace Anesis.ApiService.Controllers
         [HttpGet("StaffSchedules/{id}")]
         public async Task<Result> GetStaffScheduleById([FromRoute] int id)
         {
-            var scheduleEvent = await _timetableService.GetStaffScheduleEventByIdAsync(id);
+            var scheduleEvent = await _timetableService.GetStaffScheduleByIdAsync(id);
 
             return scheduleEvent == null
                 ? Result.Error($"Could not find schedule event with id #{id}.")
                 : Result.Ok(scheduleEvent);
+        }
+
+        [HttpGet("StaffSchedules/ChangeLogs/{id}")]
+        public async Task<Result> GetStaffScheduleChangeLogs([FromRoute] int id)
+        {
+            var changeLogs = await _timetableService.GetStaffScheduleChangeLogsAsync(id);
+
+            return Result.Ok(changeLogs);
         }
 
         [HttpPost("StaffSchedules")]

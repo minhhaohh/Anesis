@@ -59,7 +59,9 @@ namespace Anesis.ApiService.Validators.Timetables
             {
                 RuleFor(x => x.Id)
                     .MustAsync(EventExistedAsync)
-                    .WithMessage(x => $"Could not find schedule event with id #{x.Id}.");
+                    .WithMessage(x => $"Could not find schedule event with id #{x.Id}.")
+                    .MustAsync(EventInFutureAsync)
+                    .WithMessage(x => $"Could not change the past schedule.");
             });
         }
 
@@ -109,7 +111,7 @@ namespace Anesis.ApiService.Validators.Timetables
                 || model.FromDate == null
                 || model.FromDate.Value < DateTime.Now.Date
                 || model.ToDate == null
-                || model.ToDate.Value < model.FromDate.Value)
+                || model.ToDate.Value.Date <= model.FromDate.Value.Date)
             {
                 return true;
             }    
@@ -131,7 +133,14 @@ namespace Anesis.ApiService.Validators.Timetables
 
         private async Task<bool> EventExistedAsync(int? id, CancellationToken cancellationToken)
         {
-            return await _timetableService.GetStaffScheduleEventByIdAsync(id.Value, cancellationToken) != null;
+            return await _timetableService.GetStaffScheduleByIdAsync(id.Value, cancellationToken) != null;
+        }
+
+        private async Task<bool> EventInFutureAsync(int? id, CancellationToken token)
+        {
+            var evt = await _timetableService.GetStaffScheduleByIdAsync(id.Value);
+
+            return evt == null || evt.StartTime >= DateTime.Now.Date;
         }
     }
 }

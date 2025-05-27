@@ -13,35 +13,41 @@ namespace Anesis.ApiService.Validators.Timetables
         {
             _timetableService = timetableService;
 
-            RuleFor(x => x.LocationId)
-                .GreaterThan(0)
-                .WithMessage("Please select the Location field.");
-
-            RuleFor(x => x.EmployeeIds)
-                .Must(AtLeastOneEmployee)
-                .WithMessage("Please select at least 1 employee.");
-
-            RuleFor(x => x.FromDate)
-                .NotNull()
-                .WithMessage("The From Date field is required.")
-                .GreaterThanOrEqualTo(DateTime.Now.Date)
-                .WithMessage($"The From Date must be greater than or equal to current date {DateTime.Now.ToString("MM/dd/yyyy")}.");
-
-            RuleFor(x => x.ToDate)
-                .GreaterThanOrEqualTo(x => x.FromDate)
-                .WithMessage("The To Date must be greater than or equal to the From Date.");
-
-            RuleFor(x => x.DaysOfWeek)
-                .Must(AtLeastOneDay)
-                .WithMessage("Please select at least 1 day of week.")
-                .Must(HasDayInDateRange)
-                .WithMessage("No {DaysOfWeek} found between {FromDate} and {ToDate}.");
-
-            When(x => x.IsSingleEvent(), () =>
+            When(x => x.IsDeleteById(), () =>
             {
                 RuleFor(x => x.Id)
                     .MustAsync(EventExistedAsync)
-                    .WithMessage(x => $"Could not find schedule event with id #{x.Id}.");
+                    .WithMessage(x => $"Could not find schedule event with id #{x.Id}.")
+                    .MustAsync(EventInFutureAsync)
+                    .WithMessage(x => $"Could not change the past schedule.");
+            });
+
+            When(x => !x.IsDeleteById(), () =>
+            {
+
+                RuleFor(x => x.LocationId)
+                    .GreaterThan(0)
+                    .WithMessage("Please select the Location field.");
+
+                RuleFor(x => x.EmployeeIds)
+                    .Must(AtLeastOneEmployee)
+                    .WithMessage("Please select at least 1 employee.");
+
+                RuleFor(x => x.FromDate)
+                    .NotNull()
+                    .WithMessage("The From Date field is required.")
+                    .GreaterThanOrEqualTo(DateTime.Now.Date)
+                    .WithMessage($"The From Date must be greater than or equal to current date {DateTime.Now.ToString("MM/dd/yyyy")}.");
+
+                RuleFor(x => x.ToDate)
+                    .GreaterThanOrEqualTo(x => x.FromDate)
+                    .WithMessage("The To Date must be greater than or equal to the From Date.");
+
+                RuleFor(x => x.DaysOfWeek)
+                    .Must(AtLeastOneDay)
+                    .WithMessage("Please select at least 1 day of week.")
+                    .Must(HasDayInDateRange)
+                    .WithMessage("No {DaysOfWeek} found between {FromDate} and {ToDate}.");
             });
         }
 
@@ -83,9 +89,16 @@ namespace Anesis.ApiService.Validators.Timetables
             return false;
         }
 
-        private async Task<bool> EventExistedAsync(int id, CancellationToken cancellationToken)
+        private async Task<bool> EventExistedAsync(int? id, CancellationToken cancellationToken)
         {
-            return await _timetableService.GetStaffScheduleEventByIdAsync(id, cancellationToken) != null;
+            return await _timetableService.GetStaffScheduleByIdAsync(id.Value, cancellationToken) != null;
+        }
+
+        private async Task<bool> EventInFutureAsync(int? id, CancellationToken token)
+        {
+            var evt = await _timetableService.GetStaffScheduleByIdAsync(id.Value);
+
+            return evt == null || evt.StartTime >= DateTime.Now.Date;
         }
     }
 }

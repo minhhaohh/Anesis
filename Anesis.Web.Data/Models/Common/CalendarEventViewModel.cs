@@ -31,6 +31,8 @@ namespace Anesis.Web.Data.Models.Common
 
         public string ClassName { get; set; }
 
+        public int DisplayOrder { get; set; }
+
         public object ExtendedProps { get; set; }
 
         public string GetExtendProperty(string propName)

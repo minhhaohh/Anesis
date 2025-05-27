@@ -3,8 +3,9 @@
 @inject DialogService _dialogService
 
 <RadzenStack>
-    <LinkInvoiceForm LinkInvoiceModel="LinkInvoiceModel" LocationId="LocationId" LocationName="@LocationName"
-                     HasCloseButton="false" OnRefreshGrid="OnRefreshGrid" />
+    <SurgeryCaseInfo ViewModel="ViewModel" />
+
+    <LinkInvoiceForm ViewModel="ViewModel" IsDialog="false" OnRefreshGrid="OnRefreshGrid" />
 
     <RadzenTemplateForm TItem="CaseCostAddModel" Data="_addCastCostModel" Submit="AddCaseCostAsync">
         <RadzenFieldset Text="Add Device">
@@ -58,7 +59,7 @@
     <RadzenDataGrid @ref="_gridCaseCosts" TItem="CaseCostViewModel" IsLoading="_isLoading"
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                    PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                    PageSizeOptions="PageSize.All()" PageSize="_pageSize"
                     PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                     PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 400px;"
                     CellClick="OnCellClick">
@@ -122,13 +123,7 @@
 
 @code {
     [Parameter]
-    public LinkInvoiceCaseModel LinkInvoiceModel { get; set; }
-    [Parameter]
-    public int CaseId { get; set; }
-    [Parameter]
-    public int LocationId { get; set; }
-    [Parameter]
-    public string LocationName { get; set; }
+    public SurgeryCaseViewModel ViewModel { get; set; }
     [Parameter]
     public EventCallback OnRefreshGrid { get; set; }
 
@@ -149,8 +144,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _filterCastCostModel.CaseId = CaseId;
-        _addCastCostModel.CaseId = CaseId;
+        _filterCastCostModel.CaseId = ViewModel.Id;
+        _addCastCostModel.CaseId = ViewModel.Id;
 
         _activeDevices = (await _apiService.GetAllDevicesAsync(true)).Data;
     }
@@ -188,7 +183,7 @@
 
             // Reset Add Case Cost Form
             _selectedDevice = null;
-            _addCastCostModel = new() { CaseId = CaseId };
+            _addCastCostModel = new() { CaseId = ViewModel.Id };
         }
     }
 
@@ -235,8 +230,8 @@
     private async Task ConfirmDeleteCaseCostAsync(int id, int caseId, int deviceId)
     {
         var result = await _dialogService.Confirm(
-            $"Do you really want to delete device #<b>{deviceId}</b> from surgery case <b>#{caseId}</b>?",
-            $"Delete Device From Surgery Case #{caseId}",
+            $"Do you really want to delete device #{deviceId} from surgery case #{caseId}?",
+            "Delete Device & Cost",
             new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
         if (result == null || result == false)
             return;

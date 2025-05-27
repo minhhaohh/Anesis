@@ -48,7 +48,7 @@
 
     public static class StaffScheduleSaveOption
     {
-        public const string OverwriteExisting = "Overwrite existing schedule";
+        public const string OverwriteExisting = "Overwrite existing schedules";
 
         public const string IgnoreConflicts = "Ignore conflicts and try to schedule on available days";
 

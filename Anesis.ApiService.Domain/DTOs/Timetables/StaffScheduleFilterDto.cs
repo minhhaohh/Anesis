@@ -10,11 +10,11 @@ namespace Anesis.ApiService.Domain.DTOs.Timetables
 
         public string ResourceType { get; set; }
 
-        public List<int> ResourceIdList => ResourceIds.HasValue()
-            ? ResourceIds.Split(",").Select(int.Parse).ToList()
+        public List<int> ResourceIds => ResourceIdList.HasValue()
+            ? ResourceIdList.Split(",").Select(int.Parse).ToList()
             : new List<int>();
 
-        public string ResourceIds { get; set; }
+        public string ResourceIdList { get; set; }
 
         public List<int> HiddenDaysOfWeek
             => IsHiddenWeekends ? new List<int> { (int)DayOfWeek.Saturday, (int)DayOfWeek.Sunday } : new List<int>();

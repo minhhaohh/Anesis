@@ -9,7 +9,7 @@
         public const string Deleted = "Deleted";
         public const string Denied = "Denied";
 
-        public static string[] GetAll()
+        public static string[] All()
         {
             return [Pending, Approved, Used, Exception, Deleted, Denied];
         }
@@ -65,7 +65,7 @@
         public const string Biweekly = "BIWEEKLY";
         public const string Monthly = "MONTHLY";
 
-        public static string[] GetAll()
+        public static string[] All()
         {
             return [Biweekly, Monthly];
         }

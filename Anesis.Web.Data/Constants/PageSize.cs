@@ -16,7 +16,7 @@
             return Size_20;
         }
 
-        public static List<int> GetAll()
+        public static List<int> All()
         {
             return [Size_5, Size_10, Size_20, Size_50, Size_100, Size_200, Size_500, Size_1000];
         }

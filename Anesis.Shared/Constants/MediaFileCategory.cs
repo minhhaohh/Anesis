@@ -10,7 +10,7 @@
 
         public const string Announcement = "Announcement";
 
-        public static string[] GetAll()
+        public static string[] All()
         {
             return [BillingInvoice, SurgicalDoc, UserGuide, Announcement];
         }

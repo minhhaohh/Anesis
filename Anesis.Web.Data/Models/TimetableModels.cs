@@ -1,4 +1,5 @@
 ﻿using Anesis.Shared.Constants;
+using Anesis.Shared.Extensions;
 
 namespace Anesis.Web.Data.Models
 {
@@ -10,11 +11,11 @@ namespace Anesis.Web.Data.Models
 
         public string ResourceType { get; set; }
 
-        public List<int> ResourceIdList { get; set; }
+        public List<int> ResourceIds { get; set; }
 
-        public string ResourceIds 
-            => ResourceIdList != null && ResourceIdList.Count > 0
-                ? string.Join(",", ResourceIdList)
+        public string ResourceIdList 
+            => ResourceIds != null && ResourceIds.Count > 0
+                ? string.Join(",", ResourceIds)
                 : string.Empty;
 
         public List<int> HiddenDaysOfWeek 
@@ -41,33 +42,42 @@ namespace Anesis.Web.Data.Models
 
         public TimeSpan? EndTime { get; set; }
 
-        public string SaveOption { get; set; }
+        public string SaveOption { get; set; } = StaffScheduleSaveOption.ShowErrors;
 
         public string Notes { get; set; }
 
         public StaffScheduleEditModel()
         {
-            var weekends = new List<int> { (int)DayOfWeek.Saturday, (int)DayOfWeek.Sunday };
+            var weekends = new List<int>() { (int)DayOfWeek.Saturday, (int)DayOfWeek.Sunday };
             DaysOfWeek = typeof(DayOfWeek).GetEnumValues()
                 .Cast<int>()
                 .Where(x => !weekends.Contains(x))
                 .ToList();
-            SaveOption = StaffScheduleSaveOption.ShowErrors;
         }
     }
 
     public class StaffScheduleDeleteModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         public int? LocationId { get; set; }
 
-        public List<int> EmployeeIds { get; set; }
+        public string EmployeeIdList
+            => EmployeeIds.Count > 0
+                ? EmployeeIds.StrJoin(",")
+                : string.Empty;
+
+        public List<int> EmployeeIds { get; set; } = new();
 
         public DateTime? FromDate { get; set; }
 
         public DateTime? ToDate { get; set; }
 
-        public List<int> DaysOfWeek { get; set; }
+        public string DaysOfWeekList
+            => DaysOfWeek.Count > 0
+                ? DaysOfWeek.StrJoin(",")
+                : string.Empty;
+
+        public List<int> DaysOfWeek { get; set; } = new();
     }
 }

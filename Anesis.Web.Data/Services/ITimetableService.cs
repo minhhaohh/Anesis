@@ -11,6 +11,9 @@ namespace Anesis.Web.Data.Services
         Task<ResponseModel<CalendarEventViewModel>> GetStaffScheduleByIdAsync(
             int id, CancellationToken cancellationToken = default);
 
+        Task<ResponseModel<List<ChangeLogViewModel>>> GetStaffScheduleChangeLogsAsync(
+           int id, CancellationToken cancellationToken = default);
+
         Task<ResponseModel<string>> CreateStaffSchedulesAsync(
             StaffScheduleEditModel model, CancellationToken cancellationToken = default);
 

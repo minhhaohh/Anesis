@@ -131,52 +131,74 @@ function initTimelineByLocation(elementId, canScheduleStaff, settings) {
                 };
             },
             eventDidMount: function (info) {
-                //var id = info.event.id;
-                //var calendarDate = moment(info.event.start).format('MM/DD/YYYY');
-                //var startTime = moment(info.event.start).format('HH:mm');
-                //var endTime = moment(info.event.end).format('HH:mm');
-                //var locationId = info.event.resourceIds[0];
-                //// var locationName = locationResources.find(x => x.id == locationId).title;
-                //var locationName = 'Location Name';
-                //var title = info.event.title ?? '';
-                //var jobRole = info.event.extendedProps.jobRole ?? '';
-                //var notes = info.event.extendedProps.notes ?? '';
-                //var timeOffType = info.event.extendedProps.timeOffType ?? '';
+                var id = info.event.id;
 
-                //var isClinicClosed = info.event.extendedProps.isClinicClosed;
-                //var isHoliday = info.event.extendedProps.isHoliday;
-                //var isTimeOff = info.event.extendedProps.isTimeOff;
+                if (!id || id === '{select}') {
+                    return;
+                }
 
-                //var popoverContent = `<div>`
-                //    + (isTimeOff ? `<div>Time Off Type: ${timeOffType}</div>` : `<div>Location: ${locationName}</div>`)
-                //    + (isHoliday || isClinicClosed
-                //        ? `<div>Event: ${title}</div>`
-                //        : `<div>Employee: ${title}</div><div>Role: ${jobRole}</div>`)
-                //    + `<div>Notes: ${notes}</div>`
-                //    + (isClinicClosed || isHoliday || isTimeOff
-                //        ? ``
-                //        : `<div>`
-                //        + `<a href="#" class="btn btn-xs btn-flat btn-info" data-ajax-url="/Timetable/EventHistory/${id}" `
-                //        + `data-id="${id}" data-toggle="modal" data-backdrop="static" data-target="#event-history-dialog" data-title="Change history of ${title}'s schedule" `
-                //        + `data-bs-html="true" title="View change history of of ${title}'s schedule"><i class="fas fa-receipt"></i> Change History</a>`
-                //        + `</div>`)
-                //    + `</div>`;
+                var calendarDate = moment(info.event.start).format('MM/DD/YYYY');
+                var startTime = moment(info.event.start).format('HH:mm');
+                var endTime = moment(info.event.end).format('HH:mm');
+                var locationId = info.event.resourceIds[0];
+                var resources = timelineElement.timelineInstance.getOption('resources');
+                var locationName = resources.find(x => x.id == locationId).title;
+                var title = info.event.title ?? '';
+                var jobRole = info.event.extendedProps.jobRole ?? '';
+                var notes = info.event.extendedProps.notes ?? '';
+                var timeOffType = info.event.extendedProps.timeOffType ?? '';
 
-                //$(info.el).popover({
-                //    title: `${calendarDate} ${startTime} - ${endTime}`,
-                //    placement: 'auto',
-                //    animation: true,
-                //    delay: { "show": 300, "hide": 2000 },
-                //    html: true,
-                //    sanitize: false,
-                //    content: popoverContent,
-                //    trigger: 'hover'
-                //});
+                var eventType = info.event.extendedProps.eventType;
+
+                var isClinicClosed = eventType === "ClinicClosed";
+                var isHoliday = eventType === "Holiday";
+                var isTimeOff = eventType === "TimeOff";
+
+                var changeLogsButton = `<button type="button" title="View change logs of event #${id}" `
+                    + `class="rz-button rz-button-sm rz-variant-filled rz-base rz-shade-default" `
+                    + `onclick="viewEventChangeLogs(${id})">`
+                    + `<span class="rz-button-box">`
+                    + `<i class="notranslate rz-button-icon-left rzi">manage_history</i>`
+                    + `<span class="rz-button-text">Change Logs</span>`
+                    + `</span></button>`;
+
+                var deleteButton = `<button type="button" title="Delete event #${id}" `
+                    + `class="rz-button rz-button-sm rz-variant-filled rz-danger rz-shade-default" `
+                    + `onclick="deleteEvent(${id}, '${locationName}', '${title}', '${calendarDate}', '${startTime}', '${endTime}')">`
+                    + `<span class="rz-button-box">`
+                    + `<i class="notranslate rz-button-icon-left rzi">delete</i>`
+                    + `<span class="rz-button-text">Delete</span>`
+                    + `</span></button>`;
+
+                var popoverContent = `<div>`
+                    + (isTimeOff ? `<div>Time Off Type: <b>${timeOffType}</b></div>` : `<div>Location: <b>${locationName}</b></div>`)
+                    + (isHoliday || isClinicClosed
+                        ? `<div>Event: <b>${title}</b></div>`
+                        : `<div>Employee: <b>${title}</b></div><div>Role: <b>${jobRole}</b></div>`)
+                    + `<div>Notes: ${notes}</div>`
+                    + (isClinicClosed || isHoliday || isTimeOff
+                        ? ``
+                        : `<div class="rz-stack rz-display-flex rz-flex-row rz-align-items-normal rz-justify-content-normal rz-mt-2" style="--rz-gap:0.2rem;flex-wrap:nowrap;">`
+                        + changeLogsButton
+                        + deleteButton
+                        + `</div>`)
+                    + `</div>`;
+
+                new bootstrap.Popover(info.el, {
+                    title: `${calendarDate} ${startTime} - ${endTime}`,
+                    placement: 'auto',
+                    animation: true,
+                    delay: { "show": 300, "hide": 3000 },
+                    html: true,
+                    sanitize: false,
+                    content: popoverContent,
+                    trigger: 'hover'
+                });
             },
             eventClick: function (info) {
                 var eventType = info.event.extendedProps.eventType;
 
-                if (eventType === "ClinicClosed" || eventType === "Holiday" || eventType === "TimeOff" ) {
+                if (eventType === "ClinicClosed" || eventType === "Holiday" || eventType === "TimeOff") {
                     return;
                 }
 
@@ -326,6 +348,36 @@ function initTimelineByEmployee(elementId, canScheduleStaff, settings) {
                     html: content
                 };
             },
+            eventDidMount: function (info) {
+                var id = info.event.id;
+                var calendarDate = moment(info.event.start).format('MM/DD/YYYY');
+                var startTime = moment(info.event.start).format('HH:mm');
+                var endTime = moment(info.event.end).format('HH:mm');
+                var employeeId = info.event.resourceIds[0];
+                var resources = timelineElement.timelineInstance.getOption('resources');
+                var employeeName = resources.find(x => x.id == employeeId).title;
+                var title = info.event.title ?? '';
+                var isTimeOff = info.event.extendedProps.isTimeOff ?? '';
+                var jobRole = info.event.extendedProps.jobRole ?? '';
+                var notes = info.event.extendedProps.notes ?? '';
+
+                var popoverContent = `<div>`
+                    + (isTimeOff ? `<div>Time Off Type: ${title}</div>` : `<div>Location: ${title}</div>`)
+                    + `<div>Employee: ${employeeName}</div>`
+                    + `<div>Role: ${jobRole}</div>`
+                    + `<div>Notes: ${notes}</div>`
+                    + `</div>`;
+
+                new bootstrap.Popover(info.el, {
+                    title: `${calendarDate} ${startTime} - ${endTime}`,
+                    placement: 'auto',
+                    animation: true,
+                    delay: 300,
+                    html: true,
+                    content: popoverContent,
+                    trigger: 'hover'
+                });
+            },
         });
     }
 }
@@ -353,3 +405,36 @@ function refreshTimelineEvents(elementId) {
         timelineElement.timelineInstance.refetchEvents();
     }
 }
+
+function viewEventChangeLogs(id) {
+    window.dotNetHelper.invokeMethodAsync('OnViewEventChangeLogs', id)
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+function deleteEvent(id, locationName, employeeName, calendarDate, startTime, endTime) {
+    window.dotNetHelper.invokeMethodAsync('OnConfirmAndDeleteEvent', id, locationName, employeeName, calendarDate, startTime, endTime)
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+function hideAllPopovers() {
+    var popovers = document.querySelectorAll('article[aria-describedby]');
+    popovers.forEach(function (popover) {
+        var bsPopover = bootstrap.Popover.getInstance(popover);
+        if (bsPopover) {
+            bsPopover.hide();
+        }
+    });
+
+    var bsPopovers = document.querySelectorAll('div.popover');
+    bsPopovers.forEach(function (bsPopover) {
+        bsPopover.remove();
+    });
+}
+
+document.addEventListener('click', function (e) {
+    hideAllPopovers();
+});

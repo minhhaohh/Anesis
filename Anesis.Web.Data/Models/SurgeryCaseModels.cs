@@ -147,16 +147,6 @@ namespace Anesis.Web.Data.Models
         public List<string> Devices { get; set; }
 
         public List<string> Codes { get; set; }
-
-        public LinkInvoiceCaseModel ToLinkInvoiceModel()
-        {
-            return new LinkInvoiceCaseModel()
-            {
-                CaseId = Id,
-                InvoiceId = PurchaseInvoiceId,
-                SeparateAmount = InvoiceAmount
-            };
-        }
     }
 
     public class LinkInvoiceCaseModel
@@ -231,7 +221,7 @@ namespace Anesis.Web.Data.Models
 
         public int BillingCodeId { get; set; }
 
-        public int CptCode { get; set; }
+        public string CptCode { get; set; }
 
         public int RvuConfigId { get; set; }
 

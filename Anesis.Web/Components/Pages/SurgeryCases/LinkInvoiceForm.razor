@@ -2,20 +2,27 @@
 @inject NotificationService _notifyService
 @inject DialogService _dialogService
 
-<RadzenTemplateForm TItem="LinkInvoiceCaseModel" Data="LinkInvoiceModel" Submit="LinkInvoiceAsync">
+
+
+<RadzenTemplateForm TItem="LinkInvoiceCaseModel" Data="_linkInvoiceModel" Submit="LinkInvoiceAsync">
     <RadzenStack>
+        @if (IsDialog)
+        {
+            <SurgeryCaseInfo ViewModel="ViewModel" />
+        }
+
         <RadzenFieldset Text="Link Invoice">
             <RadzenRow>
                 <RadzenColumn Size="12" SizeMD="3">
                     <RadzenCheckBox @bind-Value="_limitedByLocation" TValue="bool" Name="LimitedByLocation"
-                                    Change="async (isChecked) => { await LoadDropdownInvoicesAsync(); }" />
-                    <RadzenLabel Text="@($"Limited by Location ({LocationName})")" Component="LimitedByLocation" class="rz-text-subtitle2" />
+                    Change="async (isChecked) => { await LoadDropdownInvoicesAsync(); }" />
+                    <RadzenLabel Text="@($"Limited by Location ({ViewModel.LocationName})")" Component="LimitedByLocation" class="rz-text-subtitle2" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="6">
                     <RadzenDropDown @bind-Value="_selectedInvoice" TValue="InvoiceViewModel" Name="SelectedInvoice"
-                                    Data="_invoices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
-                                    Placeholder="---Select---" Style="width: 100%;"
-                                    Change="SelectInvoiceLinkToCase">
+                    Data="_invoices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                    Placeholder="---Select---" Style="width: 100%;"
+                    Change="SelectInvoiceLinkToCase">
                         <ValueTemplate Context="invoice">
                             <div>
                                 #<strong>@invoice.InvoiceNo</strong> - @invoice.VendorName - @invoice.InvoiceDate.ToString("MM/dd/yyyy")
@@ -40,23 +47,24 @@
                             <RadzenIcon Icon="attach_money" />
                         </Start>
                         <ChildContent>
-                            <RadzenNumeric @bind-Value="LinkInvoiceModel.SeparateAmount" TValue="decimal" Name="SeparateAmount"
-                                           Disabled="@(_selectedInvoice != null && _selectedInvoice.Id > 0 && !_selectedInvoice.IsBulk)"
-                                           Style="width: 100%;" />
+                            <RadzenNumeric @bind-Value="_linkInvoiceModel.SeparateAmount" TValue="decimal" Name="SeparateAmount"
+                            Disabled="@(_selectedInvoice != null && _selectedInvoice.Id > 0 && !_selectedInvoice.IsBulk)"
+                            Style="width: 100%;" />
                         </ChildContent>
                         <End>
                             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
-                                          Text="Link" Icon="link" />
+                            Text="Link" Icon="link" />
                         </End>
                     </RadzenFormField>
                 </RadzenColumn>
             </RadzenRow>
         </RadzenFieldset>
-        @if (HasCloseButton)
+
+        @if (IsDialog)
         {
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
                 <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
-                              Text="Close" Click="() => _dialogService.Close()" />
+                Text="Close" Click="() => _dialogService.Close()" />
             </RadzenStack>
         }
     </RadzenStack>
@@ -64,16 +72,13 @@
 
 @code {
     [Parameter]
-    public LinkInvoiceCaseModel LinkInvoiceModel { get; set; }
+    public SurgeryCaseViewModel ViewModel { get; set; }
     [Parameter]
-    public int LocationId { get; set; }
-    [Parameter]
-    public string LocationName { get; set; }
-    [Parameter]
-    public bool HasCloseButton { get; set; }
+    public bool IsDialog { get; set; }
     [Parameter]
     public EventCallback OnRefreshGrid { get; set; }
 
+    private LinkInvoiceCaseModel _linkInvoiceModel = new();
     private int? _linkedInvoiceId = null;
     private bool _limitedByLocation = true;
     private InvoiceViewModel _selectedInvoice = null;
@@ -81,9 +86,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _linkedInvoiceId = LinkInvoiceModel.InvoiceId;
-        _selectedInvoice = LinkInvoiceModel.InvoiceId > 0
-            ? await GetInvoiceByIdAsync(LinkInvoiceModel.InvoiceId.Value)
+        _linkedInvoiceId = _linkInvoiceModel.InvoiceId;
+        _selectedInvoice = _linkInvoiceModel.InvoiceId > 0
+            ? await GetInvoiceByIdAsync(_linkInvoiceModel.InvoiceId.Value)
             : null;
 
         await LoadDropdownInvoicesAsync();
@@ -92,7 +97,7 @@
     // SUPPORT METHODS
     private async Task LoadDropdownInvoicesAsync()
     {
-        int? locationId = _limitedByLocation ? LocationId : null;
+        int? locationId = _limitedByLocation ? ViewModel.LocationId : null;
 
         var invoicesRes = await _apiService.GetAvailableInvoicesToLinkToCaseAsync(_linkedInvoiceId, locationId);
 
@@ -108,8 +113,8 @@
 
     private void SelectInvoiceLinkToCase()
     {
-        LinkInvoiceModel.InvoiceId = _selectedInvoice?.Id;
-        LinkInvoiceModel.SeparateAmount = _selectedInvoice != null && !_selectedInvoice.IsBulk ? _selectedInvoice.TotalAmount : 0;
+        _linkInvoiceModel.InvoiceId = _selectedInvoice?.Id;
+        _linkInvoiceModel.SeparateAmount = _selectedInvoice != null && !_selectedInvoice.IsBulk ? _selectedInvoice.TotalAmount : 0;
     }
 
     private async Task LinkInvoiceAsync(LinkInvoiceCaseModel linkInvoiceModel)
@@ -131,11 +136,11 @@
         {
             _notifyService.NotifySuccess($"Link Invoice To Surgery Case #{linkInvoiceModel.CaseId}", linkInvoiceRes.Data);
             await RefreshGridAsync();
-        }
 
-        if (HasCloseButton)
-        {
-            _dialogService.Close();
+            if (IsDialog)
+            {
+                _dialogService.Close();
+            }
         }
     }
 
@@ -152,11 +157,11 @@
         {
             _notifyService.NotifySuccess($"Unlink Invoice From Surgery Case #{caseId}", unlinkInvoiceRes.Data);
             await RefreshGridAsync();
-        }
 
-        if (HasCloseButton)
-        {
-            _dialogService.Close();
+            if (IsDialog)
+            {
+                _dialogService.Close();
+            }
         }
     }
 

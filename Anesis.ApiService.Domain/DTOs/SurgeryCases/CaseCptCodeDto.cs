@@ -35,7 +35,7 @@
         public string Notes { get; set; }
 
         public decimal ContractedPct
-            => AllowedAmountPct * 100;
+            => AllowedAmountPct % 100;
 
         public decimal AllowedAmtValue
             => CmsAllowedAmt * AllowedAmountPct * Quantity;

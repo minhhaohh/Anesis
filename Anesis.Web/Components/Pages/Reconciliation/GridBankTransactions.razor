@@ -17,7 +17,7 @@
                 Density="Density.Compact" SelectionMode="DataGridSelectionMode.Single"
                 Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize" PageNumbersCount="3"
+                PageSizeOptions="PageSize.All()" PageSize="_pageSize" PageNumbersCount="3"
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                 PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 620px;"
                 RowRender="OnRowRender" CellContextMenu="OnCellContextMenu" class="bank-grid">
@@ -43,11 +43,11 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Id)" Title="#ID" Width="10%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.PostDate)" Title="Date" FormatString="{0:MM-dd-yyyy}" Width="15%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Reference)" Title="Reference" Width="30%" />
+        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Reference)" Title="Reference" Width="25%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.TransactionType)" Title="Type" Width="12%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Debit)" Title="Debit" FormatString="{0:C2}" Width="12%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Credit)" Title="Credit" FormatString="{0:C2}" Width="12%" />
-        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Balance)" Title="Balance" FormatString="{0:C2}" Width="12%" />
+        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Debit)" Title="Debit" FormatString="{0:C2}" Width="15%" />
+        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Credit)" Title="Credit" FormatString="{0:C2}" Width="15%" />
+        <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Balance)" Title="Balance" FormatString="{0:C2}" Width="15%" />
         <RadzenDataGridColumn Property="@nameof(BankTransactionViewModel.Id)" Width="5%" Sortable="false">
             <Template Context="bank">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
@@ -146,7 +146,7 @@
         {
             args.Attributes.Add("reconciled", "reconciled");
         }
-        else if ((args.Data.Credit) < args.Data.Balance)
+        else if (args.Data.Credit < args.Data.Balance)
         {
             args.Attributes.Add("over-amount", "over-amount");
         }

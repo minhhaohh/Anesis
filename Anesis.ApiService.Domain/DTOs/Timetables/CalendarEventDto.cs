@@ -8,9 +8,13 @@
 
         public string Title { get; set; }
 
-        public string Start { get; set; }
+        public DateTime StartTime { get; set; }
 
-        public string End { get; set; }
+        public DateTime EndTime { get; set; }
+
+        public string Start => StartTime.ToString("s");
+
+        public string End => EndTime.ToString("s");
 
         public bool AllDay { get; set; }
 
@@ -25,6 +29,8 @@
         public bool? StartEditable { get; set; }
 
         public bool? DurationEditable { get; set; }
+
+        public int DisplayOrder { get; set; }
 
         public object ExtendedProps { get; set; }
     }

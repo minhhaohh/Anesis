@@ -8,7 +8,7 @@
         public const string PAC = "PA-C";
         public const string PLLC = "PLLC";
 
-        public static string[] GetAll()
+        public static string[] All()
         {
             return [ARNP, MD, PA, PAC];
         }

@@ -19,7 +19,7 @@
 
         public const string DefaultEventType = nameof(Employee);
 
-        public static Dictionary<string, string> GetAll()
+        public static Dictionary<string, string> All()
         {
             return new Dictionary<string, string>()
             {
@@ -36,7 +36,7 @@
 
         public static string GetColorClass(string eventType, string defaultEventType)
         {
-            return GetAll().GetValueOrDefault(eventType, GetAll().GetValueOrDefault(defaultEventType, ""));
+            return All().GetValueOrDefault(eventType, All().GetValueOrDefault(defaultEventType, ""));
         }
     }
 }

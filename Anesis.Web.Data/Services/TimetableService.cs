@@ -21,6 +21,13 @@ namespace Anesis.Web.Data.Services
                 $"{API_Timetables}/StaffSchedules/{id}", cancellationToken);
         }
 
+        public async Task<ResponseModel<List<ChangeLogViewModel>>> GetStaffScheduleChangeLogsAsync(
+           int id, CancellationToken cancellationToken = default)
+        {
+            return await _httpClient.GetFromJsonAsync<ResponseModel<List<ChangeLogViewModel>>>(
+                $"{API_Timetables}/StaffSchedules/ChangeLogs/{id}", cancellationToken);
+        }
+
         public async Task<ResponseModel<string>> CreateStaffSchedulesAsync(
             StaffScheduleEditModel model, CancellationToken cancellationToken = default)
         {

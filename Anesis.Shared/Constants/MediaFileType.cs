@@ -16,7 +16,7 @@
 
         public const string PNG = ".png";
 
-        public static string[] GetAll()
+        public static string[] All()
         {
             return [PDF, DOC, DOCX, XLXS, CSV, JPEG, PNG];
         }

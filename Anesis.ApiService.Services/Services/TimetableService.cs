@@ -1,4 +1,5 @@
 ﻿using Anesis.ApiService.Domain.Constants;
+using Anesis.ApiService.Domain.DTOs.GeneralChangeLogs;
 using Anesis.ApiService.Domain.DTOs.Timetables;
 using Anesis.ApiService.Domain.Entities;
 using Anesis.ApiService.Domain.Extensions;
@@ -21,10 +22,10 @@ namespace Anesis.ApiService.Services.Services
         private readonly IRepository<TimeClock> _timeClockRepo;
         private readonly IRepository<Employee> _employeeRepo;
 
-        public TimetableService(IMapper mapper, 
+        public TimetableService(IMapper mapper,
             IUnitOfWork unitOfWork,
             ILocationService locationService,
-            IChangeLogService changeLogService) 
+            IChangeLogService changeLogService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -38,175 +39,170 @@ namespace Anesis.ApiService.Services.Services
         public async Task<List<CalendarEventDto>> SearchStaffSchedulesAsync(
             StaffScheduleFilterDto filter, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var events = new List<CalendarEventDto>();
-                var doctorRoles = new[] { "PA", "PA-C", "Doctor", "ARNP" };
+            var events = new List<CalendarEventDto>();
+            var doctorRoles = new[] { "PA", "PA-C", "Doctor", "ARNP" };
 
-                if (filter.ResourceType == ScheduleResourceType.Employee)
+            if (filter.ResourceType == ScheduleResourceType.Employee)
+            {
+                // Calendar events view by employee
+                var employeeScheduleEvents = await SearchEmployeeSchedules(filter.FromDate, filter.ToDate, null, filter.ResourceIds, filter.HiddenDaysOfWeek)
+                    .Select(x => new CalendarEventDto()
+                    {
+                        Id = x.Id,
+                        ResourceId = x.EmployeeId.Value,
+                        Title = x.Location.ShortName,
+                        StartTime = x.CalendarDate.Add(x.StartTime),
+                        EndTime = x.CalendarDate.Add(x.EndTime),
+                        ExtendedProps = new
+                        {
+                            EventType = x.Employee.JobRoleId > 0 && x.Employee.JobRole.IsManager ? StaffScheduleEventType.Manager
+                                    : x.Employee.JobRoleId > 0 && doctorRoles.Contains(x.Employee.JobRole.Name) ? StaffScheduleEventType.Doctor
+                                    : StaffScheduleEventType.Employee,
+                            JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
+                            Notes = x.Notes,
+                        }
+                    })
+                    .ToListAsync(cancellationToken);
+
+                events.AddRange(employeeScheduleEvents);
+
+                // Time off events
+                var timeOffEvents = await SearchTimeOffDays(filter.FromDate, filter.ToDate, filter.ResourceIds)
+                    .Select(x => new CalendarEventDto()
+                    {
+                        Id = x.Id,
+                        ResourceId = x.EmployeeId,
+                        Title = $"{x.ClockType.ToString()} {x.TotalHours} hours",
+                        StartTime = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60) + ((x.StartTime ?? 800) % 100))),
+                        EndTime = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60)
+                            + ((x.StartTime ?? 800) % 100) + ((double)x.TotalHours * 60))),
+                        ExtendedProps = new
+                        {
+                            EventType = StaffScheduleEventType.TimeOff,
+                            JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
+                            Notes = x.Notes,
+                        }
+                    })
+                    .ToListAsync(cancellationToken);
+
+                events.AddRange(timeOffEvents);
+
+                // ResourceId = -1 => Holiday
+                if (filter.ResourceIds.Contains(-1))
                 {
-                    // Calendar events view by employee
-                    var employeeScheduleEvents = await SearchEmployeeSchedules(filter.FromDate, filter.ToDate, null, filter.ResourceIdList, filter.HiddenDaysOfWeek)
+                    var holidayEvents = await SearchHolidays(filter.FromDate, filter.ToDate)
                         .Select(x => new CalendarEventDto()
                         {
                             Id = x.Id,
-                            ResourceId = x.EmployeeId.Value,
-                            Title = x.Location.LongName,
-                            Start = x.CalendarDate.Add(x.StartTime).ToString("s"),
-                            End = x.CalendarDate.Add(x.EndTime).ToString("s"),
+                            ResourceId = -1,
+                            Title = x.Tooltip,
+                            StartTime = x.CalendarDate.Add(x.StartTime),
+                            EndTime = x.CalendarDate.Add(x.EndTime),
+                            Editable = false,
+                            StartEditable = false,
+                            DurationEditable = false,
                             ExtendedProps = new
                             {
-                                EventType = x.Employee.JobRoleId > 0 && doctorRoles.Contains(x.Employee.JobRole.Name) ? StaffScheduleEventType.Doctor
-                                    : x.Employee.JobRoleId > 0 && x.Employee.JobRole.IsManager ? StaffScheduleEventType.Manager
-                                        : StaffScheduleEventType.Employee,
-                                JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
+                                EventType = StaffScheduleEventType.Holiday,
                                 Notes = x.Notes,
                             }
                         })
                         .ToListAsync(cancellationToken);
 
-                    events.AddRange(employeeScheduleEvents);
+                    events.AddRange(holidayEvents);
+                }
+            }
+            else if (filter.ResourceType == ScheduleResourceType.Location)
+            {
 
+                // Calendar events view by location
+                var employeeScheduleEvents = await SearchEmployeeSchedules(filter.FromDate, filter.ToDate, filter.ResourceIds, null, filter.HiddenDaysOfWeek)
+                    .Select(x => new CalendarEventDto()
+                    {
+                        Id = x.Id,
+                        ResourceId = x.LocationId,
+                        Title = $"{x.Employee.FirstName} {x.Employee.LastName}",
+                        StartTime = x.CalendarDate.Add(x.StartTime),
+                        EndTime = x.CalendarDate.Add(x.EndTime),
+                        DisplayOrder = x.Employee.JobRoleId > 0 && x.Employee.JobRole.IsManager ? 1
+                            : x.Employee.JobRoleId > 0 && doctorRoles.Contains(x.Employee.JobRole.Name) ? 2
+                            : 3,
+                        ExtendedProps = new
+                        {
+                            EventType = x.Employee.JobRoleId > 0 && x.Employee.JobRole.IsManager ? StaffScheduleEventType.Manager
+                                    : x.Employee.JobRoleId > 0 && doctorRoles.Contains(x.Employee.JobRole.Name) ? StaffScheduleEventType.Doctor
+                                    : StaffScheduleEventType.Employee,
+                            EmployeeId = x.EmployeeId,
+                            JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
+                            Notes = x.Notes,
+                        }
+                    })
+                    .ToListAsync(cancellationToken);
+
+                events.AddRange(employeeScheduleEvents);
+
+                // Clinic closed events
+                var clinicClosedEvents = await SearchClinicClosedDays(filter.FromDate, filter.ToDate, filter.ResourceIds)
+                    .Select(x => new CalendarEventDto()
+                    {
+                        Id = x.Id,
+                        ResourceId = x.LocationId,
+                        Title = "Clinic Closed",
+                        StartTime = x.CalendarDate.Add(x.StartTime),
+                        EndTime = x.CalendarDate.Add(x.EndTime),
+                        Editable = false,
+                        StartEditable = false,
+                        DurationEditable = false,
+                        ExtendedProps = new
+                        {
+                            EventType = StaffScheduleEventType.ClinicClosed,
+                            Notes = x.Notes,
+                        }
+                    })
+                    .ToListAsync(cancellationToken);
+
+                events.AddRange(clinicClosedEvents);
+
+                // Holiday events
+                var holidays = await SearchHolidays(filter.FromDate, filter.ToDate).ToListAsync(cancellationToken);
+                var holidayEvents = CopyHolidayEventsForAllClinics(holidays, filter.ResourceIds);
+
+                events.AddRange(holidayEvents);
+
+                // ResourceId = 0 => Time Off
+                if (filter.ResourceIds.Contains(0))
+                {
                     // Time off events
-                    var timeOffEvents = await SearchTimeOffDays(filter.FromDate, filter.ToDate, filter.ResourceIdList)
+                    var timeOffEvents = await SearchTimeOffDays(filter.FromDate, filter.ToDate)
                         .Select(x => new CalendarEventDto()
                         {
                             Id = x.Id,
-                            ResourceId = x.EmployeeId,
-                            Title = $"{x.ClockType.ToString()} {x.TotalHours} hours",
-                            Start = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60) + ((x.StartTime ?? 800) % 100))).ToString("s"),
-                            End = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60)
-                                + ((x.StartTime ?? 800) % 100) + ((double)x.TotalHours * 60))).ToString("s"),
+                            ResourceId = 0,
+                            Title = $"{x.Employee.FirstName} {x.Employee.LastName}",
+                            StartTime = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60) + ((x.StartTime ?? 800) % 100))),
+                            EndTime = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60)
+                                + ((x.StartTime ?? 800) % 100) + ((double)x.TotalHours * 60))),
+                            Editable = false,
+                            StartEditable = false,
+                            DurationEditable = false,
                             ExtendedProps = new
                             {
                                 EventType = StaffScheduleEventType.TimeOff,
                                 JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
+                                TimeOffType = $"{x.ClockType.ToString()} {x.TotalHours} hours",
                                 Notes = x.Notes,
                             }
                         })
                         .ToListAsync(cancellationToken);
 
                     events.AddRange(timeOffEvents);
-
-                    // ResourceId = -1 => Holiday
-                    if (filter.ResourceIdList.Contains(-1))
-                    {
-                        var holidayEvents = await SearchHolidays(filter.FromDate, filter.ToDate)
-                            .Select(x => new CalendarEventDto()
-                            {
-                                Id = x.Id,
-                                ResourceId = -1,
-                                Title = x.Tooltip,
-                                Start = x.CalendarDate.Add(x.StartTime).ToString("s"),
-                                End = x.CalendarDate.Add(x.EndTime).ToString("s"),
-                                Editable = false,
-                                StartEditable = false,
-                                DurationEditable = false,
-                                ExtendedProps = new
-                                {
-                                    EventType = StaffScheduleEventType.Holiday,
-                                    Notes = x.Notes,
-                                }
-                            })
-                            .ToListAsync(cancellationToken);
-
-                        events.AddRange(holidayEvents);
-                    }
                 }
-                else if (filter.ResourceType == ScheduleResourceType.Location)
-                {
-
-                    // Calendar events view by location
-                    var employeeScheduleEvents = await SearchEmployeeSchedules(filter.FromDate, filter.ToDate, filter.ResourceIdList, null, filter.HiddenDaysOfWeek)
-                        .Select(x => new CalendarEventDto()
-                        {
-                            Id = x.Id,
-                            ResourceId = x.LocationId,
-                            Title = $"{x.Employee.FirstName} {x.Employee.LastName}",
-                            Start = x.CalendarDate.Add(x.StartTime).ToString("s"),
-                            End = x.CalendarDate.Add(x.EndTime).ToString("s"),
-                            ExtendedProps = new
-                            {
-                                EventType = x.Employee.JobRoleId > 0 && doctorRoles.Contains(x.Employee.JobRole.Name) ? StaffScheduleEventType.Doctor
-                                    : x.Employee.JobRoleId > 0 && x.Employee.JobRole.IsManager ? StaffScheduleEventType.Manager
-                                        : StaffScheduleEventType.Employee,
-                                EmployeeId = x.EmployeeId,
-                                JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
-                                Notes = x.Notes,
-                            }
-                        })
-                        .ToListAsync(cancellationToken);
-
-                    events.AddRange(employeeScheduleEvents);
-
-                    // Clinic closed events
-                    var clinicClosedEvents = await SearchClinicClosedDays(filter.FromDate, filter.ToDate, filter.ResourceIdList)
-                        .Select(x => new CalendarEventDto()
-                        {
-                            Id = x.Id,
-                            ResourceId = x.LocationId,
-                            Title = "Clinic Closed",
-                            Start = x.CalendarDate.Add(x.StartTime).ToString("s"),
-                            End = x.CalendarDate.Add(x.EndTime).ToString("s"),
-                            Editable = false,
-                            StartEditable = false,
-                            DurationEditable = false,
-                            ExtendedProps = new
-                            {
-                                EventType = StaffScheduleEventType.ClinicClosed,
-                                Notes = x.Notes,
-                            }
-                        })
-                        .ToListAsync(cancellationToken);
-
-                    events.AddRange(clinicClosedEvents);
-
-                    // Holiday events
-                    var holidays = await SearchHolidays(filter.FromDate, filter.ToDate).ToListAsync(cancellationToken);
-                    var holidayEvents = CopyHolidayEventsForAllClinics(holidays, filter.ResourceIdList);
-
-                    events.AddRange(holidayEvents);
-
-                    // ResourceId = 0 => Time Off
-                    if (filter.ResourceIdList.Contains(0))
-                    {
-                        // Time off events
-                        var timeOffEvents = await SearchTimeOffDays(filter.FromDate, filter.ToDate)
-                            .Select(x => new CalendarEventDto()
-                            {
-                                Id = x.Id,
-                                ResourceId = 0,
-                                Title = $"{x.Employee.FirstName} {x.Employee.LastName}",
-                                Start = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60) + ((x.StartTime ?? 800) % 100))).ToString("s"),
-                                End = x.ClockDate.Add(TimeSpan.FromMinutes(((x.StartTime ?? 800) / 100 * 60)
-                                    + ((x.StartTime ?? 800) % 100) + ((double)x.TotalHours * 60))).ToString("s"),
-                                Editable = false,
-                                StartEditable = false,
-                                DurationEditable = false,
-                                ExtendedProps = new
-                                {
-                                    EventType = StaffScheduleEventType.TimeOff,
-                                    JobRole = x.Employee.JobRoleId > 0 ? x.Employee.JobRole.Name : "",
-                                    TimeOffType = $"{x.ClockType.ToString()} {x.TotalHours} hours",
-                                    Notes = x.Notes,
-                                }
-                            })
-                            .ToListAsync(cancellationToken);
-
-                        events.AddRange(timeOffEvents);
-                    }
-                }
-
-                return events;
             }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
+            return events.OrderBy(x => x.Start).ThenBy(x => x.DisplayOrder).ToList();
         }
 
-        public async Task<CalendarEventDto> GetStaffScheduleEventByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<CalendarEventDto> GetStaffScheduleByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var scheduleEvent = await FindByTypeByIdAsync(ScheduleEventType.StaffSchedule, id, cancellationToken);
 
@@ -219,13 +215,18 @@ namespace Anesis.ApiService.Services.Services
             {
                 Id = scheduleEvent.Id,
                 ResourceId = scheduleEvent.LocationId,
-                Start = scheduleEvent.CalendarDate.Add(scheduleEvent.StartTime).ToString("s"),
-                End = scheduleEvent.CalendarDate.Add(scheduleEvent.EndTime).ToString("s"),
+                StartTime = scheduleEvent.CalendarDate.Add(scheduleEvent.StartTime),
+                EndTime = scheduleEvent.CalendarDate.Add(scheduleEvent.EndTime),
                 ExtendedProps = new
                 {
                     EmployeeId = scheduleEvent.EmployeeId,
                 }
             };
+        }
+
+        public async Task<List<ChangeLogDto>> GetStaffScheduleChangeLogsAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _changeLogService.GetChangeLogsAsync<Timetable>(id, null, cancellationToken);
         }
 
         public async Task<bool> ScheduleEventsForStaffAsync(
@@ -338,7 +339,7 @@ namespace Anesis.ApiService.Services.Services
             {
                 var employee = employees.FirstOrDefault(x => x.Id == newEvent.EmployeeId);
 
-                var msg = $"Created new schedule event #{newEvent.Id.ToString()} for {employee.FirstName} {employee.LastName} at {location.LongName}"
+                var msg = $"Created new schedule event #{newEvent.Id.ToString()} for {employee.FirstName} {employee.LastName} at {location.ShortName}"
                     + $"from {newEvent.StartTime.ToString("hh\\:mm")} to {newEvent.EndTime.ToString("hh\\:mm")} on {newEvent.CalendarDate.ToString("MM/dd/yyyy")}.";
 
                 await _changeLogService.AddChangeLogAsync<Timetable>(newEvent.Id, "Create", newEvent.Notes,
@@ -351,9 +352,9 @@ namespace Anesis.ApiService.Services.Services
         public async Task<bool> DeleteStaffSchedulesAsync(
            StaffScheduleDeleteDto model, CancellationToken cancellationToken = default)
         {
-            if (model.IsSingleEvent())
+            if (model.IsDeleteById())
             {
-                return await DeleteStaffScheduleByIdAsync(model.Id, cancellationToken);
+                return await DeleteStaffScheduleByIdAsync(model.Id.Value, cancellationToken);
             }
             else
             {
@@ -475,7 +476,7 @@ namespace Anesis.ApiService.Services.Services
         {
             return await _timetableRepo.All()
                 .FirstOrDefaultAsync(x => x.Id == id && x.EventType == eventType, cancellationToken);
-        } 
+        }
 
         private IQueryable<TimeClock> SearchTimeOffDays(
             DateTime fromDate, DateTime? toDate, List<int> employeeIds = null)
@@ -530,7 +531,7 @@ namespace Anesis.ApiService.Services.Services
             if (holidays.Count == 0 || locationIds.Count == 0)
             {
                 return events;
-            }   
+            }
 
             foreach (var locationId in locationIds)
             {
@@ -545,8 +546,8 @@ namespace Anesis.ApiService.Services.Services
                         Id = x.Id,
                         ResourceId = locationId,
                         Title = x.Tooltip,
-                        Start = x.CalendarDate.Add(x.StartTime).ToString("s"),
-                        End = x.CalendarDate.Add(x.EndTime).ToString("s"),
+                        StartTime = x.CalendarDate.Add(x.StartTime),
+                        EndTime = x.CalendarDate.Add(x.EndTime),
                         Editable = false,
                         StartEditable = false,
                         DurationEditable = false,
@@ -569,7 +570,7 @@ namespace Anesis.ApiService.Services.Services
         {
             if (IsConflictEvent(clinicClosedEvents, checkDate, checkStartTime, checkEndTime))
             {
-                var locationName = clinicClosedEvents.FirstOrDefault()?.Location?.LongName;
+                var locationName = clinicClosedEvents.FirstOrDefault()?.Location?.ShortName;
                 return $"{locationName} clinic closed on {checkDate.ToString("MM/dd/yyyy")}.";
             }
 

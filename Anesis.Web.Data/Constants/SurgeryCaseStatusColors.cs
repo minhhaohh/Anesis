@@ -6,7 +6,7 @@
         public const string Completed = "rz-color-success";
         public const string Cancelled = "rz-color-danger";
 
-        public static Dictionary<string, string> GetAll()
+        public static Dictionary<string, string> All()
         {
             return new Dictionary<string, string>() 
             {
@@ -18,7 +18,7 @@
 
         public static string GetColorClass(string status)
         {
-            return GetAll().GetValueOrDefault(status, "");
+            return All().GetValueOrDefault(status, "");
         }
     }
 }

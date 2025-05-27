@@ -7,7 +7,7 @@
                 Density="Density.Compact" SelectionMode="DataGridSelectionMode.Single"
                 Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize" PageNumbersCount="3"
+                PageSizeOptions="PageSize.All()" PageSize="_pageSize" PageNumbersCount="3"
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                 PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 620px;"
                 CellContextMenu="OnCellContextMenu" CellClick="OnCellClick">
@@ -266,15 +266,6 @@
                 </RadzenRow>
                 <RadzenText TextStyle="TextStyle.Body2">Do you really want to move batch transaction #<b>@batchTransaction.Id</b> to <b>Bel-Red (BSC)</b> instance?</RadzenText>
             </RadzenStack>
-            // <div>
-            //     <div>Post Date: <i>@batchTransaction.PostDate.ToString("MM/dd/yyyy")</i></div>
-            //     <div>Batch Owner: <i>@batchTransaction.BatchOwner</i></div>
-            //     <div>Document No: <i>@batchTransaction.DocNo</i></div>
-            //     <div>Payment From: <i>@batchTransaction.PaymentFrom</i></div>
-            //     <div>Payment Type: <i>@batchTransaction.PaymentType</i></div>
-            //     <div>Payment Amount: <i>@batchTransaction.PaymentAmount.ToString("C2")</i></div>
-            //     <p>Do you really want to move batch transaction #<b>@batchTransaction.Id</b> to <b>Bel-Red (BSC)</b> instance?</p>
-            // </div>
         };
     }
 

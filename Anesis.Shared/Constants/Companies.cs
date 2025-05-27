@@ -12,7 +12,7 @@
 
         public const string Philippines = "Philippines";
 
-        public static string[] GetAll()
+        public static string[] All()
         {
             return [Anesis, PainCare, ASC, BelRed, Philippines];
         }

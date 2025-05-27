@@ -1,5 +1,4 @@
-﻿using Anesis.ApiService.Domain.Constants;
-using Anesis.ApiService.Domain.Entities;
+﻿using Anesis.ApiService.Domain.Entities;
 using Anesis.Shared.Constants;
 using Anesis.Shared.Extensions;
 

@@ -1,0 +1,36 @@
+﻿<RadzenFieldset Text="Surgery Information">
+    <RadzenStack Gap="1rem">
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Subtitle2">Patient</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                @{
+                    var patientInfo = $"#{ViewModel.EcwChartNo} - {ViewModel.FirstName}, {ViewModel.LastName} - {ViewModel.Gender} - Dob: {ViewModel.Dob.ToString("MM/dd/yyyy")}";
+                }
+                <RadzenText TextStyle="TextStyle.Body2">@patientInfo</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Subtitle2">Procedure</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Body2">@ViewModel.ProcedureName</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText TextStyle="TextStyle.Subtitle2">Surgery By</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenText TextStyle="TextStyle.Body2">@ViewModel.PrimaryProviderName - @ViewModel.LocationName - @ViewModel.SurgeryDate.ToString("MM/dd/yyyy")</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public SurgeryCaseViewModel ViewModel { get; set; }
+}

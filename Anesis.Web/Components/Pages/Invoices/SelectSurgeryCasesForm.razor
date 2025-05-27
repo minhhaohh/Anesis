@@ -70,7 +70,7 @@
     <RadzenDataGrid @ref="_grid" TItem="SurgeryCaseViewModel" IsLoading="_isLoading"
                     Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                    PageSizeOptions="PageSize.GetAll()" PageSize="_pageSize"
+                    PageSizeOptions="PageSize.All()" PageSize="_pageSize"
                     PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                     PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         <Columns>

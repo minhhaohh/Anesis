@@ -24,7 +24,7 @@
     private InvoiceFilterModel _filterModel = new();
     private bool _collapsedFilterPanel = false;
     private List<CustomerViewModel> _activeVendors = new();
-    private List<string> _companies = Companies.GetAll().ToList();
+    private List<string> _companies = Companies.All().ToList();
     private Dictionary<int, string> _activeLocations = new();
     private Dictionary<int, string> _paymentMethods = typeof(PaymentMethod).ToDictionary();
     private Dictionary<int, string> _invoiceStatus = typeof(InvoiceStatus).ToDictionary();
