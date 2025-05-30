@@ -6,7 +6,7 @@
 <PageTitle>Potential Procedures</PageTitle>
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H5">Potential Procedures</RadzenText>
+    <HeaderBasedOnUrl />
 
     <ProposalFilterPanel @ref="_proposalFilterPanel" CanEditProposal="_canEditProposal" FilterModel="_filterModel"
                          CollapsedFilterPanel="_collapsedFilterPanel" ProposalStatus="_proposalStatus"
@@ -17,7 +17,7 @@
                          OnRefreshGrid="RefreshGridAsync" OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
 
     <GridProposals @ref="_gridProposals" CanEditProposal="_canEditProposal" FilterModel="_filterModel"
-        GeneralSettings="_generalSettings" ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
+                   GeneralSettings="_generalSettings" ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
                    ActiveProcedures="_activeProcedures" OnOpenEditProposalDialog="OpenEditProposalDialogAsync" />
 </RadzenStack>
 

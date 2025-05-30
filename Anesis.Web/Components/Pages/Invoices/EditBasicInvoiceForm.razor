@@ -7,10 +7,10 @@
         <RadzenFieldset Text="Invoice Information">
             <RadzenStack Gap="0.5rem">
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Vendor" Component="VendorId" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="EditBasicModel.VendorId" Name="VendorId" Data="ActiveVendors"
                                         AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
                                         TextProperty="@nameof(CustomerViewModel.CustomerName)" ValueProperty="@nameof(CustomerViewModel.Id)"
@@ -18,56 +18,56 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Invoice Number" Component="InvoiceNo" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextBox @bind-Value="EditBasicModel.InvoiceNo" Name="InvoiceNo" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Invoice Date" Component="InvoiceDate" class="rz-text-subtitle2 required-near" />
+                    <RadzenColumn Size="4">
+                        <RadzenLabel Text="Invoice Date" Component="Invoic eDate" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDatePicker @bind-Value="EditBasicModel.InvoiceDate" Name="InvoiceDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Due Date" Component="DueDate" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDatePicker @bind-Value="EditBasicModel.DueDate" Name="DueDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Purchase Order Number" Component="PurchaseOrderNo" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextBox @bind-Value="EditBasicModel.PurchaseOrderNo" Name="PurchaseOrderNo" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Company" Component="Company" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="EditBasicModel.Company" Name="Company"
                                         Data="Companies" AllowClear="true"
                                         Placeholder="---Select---" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="EditBasicModel.LocationId" Name="LocationId"
                                         Data="ActiveLocations" AllowClear="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -75,26 +75,26 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="EditBasicModel.Notes" Name="Notes" Rows="3" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Bulk Order" Component="IsBulk" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenCheckBox @bind-Value="EditBasicModel.IsBulk" Name="IsBulk" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Reason For Change" Component="UserComment" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="EditBasicModel.UserComment" Name="UserComment" Rows="3" Style="width: 100%;"
                                         Placeholder="Please provide the reason for change" />
                     </RadzenColumn>

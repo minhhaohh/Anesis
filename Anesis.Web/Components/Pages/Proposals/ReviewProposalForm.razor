@@ -9,10 +9,10 @@
         <RadzenFieldset Text="Reviewing Options">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Proposed Procedure" Component="ProcedureId" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="_reviewModel.ProcedureId" Name="ProcedureId" Data="ActiveProcedures"
                                         AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -20,18 +20,18 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Diagnosis Code" Component="DiagnosisCode" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextBox @bind-Value="_reviewModel.DiagnosisCode" Name="DiagnosisCode" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Reviewer Notes" Component="ReviewerNotes" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="_reviewModel.ReviewerNotes" Name="ReviewerNotes" Rows="3" Style="width: 100%" />
                     </RadzenColumn>
                 </RadzenRow>

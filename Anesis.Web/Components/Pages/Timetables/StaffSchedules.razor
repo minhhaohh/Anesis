@@ -7,7 +7,7 @@
 <PageTitle>Staff Schedules</PageTitle>
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H5">Staff Schedules</RadzenText>
+    <HeaderBasedOnUrl />
 
     <RadzenTabs RenderMode="TabRenderMode.Client">
         <Tabs>
@@ -268,35 +268,9 @@
         return __builder =>
         {
             <RadzenStack>
-                <RadzenRow RowGap="0">
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Date:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@calendarDate</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Time:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@startTime - @endTime</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Location:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@locationName</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Employee:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@employeeName</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
+                <EventInfo LocationName="@locationName" EmployeeName="@employeeName"
+                           CalendarDate="@calendarDate" StartTime="@startTime" EndTime="@endTime" />
+                
                 <RadzenText TextStyle="TextStyle.Body2" class="rz-color-danger">Do you really want to delete event #<b>@id</b>?</RadzenText>
             </RadzenStack>
         };

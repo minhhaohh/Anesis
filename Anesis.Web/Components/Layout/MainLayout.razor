@@ -3,34 +3,40 @@
 
 @* <AuthorizeView>
     <Authorized> *@
-        <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
-            <RadzenHeader>
-                <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="2">
-                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center">
-                            <RadzenSidebarToggle Click="ToggleNavMenu" Style="margin: 0;" />
-                        </RadzenStack>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenStack>
-
-                        </RadzenStack>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="2">
-                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center">
-                            <RadzenAppearanceToggle />
-                            <ProfileMenu />
-                        </RadzenStack>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenHeader>
-            <NavMenu Collapsed="_collapsed" />
-            <RadzenBody>
-                <div class="rz-p-4">
-                    @Body
-                </div>
-            </RadzenBody>
-        </RadzenLayout>
+<RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body' 'rz-sidebar rz-footer'">
+    <RadzenHeader>
+        <RadzenRow>
+            <RadzenColumn Size="3">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start"
+                             AlignItems="AlignItems.Center" Style="height: 100%;">
+                    <RadzenSidebarToggle Click="ToggleNavMenu" Style="height: 100%;" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="6">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center"
+                             AlignItems="AlignItems.Center" Style="height: 100%;">
+                    <span class="rz-color-info-dark rz-m-0" style="font-size: 30px; font-weight: 800; text-align: center;">
+                        ANESIS SPINE AND PAIN CARE
+                    </span>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size="3">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End"
+                             AlignItems="AlignItems.Center" Style="height: 100%;">
+                    <RadzenAppearanceToggle />
+                    <ProfileMenu />
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenHeader>
+    <NavMenu Expanded="_expanded" OnToggleNavMenu="ToggleNavMenu" />
+    <RadzenBody>
+        @Body
+    </RadzenBody>
+    <RadzenFooter>
+        <span><b>Copyright © 2016-@DateTime.Now.Year Anesis Spine and Pain Care.</b> All rights reserved.</span>
+    </RadzenFooter>
+</RadzenLayout>
 @*     </Authorized>
     <NotAuthorized>
         @{
@@ -44,11 +50,11 @@
 <RadzenComponents @rendermode="InteractiveServer" />
 
 @code {
-    private bool _collapsed = false;
+    private bool _expanded = true;
 
     // SUPPORT METHODS
     private void ToggleNavMenu()
     {
-        _collapsed = !_collapsed;
+        _expanded = !_expanded;
     }
 }

@@ -33,13 +33,13 @@
     <RadzenStack>
         <RadzenFieldset Text="Invoice Information">
             <RadzenRow Gap="4rem">
-                <RadzenColumn Size="12" SizeMD="6">
+                <RadzenColumn SizeMD="6">
                     <RadzenStack Gap="0.5rem">
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Vendor" Component="VendorId" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenDropDown @bind-Value="EditModel.VendorId" Name="VendorId" Data="ActiveVendors"
                                                 AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
                                                 TextProperty="@nameof(CustomerViewModel.CustomerName)" ValueProperty="@nameof(CustomerViewModel.Id)"
@@ -47,38 +47,38 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Invoice Number" Component="InvoiceNo" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenTextBox @bind-Value="EditModel.InvoiceNo" Name="InvoiceNo" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Invoice Date" Component="InvoiceDate" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenDatePicker @bind-Value="EditModel.InvoiceDate" Name="InvoiceDate"
                                                   AllowClear="true" AllowInput="false"
                                                   DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Due Date" Component="DueDate" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenDatePicker @bind-Value="EditModel.DueDate" Name="DueDate"
                                                   AllowClear="true" AllowInput="false"
                                                   DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Scanned File" Component="ScannedFileShortName" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <ChildContent>
                                         <RadzenTextBox @bind-Value="EditModel.ScannedFileShortName" Name="ScannedFileShortName"
@@ -92,28 +92,28 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Purchase Order Number" Component="PurchaseOrderNo" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenTextBox @bind-Value="EditModel.PurchaseOrderNo" Name="PurchaseOrderNo" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Company" Component="Company" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenDropDown @bind-Value="EditModel.Company" Name="Company"
                                                 Data="Companies" AllowClear="true"
                                                 Placeholder="---Select---" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenDropDown @bind-Value="EditModel.LocationId" Name="LocationId"
                                                 Data="ActiveLocations" AllowClear="true"
                                                 TextProperty="Value" ValueProperty="Key"
@@ -121,19 +121,19 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Comment" Component="UserComment" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenTextArea @bind-Value="EditModel.UserComment" Name="UserComment" Rows="3" Style="width: 100%;"
                                                 Placeholder="Add your comment here to provide more information to managers" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="For Surgery Cases" Component="LinkedCases" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <ChildContent>
                                         @{
@@ -159,22 +159,22 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Bulk Order" Component="IsBulk" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenCheckBox @bind-Value="EditModel.IsBulk" Name="IsBulk" />
                             </RadzenColumn>
                         </RadzenRow>
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="6">
+                <RadzenColumn SizeMD="6">
                     <RadzenStack Gap="0.5rem">
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Subtotal" Component="Subtotal" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -187,10 +187,10 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Tax Amount" Component="TaxAmount" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -203,10 +203,10 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Shipping Fee" Component="ShippingFee" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -219,10 +219,10 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Additional Charges" Component="AdditionalCharges" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -235,18 +235,18 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Additional Notes" Component="FeeNotes" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenTextBox @bind-Value="EditModel.FeeNotes" Name="FeeNotes" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Discount" Component="DiscountAmount" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -259,10 +259,10 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Total Amount" Component="TotalAmount" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -275,10 +275,10 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Amount To Pay" Component="AmountToPay" class="rz-text-subtitle2 required-near" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenFormField Style="width: 100%;" class="custom-input-group">
                                     <Start>
                                         <RadzenIcon Icon="attach_money" />
@@ -291,18 +291,18 @@
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenTextArea @bind-Value="EditModel.Notes" Name="Notes" Rows="3" Style="width: 100%;" />
                             </RadzenColumn>
                         </RadzenRow>
                         <RadzenRow>
-                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenColumn Size="4">
                                 <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2" />
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenColumn Size="8">
                                 <RadzenDropDown @bind-Value="EditModel.ReviewerId" Name="ReviewerId"
                                                 AllowClear="true" Data="InvoiceReviewers"
                                                 Placeholder="---Select---" Style="width: 100%;" />

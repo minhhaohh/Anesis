@@ -1,33 +1,50 @@
 ﻿<style>
-    .balance-summary .rz-fieldset-content {
-        padding: 6px;
+    /* SIZE LG */
+    @@media (min-width: 1280px) {
+        .balance-summary .rz-fieldset-content {
+            padding: 7px 4px;
+        }
+    }
+
+    /* SIZE MD */
+    @@media (min-width: 1024px) and (max-width: 1279px) {
+        .balance-summary .rz-fieldset-content {
+            padding: 33px 4px;
+        }
+    }
+
+    /* SIZE SM */
+    @@media (min-width: 768px) and (max-width: 1023px) {
+        .balance-summary .rz-fieldset-content {
+            padding: 7px 4px;
+        }
     }
 </style>
 
 <RadzenFieldset Text="Balance Summary" class="balance-summary">
     <RadzenRow>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn Size="4">
             <RadzenLabel Text="Total:" class="rz-text-subtitle2 rz-color-danger" />
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="8" class="rz-text-align-right">
+        <RadzenColumn Size="8" class="rz-text-align-right">
             <RadzenLabel Text="@BalanceSummaryModel.BankTotal.ToString("C2")" class="rz-text-subtitle2 rz-color-danger" />
         </RadzenColumn>
     </RadzenRow>
 
     <RadzenRow>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn Size="4">
             <RadzenLabel Text="Matched:" class="rz-text-subtitle2 rz-color-success" />
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="8" class="rz-text-align-right">
+        <RadzenColumn Size="8" class="rz-text-align-right">
             <RadzenLabel Text="@BalanceSummaryModel.MatchedTotal.ToString("C2")" class="rz-text-subtitle2 rz-color-success" />
         </RadzenColumn>
     </RadzenRow>
 
     <RadzenRow>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn Size="4">
             <RadzenLabel Text="Diff:" class="rz-text-subtitle2 rz-color-primary" />
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="8" class="rz-text-align-right">
+        <RadzenColumn Size="8" class="rz-text-align-right">
             <RadzenLabel Text="@BalanceSummaryModel.Different.ToString("C2")" class="rz-text-subtitle2 rz-color-primary" />
         </RadzenColumn>
     </RadzenRow>

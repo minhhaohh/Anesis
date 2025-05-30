@@ -10,7 +10,7 @@
     <RadzenTemplateForm TItem="CaseCostAddModel" Data="_addCastCostModel" Submit="AddCaseCostAsync">
         <RadzenFieldset Text="Add Device">
             <RadzenRow>
-                <RadzenColumn Size="12" SizeMD="5">
+                <RadzenColumn SizeSM="5" SizeXS="8">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Device" Component="SelectedDevice" class="rz-text-subtitle2 required-near" />
                         <RadzenDropDown @bind-Value="_selectedDevice" TValue="DeviceWithCostViewModel" Name="SelectedDevice"
@@ -30,13 +30,13 @@
                         </RadzenDropDown>
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeSM="2" SizeXS="4">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Quantity" Component="Quantity" class="rz-text-subtitle2 required-near" />
                         <RadzenNumeric @bind-Value="_addCastCostModel.Quantity" TValue="int?" Name="Quantity" Style="width: 100%;" />
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="5">
+                <RadzenColumn SizeSM="5" SizeXS="12">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                         <RadzenFormField Style="width: 100%;" class="custom-input-group">
@@ -70,11 +70,11 @@
             <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Quantity)" Title="Quantity" Width="10%">
                 <Template Context="caseCost">
                     <RadzenStack Orientation="Orientation.Horizontal">
-                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall"
                                       Shade="Shade.Lighter" Icon="remove"
                                       Click="async () => await ChangeCaseCostQuantityAsync(caseCost.Id, caseCost.Quantity - 1)" />
-                        <RadzenText Text="@caseCost.Quantity.ToString()" class="rz-m-0" />
-                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"
+                        <RadzenText TextStyle="TextStyle.Body2" Text="@caseCost.Quantity.ToString()" class="rz-m-0" />
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.ExtraSmall"
                                       Shade="Shade.Lighter" Icon="add"
                                       Click="async () => await ChangeCaseCostQuantityAsync(caseCost.Id, caseCost.Quantity + 1)" />
                     </RadzenStack>
@@ -82,9 +82,9 @@
             </RadzenDataGridColumn>
             <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.VendorCost)" Title="Vendor Cost" FormatString="{0:C2}" Width="10%" />
             <RadzenDataGridColumn TItem="CaseCostViewModel" Property="@nameof(CaseCostViewModel.AppliedCost)" Title="Applied Cost"
-                                  IsInEditMode="IsEditing" Width="10%">
+                                  IsInEditMode="IsEditing" Width="12%">
                 <Template Context="caseCost">
-                    <RadzenText Text="@caseCost.AppliedCost.ToString("C2")" />
+                    <span class="cell-editable">@caseCost.AppliedCost.ToString("C2")</span>
                 </Template>
                 <EditTemplate Context="caseCost">
                     <RadzenFormField Style="width: 100%;" class="custom-input-group">
@@ -100,9 +100,12 @@
                     </RadzenFormField>
                 </EditTemplate>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.EffectiveDate)" Title="Effective Date" FormatString="{0:MM-dd-yyyy}" Width="10%" />
-            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.UpdatedBy)" Title="Update By" Width="10%" />
-            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.UpdatedDate)" Title="Updated Date" FormatString="{0:MM-dd-yyyy}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.EffectiveDate)" Title="Eff. Date" FormatString="{0:MM-dd-yyyy}" Width="10%" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.UpdatedBy)" Title="Updated By" Width="15%">
+                <Template Context="caseCost">
+                    <span>@caseCost.UpdatedBy | @caseCost.UpdatedDate.ToString("MM-dd-yyyy")</span>
+                </Template>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Id)" Width="5%" Sortable="false">
                 <Template Context="caseCost">
                     <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">

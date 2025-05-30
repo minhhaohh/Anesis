@@ -4,24 +4,24 @@
 
 <RadzenStack>
     <RadzenRow RowGap="0">
-        <RadzenColumn Size="12" SizeMD="2">
+        <RadzenColumn SizeSM="2" Size="4">
             <RadzenText TextStyle="TextStyle.Body2">Bank Transaction ID:</RadzenText>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn SizeSM="4" Size="8">
             <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-danger">@ViewModel.Id</RadzenText>
         </RadzenColumn>
 
-        <RadzenColumn Size="12" SizeMD="2">
+        <RadzenColumn SizeSM="2" Size="4">
             <RadzenText TextStyle="TextStyle.Body2">Original Amount:</RadzenText>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn SizeSM="4" Size="8">
             <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.Credit?.ToString("C2")</RadzenText>
         </RadzenColumn>
 
-        <RadzenColumn Size="12" SizeMD="2">
+        <RadzenColumn SizeSM="2" Size="4">
             <RadzenText TextStyle="TextStyle.Body2" class="required-near">Split Amount:</RadzenText>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn SizeSM="4" Size="8">
             @if (Deposit != null)
             {
                 <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-success">@_splitAmount.ToString("C2")</RadzenText>
@@ -39,17 +39,17 @@
             }
         </RadzenColumn>
 
-        <RadzenColumn Size="12" SizeMD="2">
+        <RadzenColumn SizeSM="2" Size="4">
             <RadzenText TextStyle="TextStyle.Body2">Remaining Amount:</RadzenText>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="4">
+        <RadzenColumn SizeSM="4" Size="8">
             <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-color-primary">@_remainingAmount.ToString("C2")</RadzenText>
         </RadzenColumn>
 
-        <RadzenColumn Size="12" SizeMD="2">
+        <RadzenColumn SizeSM="2" Size="4">
             <RadzenText TextStyle="TextStyle.Body2" class="required-near">Notes:</RadzenText>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="10">
+        <RadzenColumn SizeSM="10" Size="8">
             <RadzenTextBox @bind-Value="_notes" Name="Notes" Style="width: 100%;" />
         </RadzenColumn>
     </RadzenRow>
@@ -57,80 +57,80 @@
     @if (Deposit != null)
     {
         <RadzenRow RowGap="0">
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Deposit ID:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.Id</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Status:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.Status</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Medical Record?:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@(Deposit.MedicalRecords ? "Yes" : "No")</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Deposit To:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.DepositTo</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Transaction ID:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.TransactionId</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Deposit Amount:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.DepositAmount?.ToString("C2")</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Deposited Date:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.DepositDate?.ToString("MM/dd/yyyy")</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Deposited By:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.DepositedBy</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Created Date:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.CreatedDate.ToString("MM/dd/yyyy HH:mm")</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Created By:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.CreatedBy</RadzenText>
             </RadzenColumn>
 
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeSM="2" Size="4">
                 <RadzenText TextStyle="TextStyle.Body2">Description:</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn SizeSM="4" Size="8">
                 <RadzenText TextStyle="TextStyle.Subtitle2">@Deposit.Description</RadzenText>
             </RadzenColumn>
         </RadzenRow>

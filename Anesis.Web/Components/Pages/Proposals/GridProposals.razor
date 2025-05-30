@@ -55,7 +55,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                 @if (proposal.RequestStatus == (int)PotentialProcedureStatus.Pending && proposal.ReviewerId > 0)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="rate_review"
-                    Click="async () => await OpenReviewProposalDialogAsync(proposal.Id)"
+                    Click="async () => await OpenReviewProposalDialogAsync(proposal)"
                     title="@($"Review proposal #{proposal.Id}")" />
                 }
             </Template>
@@ -76,14 +76,14 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                 @if (proposal.RequestStatus == (int)PotentialProcedureStatus.Reviewed)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Size="ButtonSize.Small" Icon="task"
-                    Click="async () => await ConfirmAndSetOrderedStatusAsync(proposal.Id)"
+                    Click="async () => await ConfirmAndSetOrderedStatusAsync(proposal)"
                     title="@($"Mark proposal #{proposal.Id} as ordered")" />
                 }
                 else if (proposal.RequestStatus == (int)PotentialProcedureStatus.Ordered
                 || proposal.RequestStatus == (int)PotentialProcedureStatus.Scheduled)
                 {
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Icon="calendar_month"
-                    Click="async() => await OpenScheduleSurgeryDialogAsync(proposal.Id)"
+                    Click="async() => await OpenScheduleSurgeryDialogAsync(proposal)"
                     title="@($"Schedule surgery for proposal #{proposal.Id}")" />
                 }
             </Template>
@@ -130,7 +130,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     @if (proposal.RequestStatus == (int)PotentialProcedureStatus.Scheduled)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Icon="check_circle"
-                        Click="async () => await ConfirmAndSetCompletedStatusAsync(proposal.Id)"
+                        Click="async () => await ConfirmAndSetCompletedStatusAsync(proposal)"
                         title="@($"Mark proposal #{proposal.Id} as completed")" />
                     }
                     @if (proposal.RequestStatus != (int)PotentialProcedureStatus.Completed
@@ -138,7 +138,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     {
 
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="cancel"
-                        Click="async () => await OpenCancelProposalDialog(proposal.Id)"
+                        Click="async () => await OpenCancelProposalDialog(proposal)"
                         title="@($"Cancel proposal #{proposal.Id}")" />
                     }
                 </RadzenStack>
@@ -230,15 +230,9 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         await OnOpenEditProposalDialog.InvokeAsync(id);
     }
 
-    private async Task OpenReviewProposalDialogAsync(int id)
+    private async Task OpenReviewProposalDialogAsync(ProposalViewModel proposal)
     {
-        var proposal = await GetProposalByIdAsync(id);
-        if (proposal == null)
-        {
-            return;
-        }
-
-        var title = $"Review Proposal #{id}";
+        var title = $"Review Proposal #{proposal.Id}";
         var paramsDic = new Dictionary<string, object>()
             {
                 { "ViewModel", proposal },
@@ -253,17 +247,11 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         await _dialogService.OpenAsync<ReviewProposalForm>(title, paramsDic, options);
     }
 
-    private async Task OpenScheduleSurgeryDialogAsync(int id)
+    private async Task OpenScheduleSurgeryDialogAsync(ProposalViewModel proposal)
     {
-        var proposal = await GetProposalByIdAsync(id);
-        if (proposal == null)
-        {
-            return;
-        }
-
         var businessStartTime = TimeSpan.Parse(GeneralSettings.BusinessStartTime);
         var businessEndTime = TimeSpan.Parse(GeneralSettings.BusinessEndTime);
-        var title = $"Schedule Surgery For Proposal #{id}";
+        var title = $"Schedule Surgery For Proposal #{proposal.Id}";
         var paramsDic = new Dictionary<string, object>()
             {
                 { "ViewModel", proposal },
@@ -281,15 +269,9 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         await _dialogService.OpenAsync<ScheduleSurgeryForm>(title, paramsDic, options);
     }
 
-    private async Task OpenCancelProposalDialog(int id)
+    private async Task OpenCancelProposalDialog(ProposalViewModel proposal)
     {
-        var proposal = await GetProposalByIdAsync(id);
-        if (proposal == null)
-        {
-            return;
-        }
-
-        var title = $"Cancel Proposal #{id}";
+        var title = $"Cancel Proposal #{proposal.Id}";
         var paramsDic = new Dictionary<string, object>()
             {
                 { "ViewModel", proposal },
@@ -326,38 +308,32 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         await _dialogService.OpenAsync<ChangeLogHistory>(title, paramsDic, options);
     }
 
-    private async Task ConfirmAndSetOrderedStatusAsync(int id)
+    private async Task ConfirmAndSetOrderedStatusAsync(ProposalViewModel proposal)
     {
-        var proposal = await GetProposalByIdAsync(id);
-        if (proposal == null)
+        var confirmMessage = GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed);
+        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Proposal #{proposal.Id}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+        if (result == null || result == false)
         {
             return;
         }
 
-        var confirmMessage = GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed);
-        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Proposal #{id}",
-            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
-        if (result == null || result == false)
-            return;
-
-        await SetProposalStatusAsync(id, (int)PotentialProcedureStatus.Ordered);
+        await SetProposalStatusAsync(proposal.Id, (int)PotentialProcedureStatus.Ordered);
     }
 
-    private async Task ConfirmAndSetCompletedStatusAsync(int id)
+    private async Task ConfirmAndSetCompletedStatusAsync(ProposalViewModel proposal)
     {
-        var proposal = await GetProposalByIdAsync(id);
-        if (proposal == null)
+        var confirmMessage = GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed);
+        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Proposal #{proposal.Id}",
+            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+        if (result == null || result == false)
         {
             return;
         }
 
-        var confirmMessage = GetSetStatusConfirmMessage(proposal, PotentialProcedureStatus.Completed);
-        var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Proposal #{id}",
-            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
-        if (result == null || result == false)
-            return;
-
-        await SetProposalStatusAsync(id, (int)PotentialProcedureStatus.Completed);
+        await SetProposalStatusAsync(proposal.Id, (int)PotentialProcedureStatus.Completed);
     }
 
     private RenderFragment GetSetStatusConfirmMessage(ProposalViewModel proposal, PotentialProcedureStatus status)
@@ -369,8 +345,8 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
             <RadzenStack>
                 <ProposalInfo ViewModel="proposal" />
 
-                <RadzenText TextStyle="TextStyle.Subtitle2" class="@statusColor">
-                    Do you really want to mark proposal #@proposal.Id as @status.ToString()?
+                <RadzenText TextStyle="TextStyle.Body2" class="@statusColor">
+                    Do you really want to mark proposal #<b>@proposal.Id</b> as <b>@status.ToString()</b>?
                 </RadzenText>
             </RadzenStack>
         };

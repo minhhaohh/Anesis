@@ -1,0 +1,50 @@
+﻿<RadzenFieldset Text="Original Batch Transaction">
+    <RadzenRow RowGap="0">
+        <RadzenColumn Size="4">
+            <RadzenText TextStyle="TextStyle.Body2">Post Date:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="8">
+            <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PostDate.ToString("MM/dd/yyyy")</RadzenText>
+        </RadzenColumn>
+
+        <RadzenColumn Size="4">
+            <RadzenText TextStyle="TextStyle.Body2">Batch Owner:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="8">
+            <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.BatchOwner</RadzenText>
+        </RadzenColumn>
+
+        <RadzenColumn Size="4">
+            <RadzenText TextStyle="TextStyle.Body2">Document No:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="8">
+            <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.DocNo</RadzenText>
+        </RadzenColumn>
+
+        <RadzenColumn Size="4">
+            <RadzenText TextStyle="TextStyle.Body2">Payment From:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="8">
+            <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PaymentFrom</RadzenText>
+        </RadzenColumn>
+
+        <RadzenColumn Size="4">
+            <RadzenText TextStyle="TextStyle.Body2">Payment Type:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="8">
+            <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PaymentType</RadzenText>
+        </RadzenColumn>
+
+        <RadzenColumn Size="4">
+            <RadzenText TextStyle="TextStyle.Body2">Payment Amount:</RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="8">
+            <RadzenText TextStyle="TextStyle.Subtitle2">@ViewModel.PaymentAmount.ToString("C2")</RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public BatchTransactionViewModel ViewModel { get; set; }
+}

@@ -171,11 +171,11 @@ namespace Anesis.ApiService.Controllers
             return Result.Ok(batchTransactions);
         }
 
-        [HttpPut("Batches/LinkBankId/{id}")]
-        public async Task<Result> LinkBankIdToBatchTransaction([FromRoute] int id, [FromBody] BatchLinkBankIdDto model)
+        [HttpPut("Batches/LinkBankId/{batchId}")]
+        public async Task<Result> LinkBankIdToBatchTransaction([FromRoute] int batchId, [FromBody] BatchLinkBankIdDto model)
         {
             // Make sure BatchTransactionId is from the route
-            model.BatchTransactionId = id;
+            model.BatchTransactionId = batchId;
 
             var validator = new BatchLinkBankIdDtoValidator(_batchTranService, _bankTranService);
             var validationResult = await validator.ValidateAsync(model);
@@ -187,21 +187,21 @@ namespace Anesis.ApiService.Controllers
 
             if (!await _batchTranService.LinkBankIdAsync(model))
             {
-                return Result.Error($"Something went wrong when linking bank transaction to batch transaction #{id}. Please try again.");
+                return Result.Error($"Something went wrong when linking bank transaction to batch transaction #{batchId}. Please try again.");
             }
 
-            return Result.Ok($"Linked bank transaction to batch transaction #{id} successful.");
+            return Result.Ok($"Linked bank transaction to batch transaction #{batchId} successful.");
         }
 
-        [HttpPut("Batches/UnlinkBankId/{id}")]
-        public async Task<Result> UnlinkBankIdFromBatchTransaction([FromRoute] int id)
+        [HttpPut("Batches/UnlinkBankId/{batchId}")]
+        public async Task<Result> UnlinkBankIdFromBatchTransaction([FromRoute] int batchId)
         {
-            if (!await _batchTranService.RemoveLinkedBankIdAsync(id))
+            if (!await _batchTranService.RemoveLinkedBankIdAsync(batchId))
             {
-                return Result.Error($"Something went wrong when removing bank transaction from batch transaction #{id}. Please try again.");
+                return Result.Error($"Something went wrong when removing bank transaction from batch transaction #{batchId}. Please try again.");
             }
 
-            return Result.Ok($"Unlinked bank transaction from batch transaction #{id} successful.");
+            return Result.Ok($"Unlinked bank transaction from batch transaction #{batchId} successful.");
         }
 
         [HttpPost("Batches/Adjustments")]

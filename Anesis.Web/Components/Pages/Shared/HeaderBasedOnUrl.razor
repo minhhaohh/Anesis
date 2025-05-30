@@ -1,0 +1,92 @@
+﻿@inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRunTime
+
+
+<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
+    <RadzenText TextStyle="TextStyle.H5">@_pageTitle</RadzenText>
+
+    @if (_menuTabName.HasValue() && _menuItemName.HasValue())
+    {
+        <RadzenBreadCrumb>
+            <RadzenBreadCrumbItem Icon="home" Text="Home" />
+            <RadzenBreadCrumbItem Icon="@_menuTabIcon" Text="@_menuTabName" />
+            <RadzenBreadCrumbItem Icon="@_menuItemIcon" Text="@_menuItemName" Path="@_pathName" />
+        </RadzenBreadCrumb>
+    }
+</RadzenStack>
+
+
+@code {
+    private string _pageTitle;
+    private string _pathName;
+    private string _menuTabName;
+    private string _menuItemName;
+    private string _menuTabIcon;
+    private string _menuItemIcon;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+        _pageTitle = await GetPageTitleAsync();
+        _pathName = ExtractLastSegmentFromUrl();
+        _menuTabName = await GetMenuTabNameAsync();
+        _menuItemName = await GetMenuItemNameAsync();
+        _menuTabIcon = await GetMenuTabIconAsync();
+        _menuItemIcon = await GetMenuItemIconAsync();
+        StateHasChanged();
+    }
+
+    private string ExtractLastSegmentFromUrl()
+    {
+        var uri = new Uri(_navigationManager.Uri);
+        var lastSegment = uri.Segments.LastOrDefault()?.Trim('/');
+        return lastSegment;
+    }
+
+    private async Task<string> GetPageTitleAsync()
+    {
+        var query = $@"(() => {{
+           return document.title ?? null;
+       }})()";
+        return await _jsRunTime.InvokeAsync<string>("eval", query);
+    }
+
+    private async Task<string> GetMenuTabNameAsync()
+    {
+        var query = $@"(() => {{
+          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('div.rz-navigation-item-link span.rz-navigation-item-text');
+          return element ? element.textContent : null;
+      }})()";
+        return await _jsRunTime.InvokeAsync<string>("eval", query);
+    }
+
+    private async Task<string> GetMenuItemNameAsync()
+    {
+        var query = $@"(() => {{
+          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('a.rz-navigation-item-link span.rz-navigation-item-text');
+          return element ? element.textContent : null;
+      }})()";
+        return await _jsRunTime.InvokeAsync<string>("eval", query);
+    }
+
+    private async Task<string> GetMenuTabIconAsync()
+    {
+        var query = $@"(() => {{
+          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('div.rz-navigation-item-link i.rz-navigation-item-icon');
+          return element ? element.textContent : null;
+      }})()";
+        return await _jsRunTime.InvokeAsync<string>("eval", query);
+    }
+
+    private async Task<string> GetMenuItemIconAsync()
+    {
+        var query = $@"(() => {{
+          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('a.rz-navigation-item-link i.rz-navigation-item-icon');
+          return element ? element.textContent : null;
+      }})()";
+        return await _jsRunTime.InvokeAsync<string>("eval", query);
+    }
+}

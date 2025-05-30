@@ -53,6 +53,13 @@ namespace Anesis.Web.Data.Services
             return await response.Content.ReadFromJsonAsync<ResponseModel<string>>();
         }
 
+        public async Task<ResponseModel<string>> UpdateDeviceFieldAsync(
+            FieldUpdateModel model, CancellationToken cancellationToken = default)
+        {
+            var response = await _httpClient.PatchAsJsonAsync($"{API_Devices}/{model.Id}", model, cancellationToken);
+            return await response.Content.ReadFromJsonAsync<ResponseModel<string>>();
+        }
+
         public async Task<ResponseModel<string>> ToggleDeviceFlagAsync(
             FlagToggleModel model, CancellationToken cancellationToken = default)
         {

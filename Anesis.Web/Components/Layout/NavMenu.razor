@@ -1,37 +1,71 @@
-﻿<RadzenSidebar Responsive="false" Style="width: max-content">
-    <RadzenPanelMenu Multiple="false" Style="@(Collapsed ? "" :"width:240px;")"
-                     DisplayStyle="Collapsed ? MenuItemDisplayStyle.Icon : MenuItemDisplayStyle.IconAndText">
-        <RadzenPanelMenuItem Text="ANESIS PAIN" Path="" Icon="logo_dev"></RadzenPanelMenuItem>
+﻿<style>
+    @@media (max-width: 767px) {
+        #anesis-sidebar {
+            position: absolute;
+            z-index: 3;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        #collapse-sidebar-button {
+            display: none !important;
+        }
+    }
+</style>
+
+<RadzenSidebar @bind-Expanded="Expanded" Responsive="false" id="anesis-sidebar">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End"
+                 AlignItems="AlignItems.Center" id="collapse-sidebar-button">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Secondary"
+                      Variant="Variant.Text" Icon="west" Click="ToggleNavMenu" />
+    </RadzenStack>
+
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start"
+                 AlignItems="AlignItems.Center" class="rz-p-4">
+        <RadzenImage Path="images/anesis-logo.png" Style="width: 60px; height: auto;" />
+        <span class="rz-color-info-dark rz-m-0" style="font-size: 18px; font-weight: 600;">ANESIS PAIN</span>
+    </RadzenStack>
+
+    <RadzenPanelMenu Multiple="false">
         <RadzenPanelMenuItem Text="Dashboard" Path="" Icon="home"></RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Employees" Icon="groups">
-            <RadzenPanelMenuItem Text="Calendar" Path="calendar" Icon="calendar_month" class="rz-pl-6"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Staff Schedules" Path="staff-schedules" Icon="date_range" class="rz-pl-6"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Employees" Icon="groups" class="menu-tab">
+            <RadzenPanelMenuItem Text="Calendar" Path="calendar" Icon="calendar_month" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Staff Schedules" Path="staff-schedules" Icon="date_range" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Billing" Icon="account_balance_wallet">
-            <RadzenPanelMenuItem Text="Devices & Costs" Path="devices" Icon="devices" class="rz-pl-6"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Billing" Icon="account_balance_wallet" class="menu-tab">
+            <RadzenPanelMenuItem Text="Devices & Costs" Path="devices" Icon="devices" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Purchasing" Icon="store">
-            <RadzenPanelMenuItem Text="Invoices" Path="invoices" Icon="request_quote" class="rz-pl-6"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Purchasing" Icon="store" class="menu-tab">
+            <RadzenPanelMenuItem Text="Invoices" Path="invoices" Icon="request_quote" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Revenue & Bonus" Icon="paid">
-            <RadzenPanelMenuItem Text="Reconciliation" Path="reconciliation" Icon="keyboard_onscreen" class="rz-pl-6"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Review Reconciliation" Path="review-reconciliation" Icon="keyboard_previous_language" class="rz-pl-6"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Potential Procedures" Path="proposals" Icon="procedure" class="rz-pl-6"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Revenue & Bonus" Icon="paid" class="menu-tab">
+            <RadzenPanelMenuItem Text="Reconciliation" Path="reconciliation" Icon="keyboard_onscreen" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Review Reconciliation" Path="review-reconciliation" Icon="keyboard_previous_language" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Potential Procedures" Path="proposals" Icon="procedure" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Report" Icon="query_stats">
-            <RadzenPanelMenuItem Text="ASC Surgery Cases" Path="surgery-cases" Icon="personal_injury" class="rz-pl-6"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Report" Icon="query_stats" class="menu-tab">
+            <RadzenPanelMenuItem Text="ASC Surgery Cases" Path="surgery-cases" Icon="personal_injury" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Media" Icon="folder_open">
-            <RadzenPanelMenuItem Text="Media Files" Path="files" Icon="upload_file" class="rz-pl-6"></RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Media" Icon="folder_open" class="menu-tab">
+            <RadzenPanelMenuItem Text="Media Files" Path="files" Icon="upload_file" class="menu-item rz-pl-6"></RadzenPanelMenuItem>
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="System" Icon="Dns">
+        <RadzenPanelMenuItem Text="System" Icon="Dns" class="menu-tab">
         </RadzenPanelMenuItem>
-        <RadzenPanelMenuItem Text="Settings" Icon="settings">
+        <RadzenPanelMenuItem Text="Settings" Icon="settings" class="menu-tab">
         </RadzenPanelMenuItem>
     </RadzenPanelMenu>
 </RadzenSidebar>
 
 @code {
     [Parameter]
-    public bool Collapsed { get; set; }
+    public bool Expanded { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleNavMenu { get; set; }
+
+
+    private void ToggleNavMenu()
+    {
+        OnToggleNavMenu.InvokeAsync();
+    }
 }

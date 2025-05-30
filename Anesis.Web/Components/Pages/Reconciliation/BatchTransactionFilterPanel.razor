@@ -3,23 +3,29 @@
 <RadzenTemplateForm TItem="BatchTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
     <RadzenFieldset Text="Batch Transactions" class="custom-fieldset">
         <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="3">
-                <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
-                <RadzenDropDown @bind-Value="FilterModel.BatchType" Name="PaymentType" AllowClear="true"
-                                Placeholder="---All---" Data="PaymentTypes" Style="width: 100%;" />
+            <RadzenColumn SizeLG="3" SizeSM="6">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.BatchType" Name="PaymentType" AllowClear="true"
+                                    Placeholder="---All---" Data="PaymentTypes" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="3">
-                <RadzenLabel Text="From Date" Component="FromDate" class="rz-text-subtitle2" />
-                <RadzenDatePicker @bind-Value="FilterModel.FromDate" Name="FromDate"
-                                  AllowClear="true" AllowInput="false"
-                                  DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+            <RadzenColumn SizeLG="3" SizeSM="6">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="From Date" Component="FromDate" class="rz-text-subtitle2" />
+                    <RadzenDatePicker @bind-Value="FilterModel.FromDate" Name="FromDate"
+                                      AllowClear="true" AllowInput="false"
+                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="3">
-                <RadzenLabel Text="Search Text" Component="SearchText" class="rz-text-subtitle2" />
-                <RadzenTextBox @bind-Value="FilterModel.SearchText" Name="SearchText" Style="width: 100%;" Placeholder="Search Text" />
+            <RadzenColumn SizeLG="3" SizeSM="6">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="Search Text" Component="SearchText" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.SearchText" Name="SearchText" Style="width: 100%;" Placeholder="Search Text" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="3">
-                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
+            <RadzenColumn SizeLG="3" SizeSM="6">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
                     <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="filter_alt"
                                   title="Filter batch transactions" />
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Icon="ink_eraser"

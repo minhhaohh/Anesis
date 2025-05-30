@@ -14,14 +14,11 @@ namespace Anesis.Web.Data.Services
         Task<ResponseModel<List<ChangeLogViewModel>>> GetSurgeryCaseChangeLogsAsync(
            int id, CancellationToken cancellationToken = default);
 
-        Task<ResponseModel<string>> MarkSurgeryCaseAsCompletedAsync(
-            int id, CancellationToken cancellationToken = default);
-
-        Task<ResponseModel<string>> MarkSurgeryCaseAsCancelledAsync(
-            int id, string reason, CancellationToken cancellationToken = default);
+        Task<ResponseModel<string>> SetSurgeryCaseStatusAsync(
+            CaseSetStatusModel model, CancellationToken cancellationToken = default);
 
         Task<ResponseModel<string>> LinkInvoiceToSurgeryCaseAsync(
-            LinkInvoiceCaseModel model, CancellationToken cancellationToken = default);
+            CaseLinkInvoiceModel model, CancellationToken cancellationToken = default);
 
         Task<ResponseModel<string>> UnlinkInvoiceFromSurgeryCaseAsync(
             int id, CancellationToken cancellationToken = default);

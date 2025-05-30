@@ -194,6 +194,8 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         {
             return;
         }
+
+        await SetSurgeryCaseStatusAsync(surgeryCase.Id, (int)SurgeryCaseStatus.Completed);
     }
 
     private async Task OpenManageCptCodesDialogAsync(SurgeryCaseViewModel surgeryCase)
@@ -277,8 +279,8 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
             <RadzenStack>
                 <SurgeryCaseInfo ViewModel="surgeryCase" />
 
-                <RadzenText TextStyle="TextStyle.Subtitle2" class="@statusColor">
-                    Do you really want to mark surgery case #@surgeryCase.Id as @status.ToString()?
+                <RadzenText TextStyle="TextStyle.Body2" class="@statusColor">
+                    Do you really want to mark surgery case #<b>@surgeryCase.Id</b> as <b>@status.ToString()</b>?
                 </RadzenText>
             </RadzenStack>
         };
@@ -308,5 +310,26 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
         }
 
         return changeLogsRes.Data;
+    }
+
+    private async Task SetSurgeryCaseStatusAsync(int id, int status)
+    {
+        var setStatusModel = new CaseSetStatusModel()
+            {
+                Id = id,
+                Status = status
+            };
+        var setStatusRes = await _apiService.SetSurgeryCaseStatusAsync(setStatusModel);
+
+        if (!setStatusRes.Success)
+        {
+            _notifyService.NotifyErrors("Set Surgery Case Status", setStatusRes.Messages);
+        }
+        else
+        {
+            _notifyService.NotifySuccess("Set Surgery Case Status", setStatusRes.Data);
+
+            await RefreshGridAsync();
+        }
     }
 }

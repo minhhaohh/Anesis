@@ -4,12 +4,12 @@ using FluentValidation;
 
 namespace Anesis.ApiService.Validators.SurgeryCases
 {
-    public class LinkInvoiceCaseDtoValidator : AbstractValidator<LinkInvoiceCaseDto>
+    public class CaseLinkInvoiceDtoValidator : AbstractValidator<CaseLinkInvoiceDto>
     {
         private readonly ISurgeryCaseService _surgeryCaseService;
         private readonly IInvoiceService _invoiceService;
 
-        public LinkInvoiceCaseDtoValidator(
+        public CaseLinkInvoiceDtoValidator(
             ISurgeryCaseService surgeryCaseService, 
             IInvoiceService invoiceService)
         {
@@ -41,7 +41,7 @@ namespace Anesis.ApiService.Validators.SurgeryCases
             return await _invoiceService.GetByIdAsync(invoiceId, false, cancellationToken) != null;
         }
 
-        private async Task<bool> RequiredIfBulkInvoiceAsync(LinkInvoiceCaseDto model, decimal separateAmount, CancellationToken cancellationToken)
+        private async Task<bool> RequiredIfBulkInvoiceAsync(CaseLinkInvoiceDto model, decimal separateAmount, CancellationToken cancellationToken)
         {
             var invoice = await _invoiceService.GetByIdAsync(model.InvoiceId, false, cancellationToken);
 

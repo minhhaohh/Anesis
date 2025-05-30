@@ -7,42 +7,42 @@
         <RadzenFieldset Text="Device Information">
             <RadzenStack Gap="0.5rem">
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Device Name" Component="DeviceName" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextBox @bind-Value="EditModel.Name" Name="DeviceName" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Device Code" Component="DeviceCode" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextBox @bind-Value="EditModel.DeviceCode" Name="DeviceCode" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Description" Component="Description" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="EditModel.Description" Name="Description" Rows="3" Style="width: 100%" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextBox @bind-Value="EditModel.VendorName" Name="VendorName" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Category" Component="Category" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="EditModel.Category" Name="Category"
                                         Data="@DeviceCategories" AllowClear="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -50,26 +50,26 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Display Order" Component="DisplayOrder" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenNumeric @bind-Value="EditModel.DisplayOrder" Name="DisplayOrder" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Active" Component="IsActive" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenCheckBox @bind-Value="EditModel.IsActive" Name="IsActive" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Total Cost" Component="AppliedCost" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenFormField Style="width: 100%;" class="custom-input-group">
                             <Start>
                                 <RadzenIcon Icon="attach_money" />
@@ -81,10 +81,10 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Effective Date" Component="EffectiveDate" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDatePicker @bind-Value="EditModel.EffectiveDate" Name="EffectiveDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
@@ -96,10 +96,10 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="EditModel.Notes" Name="Notes" Rows="3" Style="width: 100%" />
                     </RadzenColumn>
                 </RadzenRow>

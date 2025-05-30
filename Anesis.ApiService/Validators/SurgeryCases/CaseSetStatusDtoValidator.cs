@@ -1,22 +1,23 @@
 ﻿using Anesis.ApiService.Domain.DTOs.PotentialProcedures;
+using Anesis.ApiService.Domain.DTOs.SurgeryCases;
 using Anesis.ApiService.Services.IServices;
 using Anesis.Shared.Constants;
 using Anesis.Shared.Extensions;
 using FluentValidation;
 
-namespace Anesis.ApiService.Validators.Proposals
+namespace Anesis.ApiService.Validators.SurgeryCases
 {
-    public class ProposalSetStatusDtoValidator : AbstractValidator<ProposalSetStatusDto>
+    public class CaseSetStatusDtoValidator : AbstractValidator<CaseSetStatusDto>
     {
-        private readonly IProposalService _proposalService;
+        private ISurgeryCaseService _surgeryCaseService;
 
-        public ProposalSetStatusDtoValidator(IProposalService proposalService)
+        public CaseSetStatusDtoValidator(ISurgeryCaseService surgeryCaseService) 
         {
-            _proposalService = proposalService;
-
+            _surgeryCaseService = surgeryCaseService; 
+            
             RuleFor(x => x.Id)
-                .MustAsync(ProposalExistedAsync)
-                .WithMessage(x => $"Could not find proposal with ID #{x.Id}.");
+                .MustAsync(SurgeryCaseExisted)
+                .WithMessage(x => $"Could not find surgery case with ID #{x.Id}.");
 
             RuleFor(x => x.Status)
                 .NotNull()
@@ -29,26 +30,25 @@ namespace Anesis.ApiService.Validators.Proposals
                 .WithMessage("The Reason field is required.");
         }
 
-        private async Task<bool> ProposalExistedAsync(int id, CancellationToken cancellationToken)
+        private async Task<bool> SurgeryCaseExisted(int id, CancellationToken cancellationToken)
         {
-            return await _proposalService.GetByIdAsync(id, cancellationToken) != null;
+            return await _surgeryCaseService.GetByIdAsync(id, cancellationToken) != null;
         }
 
         private bool AllowableStatus(int? status)
         {
             int[] validStatus =
             [
-                (int)PotentialProcedureStatus.Ordered,
-                (int)PotentialProcedureStatus.Cancelled,
-                (int)PotentialProcedureStatus.Completed
+                (int)SurgeryCaseStatus.Cancelled,
+                (int)SurgeryCaseStatus.Completed
             ];
 
             return status == null || validStatus.Contains(status.Value);
         }
 
-        private bool HasReasonIfCancel(ProposalSetStatusDto model, string reason)
+        private bool HasReasonIfCancel(CaseSetStatusDto model, string reason)
         {
-            if (model.Status != (int)PotentialProcedureStatus.Cancelled)
+            if (model.Status != (int)SurgeryCaseStatus.Cancelled)
             {
                 return true;
             }

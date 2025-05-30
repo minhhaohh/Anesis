@@ -1,6 +1,6 @@
 ﻿namespace Anesis.ApiService.Domain.DTOs.SurgeryCases
 {
-    public class LinkInvoiceCaseDto
+    public class CaseLinkInvoiceDto
     {
         public int CaseId { get; set; }
 

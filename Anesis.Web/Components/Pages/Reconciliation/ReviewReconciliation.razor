@@ -5,18 +5,18 @@
 <PageTitle>Review Reconciliation</PageTitle>
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H5">Review Reconciliation</RadzenText>
+    <HeaderBasedOnUrl />
 
     <ReviewReconciliationFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
                                      PaymentTypes="_paymentTypes" Reconciliations="_reconciliations"
                                      OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
 
     <RadzenRow>
-        <RadzenColumn Size="12" SizeMD="6">
+        <RadzenColumn SizeLG="6" SizeMD="12">
             <GridBatchTransactions @ref="_gridBatchTransactions" IsEditMode="false"
                                    FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="6">
+        <RadzenColumn SizeLG="6" SizeMD="12">
             <GridBankTransactions @ref="_gridBankTransactions" IsEditMode="false"
                                   FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
                                   OnLoadBalanceSummary="LoadBalanceSummaryAsync" />

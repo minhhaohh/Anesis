@@ -1,0 +1,52 @@
+﻿<RadzenFieldset Text="Event Information">
+    <RadzenStack Gap="1rem">
+        <RadzenRow>
+            <RadzenColumn Size="4">
+                <RadzenText TextStyle="TextStyle.Body2">Date:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@CalendarDate</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <RadzenRow>
+            <RadzenColumn Size="4">
+                <RadzenText TextStyle="TextStyle.Body2">Time:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@StartTime - @EndTime</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <RadzenRow>
+            <RadzenColumn Size="4">
+                <RadzenText TextStyle="TextStyle.Body2">Location:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@LocationName</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <RadzenRow>
+            <RadzenColumn Size="4">
+                <RadzenText TextStyle="TextStyle.Body2">Employee:</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="8">
+                <RadzenText TextStyle="TextStyle.Subtitle2">@EmployeeName</RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public string LocationName { get; set; }
+    [Parameter]
+    public string EmployeeName { get; set; }
+    [Parameter]
+    public string CalendarDate { get; set; }
+    [Parameter]
+    public string StartTime { get; set; }
+    [Parameter]
+    public string EndTime { get; set; }
+}

@@ -7,10 +7,10 @@
         <RadzenFieldset Text="Schedule Information">
             <RadzenStack Gap="0.5rem">
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="EditModel.LocationId" Name="LocationId"
                                         Data="@ActiveLocations" AllowClear="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -18,10 +18,10 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Employee(s)" Component="EmployeeIds" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="EditModel.EmployeeIds" Name="EmployeeIds"
                                         Data="@ActiveEmployees" AllowClear="true" AllowFiltering="true"
                                         Multiple="true" Chips="true" MaxSelectedLabels="10"
@@ -30,30 +30,30 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="From Date" Component="FromDate" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDatePicker @bind-Value="EditModel.FromDate" Name="FromDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="To Date" Component="ToDate" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDatePicker @bind-Value="EditModel.ToDate" Name="ToDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Recur On" Component="ToDate" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         @foreach (var item in typeof(DayOfWeek).ToDictionary())
                         {
                             var checkBoxValue = EditModel.DaysOfWeek.Any(x => x == item.Key);
@@ -65,30 +65,30 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Start Time" Component="StartTime" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTimeSpanPicker @bind-Value="EditModel.StartTime" Name="StartTime"
                                               Min="BusinessStartTime" Max="BusinessEndTime"
                                               AllowClear="true" ShowConfirmationButton="true" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="End Time" Component="EndTime" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTimeSpanPicker @bind-Value="EditModel.EndTime" Name="EndTime"
                                               Min="BusinessStartTime" Max="BusinessEndTime"
                                               AllowClear="true" ShowConfirmationButton="true" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Save Option" Component="SaveOption" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenRadioButtonList @bind-Value="EditModel.SaveOption" TValue="string" Orientation="Orientation.Vertical">
                             <Items>
                                 @foreach (var item in StaffScheduleSaveOptions)
@@ -100,10 +100,10 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="EditModel.Notes" Name="Notes" Rows="3" Style="width: 100%" />
                     </RadzenColumn>
                 </RadzenRow>

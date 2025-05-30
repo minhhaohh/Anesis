@@ -39,8 +39,8 @@ namespace Anesis.ApiService.Services.Services
             _caseCostRepo = _unitOfWork.GetRepository<SurgeryCaseCost>();
         }
 
-        public async Task<IPagedList<SurgeryCaseDto>> SearchAsync(SurgeryCaseFilterDto filter,
-            CancellationToken cancellationToken = default)
+        public async Task<IPagedList<SurgeryCaseDto>> SearchAsync(
+            SurgeryCaseFilterDto filter, CancellationToken cancellationToken = default)
         {
             var result = await _mapper.ProjectTo<SurgeryCaseDto>(Search(filter))
                 .SortData(filter.Sidx, filter.Sord, nameof(SurgeryCase.SurgeryDate), SortOrder.Descending)
@@ -76,8 +76,7 @@ namespace Anesis.ApiService.Services.Services
             return result;
         }
 
-        public async Task<SurgeryCaseDto> GetByIdAsync(int id, 
-            CancellationToken cancellationToken = default)
+        public async Task<SurgeryCaseDto> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var surgeryCase = await _surgeryCaseRepo.All(true)
                 .Include(x => x.Patient)
@@ -95,24 +94,16 @@ namespace Anesis.ApiService.Services.Services
             return _mapper.Map<SurgeryCaseDto>(surgeryCase);
         }
 
-        public async Task<bool> SetStatusAsync(int id, SurgeryCaseStatus status, 
-            string reason = null, CancellationToken cancellationToken = default)
+        public async Task<bool> SetStatusAsync(CaseSetStatusDto model, CancellationToken cancellationToken = default)
         {
-            var surgeryCase = await FindByIdAsync(id, cancellationToken);
+            var surgeryCase = await FindByIdAsync(model.Id, cancellationToken);
 
             if (surgeryCase == null)
             {
                 return false;
             }
 
-            surgeryCase.CaseStatus = status;
-            surgeryCase.UpdatedBy = "haotm";
-            surgeryCase.UpdatedDate = DateTime.Now;
-
-            if (reason.HasValue())
-            {
-                surgeryCase.Notes = (surgeryCase.Notes ?? "") + $"\n{status.ToString()} Reason: {reason}";
-            }
+            model.ApplyChangesTo(surgeryCase);
 
             _surgeryCaseRepo.Update(surgeryCase);
 
@@ -121,16 +112,15 @@ namespace Anesis.ApiService.Services.Services
                 return false;
             }
 
-            await _changeLogService.AddChangeLogAsync<SurgeryCase>(surgeryCase.Id, "SetStatus",
-                $"Mark surgery case #{surgeryCase.Id} as {status.ToString()}", false, reason, cancellationToken);
+            await _changeLogService.AddChangeLogAsync<SurgeryCase>(surgeryCase.Id, "SetStatus", model.Reason,
+                null, surgeryCase, null, false, $"Set surgery case status = '{(SurgeryCaseStatus)model.Status}'", cancellationToken);
 
             return true;
         }
 
-        public async Task<bool> LinkInvoiceAsync(int id, LinkInvoiceCaseDto model
-            , CancellationToken cancellationToken = default)
+        public async Task<bool> LinkInvoiceAsync(CaseLinkInvoiceDto model, CancellationToken cancellationToken = default)
         {
-            var surgeryCase = await FindByIdAsync(id, cancellationToken);
+            var surgeryCase = await FindByIdAsync(model.CaseId, cancellationToken);
 
             if (surgeryCase == null)
             {
@@ -198,16 +188,15 @@ namespace Anesis.ApiService.Services.Services
             return true;
         }
 
-        public async Task<List<ChangeLogDto>> GetChangeLogsAsync(int id, 
-            CancellationToken cancellationToken = default)
+        public async Task<List<ChangeLogDto>> GetChangeLogsAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _changeLogService.GetChangeLogsAsync<SurgeryCase>(id, null, cancellationToken);
         }
 
 
         // CASE CPT CODES
-        public async Task<IPagedList<CaseCptCodeDto>> SearchCaseCptCodesAsync(CaseCptCodeFilterDto filter,
-            CancellationToken cancellationToken = default)
+        public async Task<IPagedList<CaseCptCodeDto>> SearchCaseCptCodesAsync(
+            CaseCptCodeFilterDto filter, CancellationToken cancellationToken = default)
         {
             var query = _caseCptCodeRepo.All(true)
                 .Where(x => x.SurgeryCaseId == filter.CaseId);
@@ -217,8 +206,7 @@ namespace Anesis.ApiService.Services.Services
                 .ToPageListAsync(filter.StartIndex, filter.CountNumber, cancellationToken);
         }
 
-        public async Task<bool> UpdateCaseCptCodeFieldAsync(
-            FieldUpdateDto model, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateCaseCptCodeFieldAsync(FieldUpdateDto model, CancellationToken cancellationToken = default)
         {
             var caseCptCode = await FindCaseCptCodeByIdAsync(model.Id, cancellationToken);
 
@@ -248,8 +236,7 @@ namespace Anesis.ApiService.Services.Services
             return true;
         }
 
-        public async Task<bool> DeleteCaseCptCodeAsync(int id,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteCaseCptCodeAsync(int id, CancellationToken cancellationToken = default)
         {
             var caseCptCode = await _caseCptCodeRepo.DeleteAsync(cancellationToken, id);
 
@@ -266,8 +253,8 @@ namespace Anesis.ApiService.Services.Services
         }
 
         // CASE COSTS
-        public async Task<IPagedList<CaseCostDto>> SearchCaseCostsAsync(CaseCostFilterDto filter,
-            CancellationToken cancellationToken = default)
+        public async Task<IPagedList<CaseCostDto>> SearchCaseCostsAsync(
+            CaseCostFilterDto filter, CancellationToken cancellationToken = default)
         {
             var query = _caseCostRepo.All(true)
                 .Where(x => x.SurgeryCaseId == filter.CaseId);
@@ -277,8 +264,7 @@ namespace Anesis.ApiService.Services.Services
                 .ToPageListAsync(filter.StartIndex, filter.CountNumber, cancellationToken);
         }
 
-        public async Task<bool> AddCaseCostAsync(CaseCostAddDto model,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> AddCaseCostAsync(CaseCostAddDto model, CancellationToken cancellationToken = default)
         {
             var existedCaseCost = await _caseCostRepo.All()
                 .FirstOrDefaultAsync(x => x.SurgeryCaseId == model.CaseId && x.DeviceId == model.DeviceId, cancellationToken);
@@ -309,8 +295,7 @@ namespace Anesis.ApiService.Services.Services
             return true;
         }
 
-        public async Task<bool> UpdateCaseCostFieldAsync(
-            FieldUpdateDto model, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateCaseCostFieldAsync(FieldUpdateDto model, CancellationToken cancellationToken = default)
         {
             var caseCost = await FindCaseCostByIdAsync(model.Id, cancellationToken);
 
@@ -343,8 +328,7 @@ namespace Anesis.ApiService.Services.Services
             return true;
         }
 
-        public async Task<bool> DeleteCaseCostAsync(int id,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteCaseCostAsync(int id, CancellationToken cancellationToken = default)
         {
             var caseCost = await _caseCostRepo.DeleteAsync(cancellationToken, id);
 

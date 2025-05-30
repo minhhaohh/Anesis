@@ -1,10 +1,10 @@
 ﻿<RadzenFieldset Text="Proposal Information">
-    <RadzenStack Gap="1rem">
+    <RadzenStack Gap="0.5rem">
         <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn Size="4">
                 <RadzenText TextStyle="TextStyle.Subtitle2">Patient</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="8">
+            <RadzenColumn Size="8">
                 @{
                     var patientInfo = $"#{ViewModel.EcwChartNo} - {ViewModel.FirstName}, {ViewModel.LastName} - {ViewModel.Gender} - Dob: {ViewModel.Dob.ToString("MM/dd/yyyy")}";
                 }
@@ -12,18 +12,18 @@
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn Size="4">
                 <RadzenText TextStyle="TextStyle.Subtitle2">Procedure</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="8">
+            <RadzenColumn Size="8">
                 <RadzenText TextStyle="TextStyle.Body2">@ViewModel.ProcedureName</RadzenText>
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenColumn Size="4">
                 <RadzenText TextStyle="TextStyle.Subtitle2">Request By</RadzenText>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="8">
+            <RadzenColumn Size="8">
                 @{
                     var requested = $"{ViewModel.ProposerName} - {ViewModel.CreatedDate.ToString("MM/dd/yyyy HH:mm")}";
                 }

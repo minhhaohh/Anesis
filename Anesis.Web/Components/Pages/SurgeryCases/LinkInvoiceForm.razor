@@ -4,7 +4,7 @@
 
 
 
-<RadzenTemplateForm TItem="LinkInvoiceCaseModel" Data="_linkInvoiceModel" Submit="LinkInvoiceAsync">
+<RadzenTemplateForm TItem="CaseLinkInvoiceModel" Data="_linkInvoiceModel" Submit="LinkInvoiceAsync">
     <RadzenStack>
         @if (IsDialog)
         {
@@ -13,12 +13,12 @@
 
         <RadzenFieldset Text="Link Invoice">
             <RadzenRow>
-                <RadzenColumn Size="12" SizeMD="3">
+                <RadzenColumn SizeSM="3" SizeXS="12">
                     <RadzenCheckBox @bind-Value="_limitedByLocation" TValue="bool" Name="LimitedByLocation"
                     Change="async (isChecked) => { await LoadDropdownInvoicesAsync(); }" />
                     <RadzenLabel Text="@($"Limited by Location ({ViewModel.LocationName})")" Component="LimitedByLocation" class="rz-text-subtitle2" />
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="6">
+                <RadzenColumn SizeSM="6" SizeXS="8">
                     <RadzenDropDown @bind-Value="_selectedInvoice" TValue="InvoiceViewModel" Name="SelectedInvoice"
                     Data="_invoices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
                     Placeholder="---Select---" Style="width: 100%;"
@@ -41,7 +41,7 @@
                         </Template>
                     </RadzenDropDown>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="3">
+                <RadzenColumn SizeSM="3" SizeXS="4">
                     <RadzenFormField Style="width: 100%;" class="custom-input-group">
                         <Start>
                             <RadzenIcon Icon="attach_money" />
@@ -78,7 +78,7 @@
     [Parameter]
     public EventCallback OnRefreshGrid { get; set; }
 
-    private LinkInvoiceCaseModel _linkInvoiceModel = new();
+    private CaseLinkInvoiceModel _linkInvoiceModel = new();
     private int? _linkedInvoiceId = null;
     private bool _limitedByLocation = true;
     private InvoiceViewModel _selectedInvoice = null;
@@ -117,7 +117,7 @@
         _linkInvoiceModel.SeparateAmount = _selectedInvoice != null && !_selectedInvoice.IsBulk ? _selectedInvoice.TotalAmount : 0;
     }
 
-    private async Task LinkInvoiceAsync(LinkInvoiceCaseModel linkInvoiceModel)
+    private async Task LinkInvoiceAsync(CaseLinkInvoiceModel linkInvoiceModel)
     {
         if (linkInvoiceModel.InvoiceId == null)
         {

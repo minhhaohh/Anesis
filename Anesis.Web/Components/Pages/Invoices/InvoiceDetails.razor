@@ -34,208 +34,215 @@
             padding: 4px !important;
         }
 </style>
-<RadzenStack>
-    <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary">Invoice Information</RadzenText>
 
-    <table class="info-table">
-        <tr>
-            <td style="width: 20%;">Invoice Number</td>
-            <td style="width: 30%;"><strong class="rz-color-primary">@InvoiceModel.InvoiceNo</strong></td>
-            <td style="width: 20%;">Purchase Order No</td>
-            <td style="width: 30%;"><strong>@InvoiceModel.PurchaseOrderNo</strong></td>
-        </tr>
+<RadzenStack Gap="2rem">
+    <RadzenStack Gap="0.5rem">
+        <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary">Invoice Information</RadzenText>
 
-        <tr>
-            <td>Invoice Date</td>
-            <td><strong>@InvoiceModel.InvoiceDate.ToString("MM/dd/yyyy")</strong></td>
-            <td>Due Date</td>
-            <td><strong>@InvoiceModel.DueDate.ToString("MM/dd/yyyy")</strong></td>
-        </tr>
-
-        <tr>
-            <td>Company / Location</td>
-            <td>@InvoiceModel.Company / @InvoiceModel.LocationName</td>
-            <td>Vendor</td>
-            <td><strong>@(InvoiceModel.VendorName ?? "N/A")</strong></td>
-        </tr>
-
-        <tr>
-            <td>Status</td>
-            <td><strong class="rz-color-danger">@InvoiceModel.InvoiceStatusStr</strong></td>
-            <td>Vendor Description</td>
-            <td>@InvoiceModel.VendorDescription</td>
-        </tr>
-
-        <tr>
-            <td>Last Updated By</td>
-            <td>@InvoiceModel.UpdatedBy</td>
-            <td>Created By</td>
-            <td>@InvoiceModel.CreatedBy</td>
-        </tr>
-
-        <tr>
-            <td>Last Updated Date</td>
-            <td>@InvoiceModel.UpdatedDate.ToString("MM/dd/yyyy HH:mm")</td>
-            <td>Created Date</td>
-            <td>@InvoiceModel.CreatedDate.ToString("MM/dd/yyyy HH:mm")</td>
-        </tr>
-
-        <tr>
-            <td>Scanned File</td>
-            <td colspan="3">
-                <i>
-                    <a href="@InvoiceModel.ScannedFileName" class="rz-color-primary text-underline-none"
-                       title="Click to view invoice scanned file" target="_blank">
-                        @InvoiceModel.ScannedFileName
-                    </a>
-                </i>
-            </td>
-        </tr>
-
-        <tr>
-            <td>Notes</td>
-            <td colspan="3">@InvoiceModel.Notes</td>
-        </tr>
-    </table>
-
-    <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary rz-mt-6">Purchased Items</RadzenText>
-
-    <table class="items-table">
-        <thead>
+        <table class="info-table">
             <tr>
-                <th class="rz-text-align-left" style="width: 60%;">Item Name</th>
-                <th class="rz-text-align-right" style="width: 10%;">Quantity</th>
-                <th class="rz-text-align-right" style="width: 10%;">Unit Price</th>
-                <th class="rz-text-align-right" style="width: 10%;">Total</th>
-                <th class="rz-text-align-left" style="width: 10%;">Added By</th>
+                <td style="width: 20%;">Invoice Number</td>
+                <td style="width: 30%;"><strong class="rz-color-primary">@InvoiceModel.InvoiceNo</strong></td>
+                <td style="width: 20%;">Purchase Order No</td>
+                <td style="width: 30%;"><strong>@InvoiceModel.PurchaseOrderNo</strong></td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in InvoiceModel.Items)
-            {
+
+            <tr>
+                <td>Invoice Date</td>
+                <td><strong>@InvoiceModel.InvoiceDate.ToString("MM/dd/yyyy")</strong></td>
+                <td>Due Date</td>
+                <td><strong>@InvoiceModel.DueDate.ToString("MM/dd/yyyy")</strong></td>
+            </tr>
+
+            <tr>
+                <td>Company / Location</td>
+                <td>@InvoiceModel.Company / @InvoiceModel.LocationName</td>
+                <td>Vendor</td>
+                <td><strong>@(InvoiceModel.VendorName ?? "N/A")</strong></td>
+            </tr>
+
+            <tr>
+                <td>Status</td>
+                <td><strong class="rz-color-danger">@InvoiceModel.InvoiceStatusStr</strong></td>
+                <td>Vendor Description</td>
+                <td>@InvoiceModel.VendorDescription</td>
+            </tr>
+
+            <tr>
+                <td>Last Updated By</td>
+                <td>@InvoiceModel.UpdatedBy</td>
+                <td>Created By</td>
+                <td>@InvoiceModel.CreatedBy</td>
+            </tr>
+
+            <tr>
+                <td>Last Updated Date</td>
+                <td>@InvoiceModel.UpdatedDate.ToString("MM/dd/yyyy HH:mm")</td>
+                <td>Created Date</td>
+                <td>@InvoiceModel.CreatedDate.ToString("MM/dd/yyyy HH:mm")</td>
+            </tr>
+
+            <tr>
+                <td>Scanned File</td>
+                <td colspan="3">
+                    <i>
+                        <a href="@InvoiceModel.ScannedFileName" class="rz-color-primary text-underline-none"
+                           title="Click to view invoice scanned file" target="_blank">
+                            @InvoiceModel.ScannedFileName
+                        </a>
+                    </i>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Notes</td>
+                <td colspan="3">@InvoiceModel.Notes</td>
+            </tr>
+        </table>
+    </RadzenStack>
+
+    <RadzenStack Gap="0.5rem">
+        <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary rz-mt-6">Purchased Items</RadzenText>
+
+        <table class="items-table">
+            <thead>
                 <tr>
-                    <td class="rz-text-align-left">
-                        @item.ItemName
-
-                        @if (item.Notes.HasValue())
-                        {
-                            <br />
-                            <i>@item.Notes</i>
-                        }
-                    </td>
-                    <td class="rz-text-align-right">@item.Quantity</td>
-                    <td class="rz-text-align-right">@item.UnitPrice.ToString("C2")</td>
-                    <td class="rz-text-align-right">@((item.Quantity * item.UnitPrice).ToString("C2"))</td>
-                    <td class="rz-text-align-left" title="on @item.UpdatedDate.ToString("MM/dd/yyyy HH:mm")">
-                        @item.UpdatedBy
-                    </td>
+                    <th class="rz-text-align-left" style="width: 60%;">Item Name</th>
+                    <th class="rz-text-align-right" style="width: 10%;">Quantity</th>
+                    <th class="rz-text-align-right" style="width: 10%;">Unit Price</th>
+                    <th class="rz-text-align-right" style="width: 10%;">Total</th>
+                    <th class="rz-text-align-left" style="width: 10%;">Added By</th>
                 </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <th rowspan="3" class="border-right"></th>
-                <th colspan="2" class="rz-color-danger rz-text-align-right">
-                    Subtotal
-                </th>
-                <th class="rz-color-danger rz-text-align-right">
-                    @InvoiceModel.Subtotal.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th colspan="2" class="rz-text-align-right">
-                    Tax Amount
-                </th>
-                <th class="rz-text-align-right">
-                    @InvoiceModel.TaxAmount.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th colspan="2" class="rz-text-align-right">
-                    Shipping Fee
-                </th>
-                <th class="rz-text-align-right">
-                    @InvoiceModel.ShippingFee.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <td rowspan="2" class="rz-text-align-left border-right">
-                    Additional charge notes:
-                    <i>@InvoiceModel.FeeNotes</i>
-                </td>
-                <th colspan="2" class="rz-text-align-right">
-                    Additional Charges
-                </th>
-                <th class="rz-text-align-right">
-                    @InvoiceModel.AdditionalCharges.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th colspan="2" class="rz-text-align-right">
-                    Discount Amount
-                </th>
-                <th class="rz-text-align-right">
-                    @InvoiceModel.DiscountAmount.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <td rowspan="2" class="rz-text-align-left border-right">
-                    User comment:
-                    <i>@InvoiceModel.UserComment</i>
-                </td>
-                <th colspan="2" class="rz-color-danger rz-text-align-right">
-                    Total Amount
-                </th>
-                <th class="rz-color-danger rz-text-align-right">
-                    @InvoiceModel.TotalAmount.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th colspan="2" class="rz-color-primary rz-text-align-right">
-                    Amount To Pay
-                </th>
-                <th class="rz-color-primary rz-text-align-right">
-                    @InvoiceModel.AmountToPay.ToString("C2")
-                </th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in InvoiceModel.Items)
+                {
+                    <tr>
+                        <td class="rz-text-align-left">
+                            @item.ItemName
 
-    <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary rz-mt-6">Payment</RadzenText>
+                            @if (item.Notes.HasValue())
+                            {
+                                <br />
+                                <i>@item.Notes</i>
+                            }
+                        </td>
+                        <td class="rz-text-align-right">@item.Quantity</td>
+                        <td class="rz-text-align-right">@item.UnitPrice.ToString("C2")</td>
+                        <td class="rz-text-align-right">@((item.Quantity * item.UnitPrice).ToString("C2"))</td>
+                        <td class="rz-text-align-left" title="on @item.UpdatedDate.ToString("MM/dd/yyyy HH:mm")">
+                            @item.UpdatedBy
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th rowspan="3" class="border-right"></th>
+                    <th colspan="2" class="rz-color-danger rz-text-align-right">
+                        Subtotal
+                    </th>
+                    <th class="rz-color-danger rz-text-align-right">
+                        @InvoiceModel.Subtotal.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="2" class="rz-text-align-right">
+                        Tax Amount
+                    </th>
+                    <th class="rz-text-align-right">
+                        @InvoiceModel.TaxAmount.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="2" class="rz-text-align-right">
+                        Shipping Fee
+                    </th>
+                    <th class="rz-text-align-right">
+                        @InvoiceModel.ShippingFee.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td rowspan="2" class="rz-text-align-left border-right">
+                        Additional charge notes:
+                        <i>@InvoiceModel.FeeNotes</i>
+                    </td>
+                    <th colspan="2" class="rz-text-align-right">
+                        Additional Charges
+                    </th>
+                    <th class="rz-text-align-right">
+                        @InvoiceModel.AdditionalCharges.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="2" class="rz-text-align-right">
+                        Discount Amount
+                    </th>
+                    <th class="rz-text-align-right">
+                        @InvoiceModel.DiscountAmount.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td rowspan="2" class="rz-text-align-left border-right">
+                        User comment:
+                        <i>@InvoiceModel.UserComment</i>
+                    </td>
+                    <th colspan="2" class="rz-color-danger rz-text-align-right">
+                        Total Amount
+                    </th>
+                    <th class="rz-color-danger rz-text-align-right">
+                        @InvoiceModel.TotalAmount.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="2" class="rz-color-primary rz-text-align-right">
+                        Amount To Pay
+                    </th>
+                    <th class="rz-color-primary rz-text-align-right">
+                        @InvoiceModel.AmountToPay.ToString("C2")
+                    </th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </RadzenStack>
 
-    <table class="payment-table">
-        <tr>
-            <td style="width: 40%;">Payment Date</td>
-            <th class="rz-text-align-left" style="width: 60%;">@(InvoiceModel.PaymentDate?.ToString("MM/dd/yyyy") ?? "PENDING")</th>
-        </tr>
-        <tr>
-            <td>Payment Method</td>
-            <th class="rz-text-align-left">@(InvoiceModel.PaymentMethodName ?? "-")</th>
-        </tr>
-        <tr>
-            <td>Paid Amount</td>
-            <th class="rz-text-align-left">@(InvoiceModel.AmountPaid?.ToString("C2") ?? "-")</th>
-        </tr>
-        <tr>
-            <td>Transaction ID</td>
-            <th class="rz-text-align-left">@(InvoiceModel.TransactionId ?? "-")</th>
-        </tr>
-        <tr>
-            <td>Paid By</td>
-            <th class="rz-text-align-left">@(InvoiceModel.PaidBy ?? "-")</th>
-        </tr>
-        <tr>
-            <td>Payment Notes</td>
-            <th class="rz-text-align-left">@(InvoiceModel.PaymentNotes ?? "-")</th>
-        </tr>
-    </table>
+    <RadzenStack Gap="0.5rem">
+        <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary rz-mt-6">Payment</RadzenText>
+
+        <table class="payment-table">
+            <tr>
+                <td style="width: 40%;">Payment Date</td>
+                <th class="rz-text-align-left" style="width: 60%;">@(InvoiceModel.PaymentDate?.ToString("MM/dd/yyyy") ?? "PENDING")</th>
+            </tr>
+            <tr>
+                <td>Payment Method</td>
+                <th class="rz-text-align-left">@(InvoiceModel.PaymentMethodName ?? "-")</th>
+            </tr>
+            <tr>
+                <td>Paid Amount</td>
+                <th class="rz-text-align-left">@(InvoiceModel.AmountPaid?.ToString("C2") ?? "-")</th>
+            </tr>
+            <tr>
+                <td>Transaction ID</td>
+                <th class="rz-text-align-left">@(InvoiceModel.TransactionId ?? "-")</th>
+            </tr>
+            <tr>
+                <td>Paid By</td>
+                <th class="rz-text-align-left">@(InvoiceModel.PaidBy ?? "-")</th>
+            </tr>
+            <tr>
+                <td>Payment Notes</td>
+                <th class="rz-text-align-left">@(InvoiceModel.PaymentNotes ?? "-")</th>
+            </tr>
+        </table>
+    </RadzenStack>
 
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"

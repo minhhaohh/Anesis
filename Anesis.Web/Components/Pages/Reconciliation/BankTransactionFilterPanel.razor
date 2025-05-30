@@ -3,24 +3,28 @@
 @inject NotificationService _notifyService
 
 <RadzenRow Gap="0">
-    <RadzenColumn Size="12" SizeMD="9">
+    <RadzenColumn SizeMD="9" SizeSM="12">
         <RadzenTemplateForm TItem="BankTransactionFilterModel" Data="FilterModel" Submit="FilterGridAsync">
             <RadzenFieldset Text="@($"Bank Transactions - Last Time Reconciliation: {LastTimeReconciliation.DateThruAndBy}")"
                             class="custom-fieldset">
                 <RadzenRow Gap="1rem">
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
-                        <RadzenDropDown @bind-Value="FilterModel.BatchType" Name="PaymentType" AllowClear="true"
-                                        Placeholder="---All---" Data="PaymentTypes" Style="width: 100%;" />
+                    <RadzenColumn SizeLG="4" SizeSM="6">
+                        <RadzenStack Gap="0.2rem">
+                            <RadzenLabel Text="Payment Type" Component="PaymentType" class="rz-text-subtitle2" />
+                            <RadzenDropDown @bind-Value="FilterModel.BatchType" Name="PaymentType" AllowClear="true"
+                                            Placeholder="---All---" Data="PaymentTypes" Style="width: 100%;" />
+                        </RadzenStack>
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Reconcile To" Component="ReconciledDate" class="rz-text-subtitle2" />
-                        <RadzenDatePicker @bind-Value="FilterModel.ReconciledDate" Name="ReconciledDate"
-                                          AllowClear="true" AllowInput="false"
-                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                    <RadzenColumn SizeLG="4" SizeSM="6">
+                        <RadzenStack Gap="0.2rem">
+                            <RadzenLabel Text="Reconcile To" Component="ReconciledDate" class="rz-text-subtitle2" />
+                            <RadzenDatePicker @bind-Value="FilterModel.ReconciledDate" Name="ReconciledDate"
+                                              AllowClear="true" AllowInput="false"
+                                              DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                        </RadzenStack>
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
+                    <RadzenColumn SizeLG="4" SizeSM="12">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
                             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="filter_alt"
                                           title="Filter bank transactions" />
                             <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Icon="ink_eraser"
@@ -38,7 +42,7 @@
             </RadzenFieldset>
         </RadzenTemplateForm>
     </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="3">
+    <RadzenColumn SizeMD="3" SizeSM="12">
         <BalanceSummary BalanceSummaryModel="BalanceSummaryModel" />
     </RadzenColumn>
 </RadzenRow>

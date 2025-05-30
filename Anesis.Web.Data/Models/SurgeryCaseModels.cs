@@ -149,7 +149,16 @@ namespace Anesis.Web.Data.Models
         public List<string> Codes { get; set; }
     }
 
-    public class LinkInvoiceCaseModel
+    public class CaseSetStatusModel
+    {
+        public int Id { get; set; }
+
+        public int Status { get; set; }
+
+        public string Reason { get; set; }
+    }
+
+    public class CaseLinkInvoiceModel
     {
         public int CaseId { get; set; }
 

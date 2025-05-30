@@ -8,19 +8,19 @@
     <RadzenTemplateForm TItem="CaseCptCodeAddModel" Data="_addCaseCptCodeModel" Submit="AddCaseCptCodeAsync">
         <RadzenFieldset Text="Add CPT Code">
             <RadzenRow>
-                <RadzenColumn Size="12" SizeMD="5">
+                <RadzenColumn SizeSM="5" SizeXS="8">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="CPT Code" Component="CptCode" class="rz-text-subtitle2 required-near" />
                         <RadzenTextBox @bind-Value="_addCaseCptCodeModel.CptCode" Name="CptCode" Style="width: 100%;" />
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeSM="2" SizeXS="4">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Quantity" Component="Quantity" class="rz-text-subtitle2 required-near" />
                         <RadzenNumeric @bind-Value="_addCaseCptCodeModel.Quantity" TValue="int?" Name="Quantity" Style="width: 100%;" />
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="5">
+                <RadzenColumn SizeSM="5" SizeXS="8">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                         <RadzenFormField Style="width: 100%;" class="custom-input-group">
@@ -52,11 +52,11 @@
             <RadzenDataGridColumn Property="@nameof(CaseCptCodeViewModel.Quantity)" Title="Quantity" Width="15%">
                 <Template Context="caseCptCode">
                     <RadzenStack Orientation="Orientation.Horizontal">
-                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall"
                                       Shade="Shade.Lighter" Icon="remove"
                                       Click="async () => await ChangeCaseCptCodeQuantityAsync(caseCptCode.Id, caseCptCode.Quantity - 1)" />
-                        <RadzenText Text="@caseCptCode.Quantity.ToString()" class="rz-m-0" />
-                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"
+                        <RadzenText TextStyle="TextStyle.Body2" Text="@caseCptCode.Quantity.ToString()" class="rz-m-0" />
+                        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.ExtraSmall"
                                       Shade="Shade.Lighter" Icon="add"
                                       Click="async () => await ChangeCaseCptCodeQuantityAsync(caseCptCode.Id, caseCptCode.Quantity + 1)" />
                     </RadzenStack>

@@ -57,8 +57,8 @@ namespace Anesis.ApiService.Services.Services
                 .ToPageListAsync(filter.StartIndex, filter.CountNumber, cancellationToken);
 		}
 
-        public async Task<List<DeviceWithCostDto>> GetAllAsync(bool activeOnly = false,
-            CancellationToken cancellationToken = default)
+        public async Task<List<DeviceWithCostDto>> GetAllAsync(
+            bool activeOnly = false, CancellationToken cancellationToken = default)
         {
             var query = _deviceRepo.All(true)
                 .WhereIf(x => x.IsActive, activeOnly);
@@ -128,8 +128,28 @@ namespace Anesis.ApiService.Services.Services
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> ToggleFlagAsync(
-			FlagToggleDto model, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateFieldAsync(FieldUpdateDto model, CancellationToken cancellationToken = default)
+        {
+            var device = await FindByIdAsync(model.Id, cancellationToken);
+
+            switch (model.FieldName)
+            {
+                case nameof(DeviceAndSupply.DisplayOrder):
+                    device.DisplayOrder = model.NewValue.ToInt();
+                    break;
+                default:
+                    return false;
+            }
+
+            device.UpdatedBy = "haotm";
+            device.UpdatedDate = DateTime.Now;
+
+            _deviceRepo.Update(device);
+
+            return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public async Task<bool> ToggleFlagAsync(FlagToggleDto model, CancellationToken cancellationToken = default)
 		{
             var device = await FindByIdAsync(model.Id, cancellationToken);
 
@@ -150,8 +170,7 @@ namespace Anesis.ApiService.Services.Services
             return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> UpdateDeviceCostAsync(
-            DeviceCostEditDto model, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateCostAsync(DeviceCostEditDto model, CancellationToken cancellationToken = default)
 		{
             var deviceCost = await FindCurrentCostAsync(model.DeviceId);
 
@@ -179,8 +198,7 @@ namespace Anesis.ApiService.Services.Services
             return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> CreateDeviceAsync(
-            DeviceWithCostEditDto model, CancellationToken cancellationToken = default)
+        public async Task<bool> CreateAsync(DeviceWithCostEditDto model, CancellationToken cancellationToken = default)
         {
             var device = _mapper.Map<DeviceAndSupply>(model);
 
@@ -194,8 +212,7 @@ namespace Anesis.ApiService.Services.Services
             return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> UpdateDeviceAsync(
-            DeviceWithCostEditDto model, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateAsync(DeviceWithCostEditDto model, CancellationToken cancellationToken = default)
         {
             var currentTime = DateTime.Now;
             var device =  await FindByIdAsync(model.Id, cancellationToken);

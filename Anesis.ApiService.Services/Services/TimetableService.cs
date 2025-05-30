@@ -339,7 +339,7 @@ namespace Anesis.ApiService.Services.Services
             {
                 var employee = employees.FirstOrDefault(x => x.Id == newEvent.EmployeeId);
 
-                var msg = $"Created new schedule event #{newEvent.Id.ToString()} for {employee.FirstName} {employee.LastName} at {location.ShortName}"
+                var msg = $"Created new schedule event #{newEvent.Id.ToString()} for {employee.FirstName} {employee.LastName} at {location.ShortName} "
                     + $"from {newEvent.StartTime.ToString("hh\\:mm")} to {newEvent.EndTime.ToString("hh\\:mm")} on {newEvent.CalendarDate.ToString("MM/dd/yyyy")}.";
 
                 await _changeLogService.AddChangeLogAsync<Timetable>(newEvent.Id, "Create", newEvent.Notes,

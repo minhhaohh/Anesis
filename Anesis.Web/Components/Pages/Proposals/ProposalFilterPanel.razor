@@ -3,115 +3,140 @@
                     Collapse="async () => await ToggleFilterPanelAsync(true)"
                     Expand="async () => await ToggleFilterPanelAsync(false)"
                     class="custom-fieldset">
-        <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="2">
+        <RadzenRow RowGap="0.5rem">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Gap="0.5rem">
-                    <RadzenLabel Text="Chart No" Component="ChartNo" class="rz-text-subtitle2" />
-                    <RadzenTextBox @bind-Value="FilterModel.EcwChartNo" Name="ChartNo"
-                                   PlaceHolder="Chart No" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Chart No" Component="ChartNo" class="rz-text-subtitle2" />
+                        <RadzenTextBox @bind-Value="FilterModel.EcwChartNo" Name="ChartNo"
+                                       PlaceHolder="Chart No" Style="width: 100%;" />
+                    </RadzenStack>
 
-                    <RadzenLabel Text="Patient Name" Component="FirstName" class="rz-text-subtitle2" />
-                    <RadzenRow>
-                        <RadzenColumn Size="12" SizeMD="6">
-                            <RadzenTextBox @bind-Value="FilterModel.FirstName" Name="FirstName"
-                                           Placeholder="First Name" Style="width: 100%;" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12" SizeMD="6">
-                            <RadzenTextBox @bind-Value="FilterModel.LastName" Name="LastName"
-                                           Placeholder="Last Name" Style="width: 100%;" />
-                        </RadzenColumn>
-                    </RadzenRow>
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Patient Name" Component="FirstName" class="rz-text-subtitle2" />
+                        <RadzenRow>
+                            <RadzenColumn Size="6">
+                                <RadzenTextBox @bind-Value="FilterModel.FirstName" Name="FirstName"
+                                               Placeholder="First Name" Style="width: 100%;" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="6">
+                                <RadzenTextBox @bind-Value="FilterModel.LastName" Name="LastName"
+                                               Placeholder="Last Name" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Gap="0.5rem">
-                    <RadzenLabel Text="Proposer" Component="ProposerId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.ProposerId" Name="ProposerId"
-                                    Data="ActiveMidLevelProviders" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Proposer" Component="ProposerId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.ProposerId" Name="ProposerId"
+                                        Data="ActiveMidLevelProviders" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
 
-                    <RadzenLabel Text="Status" Component="RequestStatus" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.RequestStatus" Name="RequestStatus"
-                                    Data="ProposalStatus" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;"
-                                    Change="(selectedValue) => { if ((int?)selectedValue >= 0) { FilterModel.ExcludeCancelled = false; } }" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Status" Component="RequestStatus" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.RequestStatus" Name="RequestStatus"
+                                        Data="ProposalStatus" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;"
+                                        Change="(selectedValue) => { if ((int?)selectedValue >= 0) { FilterModel.ExcludeCancelled = false; } }" />
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Gap="0.5rem">
-                    <RadzenLabel Text="Appointment Provider" Component="ProviderId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.ProviderId" Name="ProviderId"
-                                    Data="ActiveProviders" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Appointment Provider" Component="ProviderId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.ProviderId" Name="ProviderId"
+                                        Data="ActiveProviders" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
 
-                    <RadzenLabel Text="Appointment Date" Component="AppointmentDate" class="rz-text-subtitle2" />
-                    <RadzenDatePicker @bind-Value="FilterModel.AppointmentDate" Name="AppointmentDate"
-                                      AllowClear="true" AllowInput="false"
-                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Appointment Date" Component="AppointmentDate" class="rz-text-subtitle2" />
+                        <RadzenDatePicker @bind-Value="FilterModel.AppointmentDate" Name="AppointmentDate"
+                                          AllowClear="true" AllowInput="false"
+                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Gap="0.5rem">
-                    <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.ReviewerId" Name="ReviewerId"
-                                    Data="ActiveDoctors" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Reviewer" Component="ReviewerId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.ReviewerId" Name="ReviewerId"
+                                        Data="ActiveDoctors" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
 
-                    <RadzenLabel Text="Appointment Location" Component="LocationId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.LocationId" Name="LocationId"
-                                    Data="ActiveLocations" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Appointment Location" Component="LocationId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.LocationId" Name="LocationId"
+                                        Data="ActiveLocations" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Gap="0.5rem">
-                    <RadzenLabel Text="Proposed Procedure" Component="ProcedureId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.ProcedureId" Name="ProcedureId" Data="ActiveProcedures"
-                                    AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Proposed Procedure" Component="ProcedureId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.ProcedureId" Name="ProcedureId" Data="ActiveProcedures"
+                                        AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
 
-                    <RadzenLabel Text="Surgery Location" Component="SurgeryLocationId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.SurgeryLocationId" Name="SurgeryLocationId"
-                                    Data="ActiveAscLocations" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Surgery Location" Component="SurgeryLocationId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.SurgeryLocationId" Name="SurgeryLocationId"
+                                        Data="ActiveAscLocations" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Gap="0.5rem">
-                    <RadzenLabel Text="Surgeon" Component="SurgeonId" class="rz-text-subtitle2" />
-                    <RadzenDropDown @bind-Value="FilterModel.SurgeonId" Name="SurgeonId"
-                                    Data="ActiveDoctors" AllowClear="true"
-                                    TextProperty="Value" ValueProperty="Key"
-                                    Placeholder="---All---" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Surgeon" Component="SurgeonId" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.SurgeonId" Name="SurgeonId"
+                                        Data="ActiveDoctors" AllowClear="true"
+                                        TextProperty="Value" ValueProperty="Key"
+                                        Placeholder="---All---" Style="width: 100%;" />
+                    </RadzenStack>
 
-                    <RadzenLabel Text="Surgery Date" Component="SurgeryDate" class="rz-text-subtitle2" />
-                    <RadzenDatePicker @bind-Value="FilterModel.SurgeryDate" Name="SurgeryDate"
-                                      AllowClear="true" AllowInput="false"
-                                      DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Surgery Date" Component="SurgeryDate" class="rz-text-subtitle2" />
+                        <RadzenDatePicker @bind-Value="FilterModel.SurgeryDate" Name="SurgeryDate"
+                                          AllowClear="true" AllowInput="false"
+                                          DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
                     <RadzenCheckBox @bind-Value="FilterModel.UnpostedChartNote" Name="UnpostedChartNote" />
                     <RadzenLabel Text="Unposted Chart Note" Component="UnpostedChartNote" class="rz-text-subtitle2" />
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
                     <RadzenCheckBox @bind-Value="FilterModel.ExcludeCancelled" TValue="bool" Name="ExcludeCancelled"
                                     Change="(isChecked) => { if (isChecked) { FilterModel.RequestStatus = null; } }" />
                     <RadzenLabel Text="Exclude Cancelled" Component="ExcludeCancelled" class="rz-text-subtitle2" />
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="8">
-                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" Style="height: 100%;">
+            <RadzenColumn SizeLG="8" SizeMD="12" SizeSM="12">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End"  AlignItems="AlignItems.End"
+                Gap="0.5rem" Style="height: 100%;">
                     <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                                   Text="Filter" Icon="filter_alt" />
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning"

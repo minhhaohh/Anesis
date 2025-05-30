@@ -10,7 +10,7 @@
                         Collapse="() => ToggleFilterPanel(true)"
                         Expand="() => ToggleFilterPanel(false)">
             <RadzenRow>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeLG="2" SizeMD="4" SizeSM="6">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Surgery Date" Component="SurgeryDate" class="rz-text-subtitle2" />
                         <RadzenDatePicker @bind-Value="_filterModel.SurgeryDate" Name="SurgeryDate"
@@ -19,7 +19,7 @@
 
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeLG="2" SizeMD="4" SizeSM="6">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2" />
                         <RadzenDropDown @bind-Value="_filterModel.LocationId" Name="LocationId"
@@ -28,14 +28,14 @@
                                         Placeholder="---All---" Style="width: 100%;" />
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeLG="2" SizeMD="4" SizeSM="6">
                     <RadzenStack Gap="0.5rem">
                         <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
                         <RadzenTextBox @bind-Value="_filterModel.VendorName" Name="VendorName"
                                        PlaceHolder="Vendor Name" Style="width: 100%;" />
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeLG="2" SizeMD="4" SizeSM="6">
                     <RadzenStack Gap="0.5rem" Style="height: 100%;">
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="height: 100%;">
                             <RadzenCheckBox @bind-Value="_filterModel.HasDevices" TValue="bool" Name="HasDevices"
@@ -49,13 +49,13 @@
                         </RadzenStack>
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeLG="2" SizeMD="4" SizeSM="6">
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="height: 100%;">
                         <RadzenSwitch @bind-Value="_filterModel.SelectedOnly" Name="SelectedOnly" />
                         <RadzenLabel Text="Selected Only" Component="SelectedOnly" class="rz-text-subtitle2 rz-color-danger" />
                     </RadzenStack>
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="2">
+                <RadzenColumn SizeLG="2" SizeMD="4" SizeSM="6">
                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
                         <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                                       Icon="filter_alt" title="Filter surgery cases" />
@@ -77,8 +77,8 @@
             <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
             <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.EcwChartNo)" Title="Patient" Width="15%">
                 <Template Context="surgeryCase">
-                    <div title="Chart No">
-                        <strong>@surgeryCase.EcwChartNo</strong>
+                    <div>
+                        <strong title="Chart No">@surgeryCase.EcwChartNo</strong>
                         <span> | </span>
                         <strong class="rz-color-primary" title="Patient Name">@surgeryCase.FirstName, @surgeryCase.LastName</strong>
                     </div>
@@ -94,14 +94,24 @@
                     @{
                         var colorClass = SurgeryCaseStatusColors.GetColorClass(surgeryCase.CaseStatusStr);
                     }
-                    <div><strong title="Procedure">@surgeryCase.ProcedureName</strong></div>
-                    <div><span title="Surgery Date">@surgeryCase.SurgeryDate.ToString("MM-dd-yyyy")</span> | <strong class="@colorClass" title="Status">@surgeryCase.CaseStatusStr</strong></div>
+                    <div>
+                        <strong title="Procedure">@surgeryCase.ProcedureName</strong>
+                    </div>
+                    <div>
+                        <span title="Surgery Date">@surgeryCase.SurgeryDate.ToString("MM-dd-yyyy")</span>
+                        <span> | </span>
+                        <strong class="@colorClass" title="Status">@surgeryCase.CaseStatusStr</strong>
+                    </div>
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.PrimaryProviderName)" Title="Surgery By" Width="15%">
                 <Template Context="surgeryCase">
-                    <div class="rz-color-series-4"><strong title="Surgeon">@surgeryCase.PrimaryProviderName</strong></div>
-                    <div><strong title="Location">@surgeryCase.LocationName</strong></div>
+                    <div>
+                        <strong class="rz-color-series-4" title="Surgeon">@surgeryCase.PrimaryProviderName</strong>
+                    </div>
+                    <div>
+                        <strong title="Location">@surgeryCase.LocationName</strong>
+                    </div>
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Devices)" Title="Devices" Width="20%" Sortable="false">

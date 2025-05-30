@@ -81,7 +81,7 @@ namespace Anesis.ApiService.Controllers
 
             model.VendorCost = model.VendorCost > 0 ? model.VendorCost : model.AppliedCost;
             
-            if (!await _deviceService.CreateDeviceAsync(model))
+            if (!await _deviceService.CreateAsync(model))
             {
                 return Result.Error("Something went wrong when creating device. Please try again.");
             }
@@ -105,7 +105,7 @@ namespace Anesis.ApiService.Controllers
 
             model.VendorCost = model.VendorCost > 0 ? model.VendorCost : model.AppliedCost;
 
-            if (!await _deviceService.UpdateDeviceAsync(model))
+            if (!await _deviceService.UpdateAsync(model))
             {
                 return Result.Error($"Something went wrong when updating device #{id}. Please try again.");
             }
@@ -113,18 +113,32 @@ namespace Anesis.ApiService.Controllers
             return Result.Ok($"Updated device #{model.Id} successful.");
         }
 
-        [HttpPatch("ToggleFlag/{id}")]
-		public async Task<Result> ToggleFlag([FromRoute] int id, [FromBody] FlagToggleDto model)
-		{
+        [HttpPatch("{id}")]
+        public async Task<Result> UpdateDeviceField([FromRoute] int id, [FromBody] FieldUpdateDto model)
+        {
             // Make sure device ID is from the route
             model.Id = id;
 
-			if (!await _deviceService.ToggleFlagAsync(model))
+            if (!await _deviceService.UpdateFieldAsync(model))
             {
                 return Result.Error($"Something went wrong when updating device #{id}. Please try again.");
             }
 
             return Result.Ok($"Updated device #{id} successful.");
+        }
+
+        [HttpPatch("ToggleFlag/{deviceId}")]
+		public async Task<Result> ToggleFlag([FromRoute] int deviceId, [FromBody] FlagToggleDto model)
+		{
+            // Make sure device ID is from the route
+            model.Id = deviceId;
+
+			if (!await _deviceService.ToggleFlagAsync(model))
+            {
+                return Result.Error($"Something went wrong when updating device #{deviceId}. Please try again.");
+            }
+
+            return Result.Ok($"Updated device #{deviceId} successful.");
         }
 
         [HttpPut("Costs/{deviceId}")]
@@ -143,7 +157,7 @@ namespace Anesis.ApiService.Controllers
 
             model.VendorCost = model.VendorCost > 0 ? model.VendorCost : model.AppliedCost;
             
-            if (!await _deviceService.UpdateDeviceCostAsync(model))
+            if (!await _deviceService.UpdateCostAsync(model))
             {
                 return Result.Error($"Something went wrong when updating device #{deviceId}. Please try again.");
             }

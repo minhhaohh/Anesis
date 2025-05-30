@@ -28,22 +28,15 @@ namespace Anesis.Web.Data.Services
                 $"{API_Surgery_Cases}/ChangeLogs/{id}", cancellationToken);
         }
 
-        public async Task<ResponseModel<string>> MarkSurgeryCaseAsCompletedAsync(
-            int id, CancellationToken cancellationToken = default)
+        public async Task<ResponseModel<string>> SetSurgeryCaseStatusAsync(
+            CaseSetStatusModel model, CancellationToken cancellationToken = default)
         {
-            var response = await _httpClient.PatchAsJsonAsync($"{API_Surgery_Cases}/MarkAsCompleted/{id}", cancellationToken);
-            return await response.Content.ReadFromJsonAsync<ResponseModel<string>>();
-        }
-
-        public async Task<ResponseModel<string>> MarkSurgeryCaseAsCancelledAsync(
-            int id, string reason, CancellationToken cancellationToken = default)
-        {
-            var response = await _httpClient.PatchAsJsonAsync($"{API_Surgery_Cases}/MarkAsCancelled/{id}", reason, cancellationToken);
+            var response = await _httpClient.PatchAsJsonAsync($"{API_Surgery_Cases}/SetStatus/{model.Id}", model, cancellationToken);
             return await response.Content.ReadFromJsonAsync<ResponseModel<string>>();
         }
 
         public async Task<ResponseModel<string>> LinkInvoiceToSurgeryCaseAsync(
-            LinkInvoiceCaseModel model, CancellationToken cancellationToken = default)
+            CaseLinkInvoiceModel model, CancellationToken cancellationToken = default)
         {
             var response = await _httpClient.PatchAsJsonAsync($"{API_Surgery_Cases}/LinkInvoice/{model.CaseId}", model, cancellationToken);
             return await response.Content.ReadFromJsonAsync<ResponseModel<string>>();

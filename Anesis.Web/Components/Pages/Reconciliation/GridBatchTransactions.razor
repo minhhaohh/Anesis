@@ -9,7 +9,7 @@
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.All()" PageSize="_pageSize" PageNumbersCount="3"
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-                PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 620px;"
+                PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 614px;"
                 CellContextMenu="OnCellContextMenu" CellClick="OnCellClick">
     <Template Context="batch">
         <RadzenTable>
@@ -37,7 +37,7 @@
         <RadzenDataGridColumn TItem="BatchTransactionViewModel" Property="@nameof(BatchTransactionViewModel.BankTransactionId)" Title="#BankID"
                               IsInEditMode="IsEditing" Width="15%" CssClass="rz-py-0">
             <Template Context="batch">
-                <RadzenText Text="@batch.BankTransactionId.ToString()" TextStyle="TextStyle.Subtitle2" class="rz-m-0" />
+                <span class="rz-text-subtitle2">@batch.BankTransactionId.ToString()</span>
             </Template>
             <EditTemplate Context="batch">
                 <RadzenNumeric @bind-Value="batch.BankTransactionId" TValue="int?" Style="width:100%"
@@ -221,49 +221,8 @@
         return __builder =>
         {
             <RadzenStack>
-                <RadzenRow RowGap="0">
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Post Date:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@batchTransaction.PostDate.ToString("MM/dd/yyyy")</RadzenText>
-                    </RadzenColumn>
+                <BatchTransactionInfo ViewModel="batchTransaction" />
 
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Batch Owner:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@batchTransaction.BatchOwner</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Document No:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@batchTransaction.DocNo</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Payment From:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@batchTransaction.PaymentFrom</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Payment Type:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@batchTransaction.PaymentType</RadzenText>
-                    </RadzenColumn>
-
-                    <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenText TextStyle="TextStyle.Body2">Payment Amount:</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenText TextStyle="TextStyle.Subtitle2">@batchTransaction.PaymentAmount.ToString("C2")</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
                 <RadzenText TextStyle="TextStyle.Body2">Do you really want to move batch transaction #<b>@batchTransaction.Id</b> to <b>Bel-Red (BSC)</b> instance?</RadzenText>
             </RadzenStack>
         };

@@ -7,19 +7,22 @@
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.All()" PageSize="_pageSize"
                 PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
+                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle"
+                CellClick="OnCellClick">
     <Columns>
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.Id)" Title="#ID"
                               Width="10%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.Name)" Title="Device Name" Width="40%" />
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.VendorName)" Title="Vendor Name" Width="15%" />
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.CategoryName)" Title="Category" Width="15%" Sortable="false" />
-        <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.DisplayOrder)" Title="Order" Width="10%">
+        <RadzenDataGridColumn TItem="DeviceWithCostViewModel" Property="@nameof(DeviceWithCostViewModel.DisplayOrder)" Title="D. Order"
+                              IsInEditMode="IsEditing" Width="10%">
             <Template Context="device">
-                <RadzenText Text="@device.DisplayOrder.ToString()" />
+                <span class="@(CanEditDevice ? "cell-editable" : "")">@device.DisplayOrder.ToString()</span>
             </Template>
             <EditTemplate Context="device">
-                <RadzenNumeric @bind-Value="device.DisplayOrder" Style="width:100%" />
+                <RadzenNumeric @bind-Value="device.DisplayOrder" TValue="int" Style="width:100%"
+                               Change="async (changedValue) => await UpdateFieldAsync(device.Id, nameof(DeviceWithCostViewModel.DisplayOrder), changedValue.ToString())" />
             </EditTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.IsActive)" Title="Active" Width="10%">
@@ -29,15 +32,17 @@
                     @if (device.IsActive)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"
-                                      Shade="Shade.Lighter" Icon="check" Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
+                                      Shade="Shade.Lighter" Icon="check" title="Click to update device to inactive"
+                                      Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
                     }
                     else
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
-                                      Shade="Shade.Lighter" Icon="close" Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
+                                      Shade="Shade.Lighter" Icon="close" title="Click to update device to active"
+                                      Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
                     }
                 }
-                else 
+                else
                 {
                     @if (device.IsActive)
                     {
@@ -49,7 +54,7 @@
                     }
                 }
 
-                
+
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.VendorCost)" Title="Base Cost" FormatString="{0:C2}" Width="15%" />
@@ -87,21 +92,22 @@
     [Parameter]
     public EventCallback<int> OnOpenEditDeviceDialog { get; set; }
 
-    private string _gridStyle = "max-height: 620px;";
+    private string _gridStyle = "max-height: 612px;";
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
     private ResponseModel<List<DeviceWithCostViewModel>> _data = new();
 
+    private string _columnEditing;
+    private DeviceWithCostViewModel _deviceToUpdate = new();
+
     // COMPONENTS
     private RadzenDataGrid<DeviceWithCostViewModel> _grid;
-
-    // OVERRIDE METHODS
 
     // PUBLIC METHODS
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 620px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 686px;" : "max-height: 612px;";
     }
 
     public async Task RefreshGridAsync()
@@ -147,7 +153,29 @@
         }
         else
         {
-            _notifyService.NotifyErrors($"Update Device Information", updateDeviceRes.Messages);
+            _notifyService.NotifyErrors("Update Device Information", updateDeviceRes.Messages);
+        }
+    }
+
+    private async Task UpdateFieldAsync(int id, string fieldName, string value)
+    {
+        var updateModel = new FieldUpdateModel()
+            {
+                Id = id,
+                FieldName = fieldName,
+                NewValue = value,
+            };
+
+        var updateDeviceRes = await _apiService.UpdateDeviceFieldAsync(updateModel);
+
+        if (updateDeviceRes.Success)
+        {
+            _notifyService.NotifySuccess("Update Device Information", updateDeviceRes.Data);
+            await RefreshGridAsync();
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Update Device Information", updateDeviceRes.Messages);
         }
     }
 
@@ -204,5 +232,36 @@
     private async Task OpenEditDeviceDialogAsync(int id)
     {
         await OnOpenEditDeviceDialog.InvokeAsync(id);
+    }
+
+    private bool IsEditing(string columnName, DeviceWithCostViewModel caseCost)
+    {
+        return _columnEditing == columnName && _deviceToUpdate == caseCost;
+    }
+
+    private void OnCellClick(DataGridCellMouseEventArgs<DeviceWithCostViewModel> args)
+    {
+        _columnEditing = args.Column.Property;
+
+        if (_columnEditing != nameof(DeviceWithCostViewModel.DisplayOrder))
+        {
+            return;
+        }
+
+        EditRow(args.Data);
+    }
+
+    private void EditRow(DeviceWithCostViewModel device)
+    {
+        _deviceToUpdate = device;
+
+        _grid.EditRow(device);
+    }
+
+    private void UpdateRowGrid()
+    {
+        _grid.UpdateRow(_deviceToUpdate);
+
+        _deviceToUpdate = new();
     }
 }

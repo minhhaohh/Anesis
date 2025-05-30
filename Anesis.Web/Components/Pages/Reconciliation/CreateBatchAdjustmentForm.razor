@@ -7,28 +7,28 @@
         <RadzenFieldset Text="Batch Adjustment">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn SizeSM="4">
                         <RadzenLabel Text="Post Date" Component="PostDate" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn SizeSM="8">
                         <RadzenDatePicker @bind-Value="CreateModel.PostDate" Name="PostDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" Disabled />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn SizeSM="4">
                         <RadzenLabel Text="Batch Owner" Component="BatchOwner" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn SizeSM="8">
                         <RadzenTextBox @bind-Value="CreateModel.BatchOwner" Name="BatchOwner" Style="width: 100%;" Disabled />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn SizeSM="4">
                         <RadzenLabel Text="Location" Component="LocationId" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn SizeSM="8">
                         <RadzenDropDown @bind-Value="CreateModel.LocationId" Name="LocationId"
                                         Data="ActiveLocations" AllowClear="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -36,28 +36,28 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn SizeSM="4">
                         <RadzenLabel Text="Description" Component="Description" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn SizeSM="8">
                         <RadzenTextBox @bind-Value="CreateModel.Description" Name="Description" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn SizeSM="4">
                         <RadzenLabel Text="PaymentType" Component="PaymentType" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn SizeSM="8">
                         <RadzenDropDown @bind-Value="CreateModel.PaymentType" Name="PaymentType"
                                         Data="PaymentTypes" AllowClear="true"
                                         Placeholder="---Select---" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn SizeSM="4">
                         <RadzenLabel Text="Amount" Component="Amount" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn SizeSM="8">
                         <RadzenFormField Style="width: 100%;" class="custom-input-group">
                             <Start>
                                 <RadzenIcon Icon="attach_money" />

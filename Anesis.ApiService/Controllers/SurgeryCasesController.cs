@@ -1,7 +1,9 @@
 ﻿using Anesis.ApiService.Domain.DTOs.Common;
+using Anesis.ApiService.Domain.DTOs.PotentialProcedures;
 using Anesis.ApiService.Domain.DTOs.SurgeryCases;
 using Anesis.ApiService.Extensions;
 using Anesis.ApiService.Services.IServices;
+using Anesis.ApiService.Validators.Proposals;
 using Anesis.ApiService.Validators.SurgeryCases;
 using Anesis.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
@@ -46,40 +48,21 @@ namespace Anesis.ApiService.Controllers
             return Result.Ok(surgeryCase);
         }
 
-        [HttpGet("ChangeLogs/{id}")]
-        public async Task<Result> GetChangeLogs([FromRoute] int id)
+        [HttpGet("ChangeLogs/{caseId}")]
+        public async Task<Result> GetChangeLogs([FromRoute] int caseId)
         {
-            var changeLogs = await _surgeryCaseService.GetChangeLogsAsync(id);
+            var changeLogs = await _surgeryCaseService.GetChangeLogsAsync(caseId);
 
             return Result.Ok(changeLogs);
         }
 
-        [HttpPatch("MarkAsCompleted/{id}")]
-        public async Task<Result> MarkAsCompleted([FromRoute] int id)
+        [HttpPatch("SetStatus/{caseId}")]
+        public async Task<Result> SetStatus([FromRoute] int caseId, [FromBody] CaseSetStatusDto model)
         {
-            if (!await _surgeryCaseService.SetStatusAsync(id, SurgeryCaseStatus.Completed))
-            {
-                return Result.Error($"Something went wrong when updating surgery case #{id}. Please try again.");
-            }
+            // Make sure surgery case ID is from the route
+            model.Id = caseId;
 
-            return Result.Ok($"Marked surgery case #{id} as completed successful.");
-        }
-
-        [HttpPatch("MarkAsCancelled/{id}")]
-        public async Task<Result> MarkAsCancelled([FromRoute] int id, [FromBody] string reason)
-        {
-            if (!await _surgeryCaseService.SetStatusAsync(id, SurgeryCaseStatus.Cancelled, reason))
-            {
-                return Result.Error($"Something went wrong when updating surgery case #{id}. Please try again.");
-            }
-
-            return Result.Ok($"Marked surgery case #{id} as cancelled successful.");
-        }
-
-        [HttpPatch("LinkInvoice/{id}")]
-        public async Task<Result> LinkInvoice([FromRoute] int id, [FromBody] LinkInvoiceCaseDto model)
-        {
-            var validator = new LinkInvoiceCaseDtoValidator(_surgeryCaseService, _invoiceService);
+            var validator = new CaseSetStatusDtoValidator(_surgeryCaseService);
             var validationResult = await validator.ValidateAsync(model);
 
             if (!validationResult.IsValid)
@@ -87,23 +70,45 @@ namespace Anesis.ApiService.Controllers
                 return validationResult.ToResponseWithErrors();
             }
 
-            if (!await _surgeryCaseService.LinkInvoiceAsync(id, model))
+            if (!await _surgeryCaseService.SetStatusAsync(model))
             {
-                return Result.Error($"Something went wrong when updating surgery case #{id}. Please try again.");
+                return Result.Error($"Something went wrong when updating surgery case #{caseId}. Please try again.");
             }
 
-            return Result.Ok($"Linked invoice to surgery case #{id} successful.");
+            return Result.Ok($"Updated surgery case #{caseId} status to {(SurgeryCaseStatus)model.Status} successful.");
         }
 
-        [HttpPatch("UnlinkInvoice/{id}")]
-        public async Task<Result> UnlinkInvoice([FromRoute] int id)
+        [HttpPatch("LinkInvoice/{caseId}")]
+        public async Task<Result> LinkInvoice([FromRoute] int caseId, [FromBody] CaseLinkInvoiceDto model)
         {
-            if (!await _surgeryCaseService.RemoveLinkedInvoiceAsync(id))
+            // Make sure surgery case ID is from the route
+            model.CaseId = caseId;
+
+            var validator = new CaseLinkInvoiceDtoValidator(_surgeryCaseService, _invoiceService);
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
             {
-                return Result.Error($"Something went wrong when updating surgery case #{id}. Please try again.");
+                return validationResult.ToResponseWithErrors();
             }
 
-            return Result.Ok($"Remove linked invoice from surgery case #{id} successful.");
+            if (!await _surgeryCaseService.LinkInvoiceAsync(model))
+            {
+                return Result.Error($"Something went wrong when updating surgery case #{caseId}. Please try again.");
+            }
+
+            return Result.Ok($"Linked invoice to surgery case #{caseId} successful.");
+        }
+
+        [HttpPatch("UnlinkInvoice/{caseId}")]
+        public async Task<Result> UnlinkInvoice([FromRoute] int caseId)
+        {
+            if (!await _surgeryCaseService.RemoveLinkedInvoiceAsync(caseId))
+            {
+                return Result.Error($"Something went wrong when updating surgery case #{caseId}. Please try again.");
+            }
+
+            return Result.Ok($"Remove linked invoice from surgery case #{caseId} successful.");
         }
 
         // CASE CPT CODES

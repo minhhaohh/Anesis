@@ -4,29 +4,36 @@
                     Expand="async () => await ToggleFilterPanelAsync(false)"
                     class="custom-fieldset">
         <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="2">
-                <RadzenLabel Text="Category" Component="Category" class="rz-text-subtitle2" />
-                <RadzenDropDown @bind-Value="FilterModel.Category" Name="Category"
-                                Data="DeviceCategories" AllowClear="true"
-                                TextProperty="Value" ValueProperty="Key"
-                                Placeholder="---All---" Style="width: 100%;" />
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="Category" Component="Category" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.Category" Name="Category"
+                                    Data="DeviceCategories" AllowClear="true"
+                                    TextProperty="Value" ValueProperty="Key"
+                                    Placeholder="---All---" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
-                <RadzenLabel Text="Device Name" Component="DeviceName" class="rz-text-subtitle2" />
-                <RadzenTextBox @bind-Value="FilterModel.Name" Name="DeviceName" Placeholder="Device Name" Style="width: 100%;" />
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="Device Name" Component="DeviceName" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.Name" Name="DeviceName" Placeholder="Device Name" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
-                <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
-                <RadzenTextBox @bind-Value="FilterModel.VendorName" Name="VendorName" Placeholder="Vendor Name" Style="width: 100%;" />
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
+                    <RadzenTextBox @bind-Value="FilterModel.VendorName" Name="VendorName" Placeholder="Vendor Name" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="height: 100%;">
                     <RadzenSwitch @bind-Value="FilterModel.ActiveOnly" Name="ActiveOnly" />
                     <RadzenLabel Text="Active Only" Component="ActiveOnly" class="rz-text-subtitle2" />
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
-                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
+            <RadzenColumn SizeLG="4" SizeMD="12" SizeSM="8">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.End"
+                             Gap="0.5rem" Style="height: 100%;">
                     <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
                                   Text="Filter" Icon="filter_alt" />
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning"

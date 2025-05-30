@@ -5,10 +5,10 @@
 <PageTitle>Reconciliation</PageTitle>
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H5">Reconciliation</RadzenText>
+    <HeaderBasedOnUrl />
 
     <RadzenRow>
-        <RadzenColumn Size="12" SizeMD="6">
+        <RadzenColumn SizeLG="6" SizeMD="12">
             <RadzenStack>
                 <BatchTransactionFilterPanel FilterModel="_batchFilterModel" LastTimeReconciliation="_lastTimeReconciliation"
                                              ActiveLocations="_activeLocations" PaymentTypes="_paymentTypes"
@@ -17,7 +17,7 @@
                                        FilterModel="_batchFilterModel" OnRefreshBankGrid="RefreshBankGridAsync" />
             </RadzenStack>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeMD="6">
+        <RadzenColumn SizeLG="6" SizeMD="12">
             <RadzenStack>
                 <BankTransactionFilterPanel FilterModel="_bankFilterModel" BalanceSummaryModel="_balanceSummaryModel"
                                             LastTimeReconciliation="_lastTimeReconciliation" PaymentTypes="_paymentTypes"

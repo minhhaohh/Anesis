@@ -9,30 +9,30 @@
         <RadzenFieldset Text="Scheduling Options">
             <RadzenStack Gap="1rem">
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Surgery Date" Component="SurgeryDate" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDatePicker @bind-Value="_scheduleModel.SurgeryDate" Name="SurgeryDate"
                                           AllowClear="true" AllowInput="false"
                                           DateFormat="MM/dd/yyyy" Placeholder="MM/dd/yyyy" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Surgery Time" Component="SurgeryTime" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTimeSpanPicker @bind-Value="_scheduleModel.SurgeryTime" Name="SurgeryTime"
                                               Min="BusinessStartTime" Max="BusinessEndTime"
                                               AllowClear="true" ShowConfirmationButton="true" Placeholder="HH:mm:ss" Style="width: 100%;" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Surgeon" Component="SurgeonId" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="_scheduleModel.SurgeonId" Name="SurgeonId"
                                         Data="ActiveDoctors" AllowClear="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -40,10 +40,10 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Surgery Location" Component="SurgeryLocationId" class="rz-text-subtitle2 required-near" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenDropDown @bind-Value="_scheduleModel.SurgeryLocationId" Name="SurgeryLocationId"
                                         Data="ActiveAscLocations" AllowClear="true"
                                         TextProperty="Value" ValueProperty="Key"
@@ -51,10 +51,10 @@
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow>
-                    <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenColumn Size="4">
                         <RadzenLabel Text="Notes" Component="Notes" class="rz-text-subtitle2" />
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenColumn Size="8">
                         <RadzenTextArea @bind-Value="_scheduleModel.Notes" Name="Notes" Rows="3" Style="width: 100%" />
                     </RadzenColumn>
                 </RadzenRow>

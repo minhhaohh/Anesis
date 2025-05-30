@@ -26,6 +26,9 @@ namespace Anesis.Web.Data.Services
         Task<ResponseModel<string>> UpdateDeviceAsync(
             DeviceWithCostEditModel model, CancellationToken cancellationToken = default);
 
+        Task<ResponseModel<string>> UpdateDeviceFieldAsync(
+            FieldUpdateModel model, CancellationToken cancellationToken = default);
+
         Task<ResponseModel<string>> ToggleDeviceFlagAsync(
             FlagToggleModel model, CancellationToken cancellationToken = default);
 
