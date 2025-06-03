@@ -1,6 +1,6 @@
 ﻿namespace Anesis.Shared.Constants
 {
-    public static class ProviderTypes
+    public static class ProviderType
     {
         public const string ARNP = "ARNP";
         public const string MD = "MD";

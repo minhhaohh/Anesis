@@ -32,15 +32,17 @@ namespace Anesis.ApiService.Domain.DTOs.SurgeryCases
 
         public bool NoDevices { get; set; }
 
-        public bool LinkedInvoice { get; set; }
+        public bool IsLinkedInvoice { get; set; }
 
-        public bool NotLinkInvoice { get; set; }
+        public bool NotLinkedInvoice { get; set; }
+
+        public string RoomName { get; set; }
 
         public string VendorName { get; set; }
 
-        public string LinkedInvoiceNo { get; set; }
+        public string InvoiceNumber { get; set; }
 
-        public int? PurchaseInvoiceId { get; set; }
+        public int? InvoiceId { get; set; }
 
         public bool SelectedOnly { get; set; }
 

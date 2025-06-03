@@ -5,7 +5,7 @@
 
 <RadzenDataGrid @ref="_grid" TItem="BatchTransactionViewModel" IsLoading="_isLoading"
                 Density="Density.Compact" SelectionMode="DataGridSelectionMode.Single"
-                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.All()" PageSize="_pageSize" PageNumbersCount="3"
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
@@ -59,9 +59,11 @@
     [Parameter]
     public EventCallback OnRefreshBankGrid { get; set; }
 
+    // GRID PROPERTIES
+    private List<BatchTransactionViewModel> _data = new();
+    private int _totalCount = 0;
     private int _pageSize = PageSize.Size_50;
     private bool _isLoading = false;
-    private ResponseModel<List<BatchTransactionViewModel>> _data = new();
 
     // CELL EDITING
     private string _columnEditing;
@@ -69,6 +71,15 @@
 
     // COMPONENTS
     private RadzenDataGrid<BatchTransactionViewModel> _grid;
+
+    // OVERRIDE METHODS
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshGridAsync();
+        }
+    }
 
     // PUBLIC METHODS
     public async Task RefreshGridAsync()
@@ -92,15 +103,38 @@
     {
         _isLoading = true;
 
+        SetPageableProperties(args);
+
+        await LoadGridDataAsync(FilterModel);
+
+        _isLoading = false;
+    }
+
+    private void SetPageableProperties(LoadDataArgs args)
+    {
         FilterModel.CountNumber = args.Top.Value;
         FilterModel.StartIndex = args.Skip.Value;
 
         FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
         FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+    }
 
-        _data = await _apiService.SearchBatchTransactionsAsync(FilterModel);
+    private async Task LoadGridDataAsync(BatchTransactionFilterModel filterModel)
+    {
+        var searchRes = await _apiService.SearchBatchTransactionsAsync(filterModel);
 
-        _isLoading = false;
+        if (searchRes.Success)
+        {
+            _data = searchRes.Data;
+            _totalCount = searchRes.TotalCount;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Search Batch Transactions", searchRes.Messages);
+
+            _data = new();
+            _totalCount = 0;
+        }
     }
 
     private void OnCellContextMenu(DataGridCellMouseEventArgs<BatchTransactionViewModel> args)
@@ -209,7 +243,7 @@
         var confirmMessage = GetMoveBatchTransactionConfirmMessage(batchTransaction);
 
         var result = await _dialogService.Confirm(confirmMessage, $"Move Batch Transaction #{batchTransaction.Id}",
-           new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+           new ConfirmOptions() { Style = "max-width: 600px;", OkButtonText = "Yes", CancelButtonText = "No" });
 
         if (result == null || result == false)
             return;

@@ -36,5 +36,25 @@
         {
             return int.Parse(value);
         }
+
+        public static string EnsureStartsWith(this string value, string startsWith)
+        {
+            if (!value.StartsWith(startsWith))
+            {
+                return startsWith + value;
+            }
+
+            return value;
+        }
+
+        public static string EnsureEndsWith(this string value, string endsWith)
+        {
+            if (!value.EndsWith(endsWith))
+            {
+                return value + endsWith;
+            }
+
+            return value;
+        }
     }
 }

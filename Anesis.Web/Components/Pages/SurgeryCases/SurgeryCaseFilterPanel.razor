@@ -92,37 +92,57 @@
                     </RadzenStack>
 
                     <RadzenStack Gap="0.2rem">
-                        <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
-                        <RadzenTextBox @bind-Value="FilterModel.VendorName" Name="VendorName"
-                                       PlaceHolder="Vendor Name" Style="width: 100%;" />
+                        <RadzenLabel Text="Room Name" Component="RoomName" class="rz-text-subtitle2" />
+                        <RadzenDropDown @bind-Value="FilterModel.RoomName" Name="RoomName"
+                                        Data="OperatingRoomNames" AllowClear="true"
+                                        Placeholder="---All---" Style="width: 100%;" />
                     </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
             <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
-                <RadzenStack Gap="0.5rem" Style="height: 100%;">
-                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Vendor Name" Component="VendorName" class="rz-text-subtitle2" />
+                        <RadzenTextBox @bind-Value="FilterModel.VendorName" Name="VendorName"
+                                       PlaceHolder="Vendor Name" Style="width: 100%;" />
+                    </RadzenStack>
+
+                    <RadzenStack Gap="0.2rem">
+                        <RadzenLabel Text="Linked Invoice No" Component="InvoiceNumber" class="rz-text-subtitle2" />
+                        <RadzenTextBox @bind-Value="FilterModel.InvoiceNumber" Name="InvoiceNumber"
+                                       PlaceHolder="Linked Invoice No" Style="width: 100%;" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
+                <RadzenStack Gap="0.2rem" Style="height: 100%;">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.2rem" Style="height: 100%;">
                         <RadzenCheckBox @bind-Value="FilterModel.HasDevices" TValue="bool" Name="HasDevices"
                                         Change="(isChecked) => { if (isChecked) { FilterModel.NoDevices = false; } }" />
                         <RadzenLabel Text="Has Devices" Component="HasDevices" class="rz-text-subtitle2" />
                     </RadzenStack>
-                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.2rem" Style="height: 100%;">
                         <RadzenCheckBox @bind-Value="FilterModel.NoDevices" TValue="bool" Name="NoDevices"
                                         Change="(isChecked) => { if (isChecked) { FilterModel.HasDevices = false; } }" />
                         <RadzenLabel Text="No Devices" Component="NoDevices" class="rz-text-subtitle2" />
                     </RadzenStack>
-                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
-                        <RadzenCheckBox @bind-Value="FilterModel.LinkedInvoice" TValue="bool" Name="LinkedInvoice"
-                                        Change="(isChecked) => { if (isChecked) { FilterModel.NotLinkInvoice = false; } }" />
-                        <RadzenLabel Text="Linked Invoice" Component="LinkedInvoice" class="rz-text-subtitle2" />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="6">
+                <RadzenStack Gap="0.2rem" Style="height: 100%;">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.2rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.IsLinkedInvoice" TValue="bool" Name="IsLinkedInvoice"
+                                        Change="(isChecked) => { if (isChecked) { FilterModel.NotLinkedInvoice = false; } }" />
+                        <RadzenLabel Text="Linked Invoice" Component="IsLinkedInvoice" class="rz-text-subtitle2" />
                     </RadzenStack>
-                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="height: 100%;">
-                        <RadzenCheckBox @bind-Value="FilterModel.NotLinkInvoice" TValue="bool" Name="NotLinkInvoice"
-                                        Change="(isChecked) => { if (isChecked) { FilterModel.LinkedInvoice = false; } }" />
-                        <RadzenLabel Text="Not Link Invoice" Component="NotLinkInvoice" class="rz-text-subtitle2" />
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.2rem" Style="height: 100%;">
+                        <RadzenCheckBox @bind-Value="FilterModel.NotLinkedInvoice" TValue="bool" Name="NotLinkedInvoice"
+                                        Change="(isChecked) => { if (isChecked) { FilterModel.IsLinkedInvoice = false; } }" />
+                        <RadzenLabel Text="Not Link Invoice" Component="NotLinkedInvoice" class="rz-text-subtitle2" />
                     </RadzenStack>
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn SizeLG="12" SizeMD="6" SizeSM="12">
+            <RadzenColumn SizeLG="8" SizeMD="12" SizeSM="12">
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.End" 
                 Gap="0.5rem" Style="height: 100%;">
                     <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
@@ -152,6 +172,8 @@
     public Dictionary<int, string> ActiveProcedures { get; set; }
     [Parameter]
     public Dictionary<int, string> ActiveInsurances { get; set; }
+    [Parameter]
+    public List<string> OperatingRoomNames { get; set; }
 
     [Parameter]
     public EventCallback<bool> OnResizeGrid { get; set; }

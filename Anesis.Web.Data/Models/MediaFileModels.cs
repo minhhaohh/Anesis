@@ -10,6 +10,8 @@ namespace Anesis.Web.Data.Models
         public string Category { get; set; }
 
         public bool NotSignedOnly { get; set; }
+
+        public bool UploadedOnly { get; set; }
     }
 
     public class MediaFileViewModel

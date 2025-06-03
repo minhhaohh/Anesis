@@ -1,4 +1,6 @@
-﻿namespace Anesis.Shared.Extensions
+﻿using System.Data;
+
+namespace Anesis.Shared.Extensions
 {
     public static class EnumerableExtensions
     {

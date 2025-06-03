@@ -3,7 +3,7 @@
 @inject NotificationService _notifyService
 
 <RadzenDataGrid @ref="_grid" TItem="MediaFileViewModel" IsLoading="_isLoading"
-                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.All()" PageSize="_pageSize"
                 PagingSummaryFormat="Page {0} of {1} (total {2} records)"
@@ -49,7 +49,7 @@
                     }
                     
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="delete"
-                                  Click="async () => await ConfirmDeleteFileAsync(file.Id)"
+                                  Click="async () => await ConfirmAndDeleteFileAsync(file.Id)"
                                   title="@($"Delete file #{file.Id}")" />
                 </RadzenStack>
             </Template>
@@ -61,12 +61,23 @@
     [Parameter]
     public MediaFileFilterModel FilterModel { get; set; }
 
+    // GRID PROPERTIES
+    private List<MediaFileViewModel> _data = new();
+    private int _totalCount = 0;
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
-    private ResponseModel<List<MediaFileViewModel>> _data = new();
 
     // COMPONENTS
     private RadzenDataGrid<MediaFileViewModel> _grid;
+
+    // OVERRIDE METHODS
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshGridAsync();
+        }
+    }
 
     // PUBLIC METHODS
     public async Task RefreshGridAsync()
@@ -85,15 +96,38 @@
     {
         _isLoading = true;
 
+        SetPageableProperties(args);
+
+        await LoadGridDataAsync(FilterModel);
+
+        _isLoading = false;
+    }
+
+    private void SetPageableProperties(LoadDataArgs args)
+    {
         FilterModel.CountNumber = args.Top.Value;
         FilterModel.StartIndex = args.Skip.Value;
 
         FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
         FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+    }
 
-        _data = await _apiService.SearchMediaFilesAsync(FilterModel);
+    private async Task LoadGridDataAsync(MediaFileFilterModel filterModel)
+    {
+        var searchRes = await _apiService.SearchMediaFilesAsync(filterModel);
 
-        _isLoading = false;
+        if (searchRes.Success)
+        {
+            _data = searchRes.Data;
+            _totalCount = searchRes.TotalCount;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Search Media Files", searchRes.Messages);
+
+            _data = new();
+            _totalCount = 0;
+        }
     }
 
     private async Task OpenSignFileDialogAsync(int fileId)
@@ -125,11 +159,11 @@
         await _dialogService.OpenAsync<SignMediaFileForm>(title, paramsDic, options);
     }
 
-    private async Task ConfirmDeleteFileAsync(int id)
+    private async Task ConfirmAndDeleteFileAsync(int id)
     {
         var result = await _dialogService.Confirm(
             $"Do you really want to delete file <b>#{id}</b>?", $"Delete File #{id}",
-            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+            new ConfirmOptions() { Style = "max-width: 600px;", OkButtonText = "Yes", CancelButtonText = "No" });
 
         if (result == null || result == false)
         {

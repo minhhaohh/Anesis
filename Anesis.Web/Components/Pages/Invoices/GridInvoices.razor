@@ -3,11 +3,11 @@
 @inject NotificationService _notifyService
 
 <RadzenDataGrid @ref="_grid" TItem="InvoiceViewModel" IsLoading="_isLoading" Density="Density.Compact"
-                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
-                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                PageSizeOptions="PageSize.All()" PageSize="_pageSize"
-                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
+Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
+AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+PageSizeOptions="PageSize.All()" PageSize="_pageSize"
+PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     <Columns>
         <RadzenDataGridColumn Property="@nameof(InvoiceViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(InvoiceViewModel.InvoiceNo)" Title="Invoice No/Date" Width="10%">
@@ -18,7 +18,7 @@
                     {
                         <strong title="@($"Update Invoice #{invoice.InvoiceNo}")">
                             <a href="javascript:;" class="rz-color-primary text-underline-none"
-                               onclick="@(async () => await OpenEditInvoiceDialogAsync(invoice.Id))">
+                            onclick="@(async () => await OpenEditInvoiceDialogAsync(invoice.Id))">
                                 @invoice.InvoiceNo
                             </a>
                         </strong>
@@ -27,7 +27,7 @@
                     {
                         <strong title="@($"Update Invoice #{invoice.InvoiceNo}")">
                             <a href="javascript:;" class="rz-color-series-4 text-underline-none"
-                               onclick="@(async () => await OpenEditBasicInvoiceDialogAsync(invoice.Id))">
+                            onclick="@(async () => await OpenEditBasicInvoiceDialogAsync(invoice.Id))">
                                 @invoice.InvoiceNo
                             </a>
                         </strong>
@@ -70,12 +70,12 @@
         <RadzenDataGridColumn Property="@nameof(InvoiceViewModel.TotalAmount)" Title="Amount" Width="12%">
             <Template Context="invoice">
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween"
-                             Style="width:100%;" title="Total Amount">
+                Style="width:100%;" title="Total Amount">
                     <span>Total:</span>
                     <strong class="rz-color-series-4">@invoice.TotalAmount.ToString("C2")</strong>
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween"
-                             Style="width: 100%;" title="Amount To Pay">
+                Style="width: 100%;" title="Amount To Pay">
                     <span>Must Pay:</span>
                     <strong class="rz-color-primary">@invoice.AmountToPay.ToString("C2")</strong>
                 </RadzenStack>
@@ -131,15 +131,15 @@
             <Template Context="invoice">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Size="ButtonSize.Small" Icon="manage_history"
-                                  Click="async() => await OpenInvoiceChangeLogsDialogAsync(invoice.Id)"
-                                  title="@($"View change logs of invoice #{invoice.Id}")" />
+                    Click="async() => await OpenInvoiceChangeLogsDialogAsync(invoice.Id)"
+                    title="@($"View change logs of invoice #{invoice.Id}")" />
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="chat_info"
-                                  Click="async() => await OpenInvoiceDetailsDialogAsync(invoice.Id)"
-                                  title="@($"View invoice details #{invoice.Id}")" />
+                    Click="async() => await OpenInvoiceDetailsDialogAsync(invoice.Id)"
+                    title="@($"View invoice details #{invoice.Id}")" />
                     @if (invoice.CanDelete)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Icon="delete"
-                                      title="@($"Delete invoice #{invoice.Id}")" />
+                        title="@($"Delete invoice #{invoice.Id}")" />
                     }
                 </RadzenStack>
             </Template>
@@ -158,19 +158,30 @@
     [Parameter]
     public EventCallback<int> OnOpenEditBasicInvoiceDialog { get; set; }
 
-    private string _gridStyle = "max-height: 500px;";
+    // GRID PROPERTIES
+    private List<InvoiceViewModel> _data = new();
+    private int _totalCount = 0;
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
-    private ResponseModel<List<InvoiceViewModel>> _data = new();
+    private string _gridStyle = "max-height: 500px;";
 
     // COMPONENTS
     private RadzenDataGrid<InvoiceViewModel> _grid;
+
+    // OVERRIDE METHODS
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshGridAsync();
+        }
+    }
 
     // PUBLIC METHODS
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 500px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 686px;" : "max-height: 500px;";
     }
 
     public async Task RefreshGridAsync()
@@ -189,15 +200,38 @@
     {
         _isLoading = true;
 
+        SetPageableProperties(args);
+
+        await LoadGridDataAsync(FilterModel);
+
+        _isLoading = false;
+    }
+
+    private void SetPageableProperties(LoadDataArgs args)
+    {
         FilterModel.CountNumber = args.Top.Value;
         FilterModel.StartIndex = args.Skip.Value;
 
         FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
         FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+    }
 
-        _data = await _apiService.SearchInvoicesAsync(FilterModel);
+    private async Task LoadGridDataAsync(InvoiceFilterModel filterModel)
+    {
+        var searchRes = await _apiService.SearchInvoicesAsync(filterModel);
 
-        _isLoading = false;
+        if (searchRes.Success)
+        {
+            _data = searchRes.Data;
+            _totalCount = searchRes.TotalCount;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Search Invoices", searchRes.Messages);
+
+            _data = new();
+            _totalCount = 0;
+        }
     }
 
     private async Task OpenEditInvoiceDialogAsync(int id)

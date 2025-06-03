@@ -107,6 +107,19 @@
 
     public async Task LoadBalanceSummaryAsync(BankTransactionFilterModel filterModel)
     {
-        _balanceSummaryModel = (await _apiService.GetBalanceSummary(filterModel)).Data;
+        _balanceSummaryModel = await GetBalanceSummary(filterModel) ?? new();
+    }
+
+    private async Task<BalanceSummaryViewModel> GetBalanceSummary(BankTransactionFilterModel filterModel)
+    {
+        var summaryRes = await _apiService.GetBalanceSummary(filterModel);
+
+        if (!summaryRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Balance Summary", summaryRes.Messages);
+            return null;
+        }
+
+        return summaryRes.Data;
     }
 }

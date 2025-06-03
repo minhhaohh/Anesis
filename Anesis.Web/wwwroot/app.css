@@ -44,3 +44,14 @@ textarea::placeholder,
     color: var(--rz-input-value-color) !important;
     opacity: 1 !important;
 }
+
+.cell-editable {
+    cursor: pointer;
+    font-style: italic;
+    color: var(--rz-danger) !important;
+    border-bottom: dashed 1px var(--rz-info);
+}
+
+.rz-dialog {
+    max-width: 100%;
+}

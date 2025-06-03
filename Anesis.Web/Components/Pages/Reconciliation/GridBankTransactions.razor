@@ -15,7 +15,7 @@
 
 <RadzenDataGrid @ref="_grid" TItem="BankTransactionViewModel" IsLoading="_isLoading"
                 Density="Density.Compact" SelectionMode="DataGridSelectionMode.Single"
-                Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
                 AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                 PageSizeOptions="PageSize.All()" PageSize="_pageSize" PageNumbersCount="3"
                 PageSizeText="" PagingSummaryFormat="Page {0} of {1} (total {2} records)"
@@ -79,12 +79,23 @@
     [Parameter]
     public EventCallback<BankTransactionFilterModel> OnLoadBalanceSummary { get; set; }
 
+    // GRID PROPERTIES
+    private List<BankTransactionViewModel> _data = new();
+    private int _totalCount = 0;
     private int _pageSize = PageSize.Size_50;
     private bool _isLoading = false;
-    private ResponseModel<List<BankTransactionViewModel>> _data = new();
 
     // COMPONENTS
     private RadzenDataGrid<BankTransactionViewModel> _grid;
+
+    // OVERRIDE METHODS
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshGridAsync();
+        }
+    }
 
     // PUBLIC METHODS
     public async Task RefreshGridAsync()
@@ -108,17 +119,40 @@
     {
         _isLoading = true;
 
+        SetPageableProperties(args);
+
+        await LoadGridDataAsync(FilterModel);
+
+        await LoadBalanceSummaryAsync();
+
+        _isLoading = false;
+    }
+
+    private void SetPageableProperties(LoadDataArgs args)
+    {
         FilterModel.CountNumber = args.Top.Value;
         FilterModel.StartIndex = args.Skip.Value;
 
         FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
         FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+    }
 
-        _data = await _apiService.SearchBankTransactionsAsync(FilterModel);
+    private async Task LoadGridDataAsync(BankTransactionFilterModel filterModel)
+    {
+        var searchRes = await _apiService.SearchBankTransactionsAsync(filterModel);
 
-        await LoadBalanceSummaryAsync();
+        if (searchRes.Success)
+        {
+            _data = searchRes.Data;
+            _totalCount = searchRes.TotalCount;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Search Bank Transactions", searchRes.Messages);
 
-        _isLoading = false;
+            _data = new();
+            _totalCount = 0;
+        }
     }
 
     private void OnCellContextMenu(DataGridCellMouseEventArgs<BankTransactionViewModel> args)

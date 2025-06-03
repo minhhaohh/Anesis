@@ -57,14 +57,14 @@
     </RadzenTemplateForm>
 
     <RadzenDataGrid @ref="_gridCaseCosts" TItem="CaseCostViewModel" IsLoading="_isLoading"
-                    Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
+                    Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
                     AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
                     PageSizeOptions="PageSize.All()" PageSize="_pageSize"
                     PagingSummaryFormat="Page {0} of {1} (total {2} records)"
                     PagerHorizontalAlign="HorizontalAlign.Center" Style="max-height: 400px;"
                     CellClick="OnCellClick">
         <Columns>
-            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
+            <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.DeviceId)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
             <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.DeviceName)" Title="Device" Width="20%" />
             <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.VendorName)" Title="Vendor" Width="15%" />
             <RadzenDataGridColumn Property="@nameof(CaseCostViewModel.Quantity)" Title="Quantity" Width="10%">
@@ -135,9 +135,11 @@
     private CaseCostFilterModel _filterCastCostModel = new();
     private CaseCostAddModel _addCastCostModel = new();
 
+    // GRID PROPERTIES
+    private List<CaseCostViewModel> _data = new();
+    private int _totalCount = 0;
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
-    private ResponseModel<List<CaseCostViewModel>> _data = new();
 
     private string _columnEditing;
     private CaseCostViewModel _caseCostToUpdate = new();
@@ -145,12 +147,21 @@
     // COMPONENTS
     private RadzenDataGrid<CaseCostViewModel> _gridCaseCosts;
 
+    // OVERRIDE METHODS
     protected override async Task OnParametersSetAsync()
     {
         _filterCastCostModel.CaseId = ViewModel.Id;
         _addCastCostModel.CaseId = ViewModel.Id;
 
-        _activeDevices = (await _apiService.GetAllDevicesAsync(true)).Data;
+        _activeDevices = await GetActiveDevices() ?? new();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _gridCaseCosts.RefreshDataAsync();
+        }
     }
 
     // SUPPORT METHODS
@@ -158,15 +169,38 @@
     {
         _isLoading = true;
 
+        SetPageableProperties(args);
+
+        await LoadGridDataAsync(_filterCastCostModel);
+
+        _isLoading = false;
+    }
+
+    private void SetPageableProperties(LoadDataArgs args)
+    {
         _filterCastCostModel.CountNumber = args.Top.Value;
         _filterCastCostModel.StartIndex = args.Skip.Value;
 
         _filterCastCostModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
         _filterCastCostModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+    }
 
-        _data = await _apiService.SearchCaseCostsAsync(_filterCastCostModel);
+    private async Task LoadGridDataAsync(CaseCostFilterModel filterModel)
+    {
+        var searchRes = await _apiService.SearchCaseCostsAsync(filterModel);
 
-        _isLoading = false;
+        if (searchRes.Success)
+        {
+            _data = searchRes.Data;
+            _totalCount = searchRes.TotalCount;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Search Devices & Costs", searchRes.Messages);
+
+            _data = new();
+            _totalCount = 0;
+        }
     }
 
     private async Task AddCaseCostAsync(CaseCostAddModel caseCostAddModel)
@@ -232,12 +266,21 @@
 
     private async Task ConfirmDeleteCaseCostAsync(int id, int caseId, int deviceId)
     {
-        var result = await _dialogService.Confirm(
-            $"Do you really want to delete device #{deviceId} from surgery case #{caseId}?",
-            "Delete Device & Cost",
-            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        var confirmMessage = GetDeleteDeviceConfirmMessage(caseId, deviceId);
+        var result = await _dialogService.Confirm(confirmMessage, "Delete Device & Cost",
+            new ConfirmOptions() { Style = "max-width: 600px;", OkButtonText = "Yes", CancelButtonText = "No" });
         if (result == null || result == false)
             return;
+    }
+
+    private RenderFragment GetDeleteDeviceConfirmMessage(int caseId, int deviceId)
+    {
+        return __builder =>
+        {
+            <div class="rz-color-danger">
+                Do you really want to <b>delete</b> device #<b>@deviceId</b> from surgery case #<b>@caseId</b>?
+            </div>
+        };
     }
 
     private void SelectDeviceAddToCase()
@@ -248,6 +291,20 @@
     private async Task RefreshGridAsync()
     {
         await OnRefreshGrid.InvokeAsync();
+    }
+
+    private async Task<List<DeviceWithCostViewModel>> GetActiveDevices()
+    {
+        var devicesRes = await _apiService.GetAllDevicesAsync(true);
+
+        if (!devicesRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Devices", devicesRes.Messages);
+            return null;
+        }
+
+        return devicesRes.Data;
+
     }
 
     private bool IsEditing(string columnName, CaseCostViewModel caseCost)

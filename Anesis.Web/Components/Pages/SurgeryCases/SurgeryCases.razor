@@ -12,6 +12,7 @@
                             FilterModel="_filterModel" SurgeryCaseStatus="_surgeryCaseStatus"
                             ActiveAscLocations="_activeAscLocations" ActiveDoctors="_activeDoctors"
                             ActiveProcedures="_activeProcedures" ActiveInsurances="_activeInsurances"
+                            OperatingRoomNames="_operatingRoomNames"
                             OnResizeGrid="ResizeGrid" OnFilterGrid="FilterGridAsync" OnRefreshGrid="RefreshGridAsync" />
 
     <GridSurgeryCases @ref="_gridSurgeryCases" FilterModel="_filterModel" />
@@ -25,6 +26,7 @@
     private Dictionary<int, string> _activeDoctors = new();
     private Dictionary<int, string> _activeProcedures = new();
     private Dictionary<int, string> _activeInsurances = new();
+    private List<string> _operatingRoomNames = OperatingRoomName.All().ToList();
 
     // COMPONENTS
     private SurgeryCaseFilterPanel _surgeryCaseFilterPanel;

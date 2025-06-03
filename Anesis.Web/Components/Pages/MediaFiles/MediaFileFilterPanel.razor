@@ -2,24 +2,35 @@
     <RadzenFieldset Text="Filter Panel"
                     class="custom-fieldset">
         <RadzenRow>
-            <RadzenColumn Size="12" SizeMD="2">
-                <RadzenLabel Text="Category" Component="Category" class="rz-text-subtitle2" />
-                <RadzenDropDown @bind-Value="FilterModel.Category" Name="Category" AllowClear="true" Placeholder="---All---"
-                                Data="FileCategories" Style="width: 100%;" />
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="Category" Component="Category" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.Category" Name="Category" AllowClear="true" Placeholder="---All---"
+                                    Data="FileCategories" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
-                <RadzenLabel Text="File Ext" Component="FileExt" class="rz-text-subtitle2" />
-                <RadzenDropDown @bind-Value="FilterModel.FileExt" Name="FileExt" AllowClear="true" Placeholder="---All---"
-                                Data="FileTypes" Style="width: 100%;" />
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
+                <RadzenStack Gap="0.2rem">
+                    <RadzenLabel Text="File Ext" Component="FileExt" class="rz-text-subtitle2" />
+                    <RadzenDropDown @bind-Value="FilterModel.FileExt" Name="FileExt" AllowClear="true" Placeholder="---All---"
+                                    Data="FileTypes" Style="width: 100%;" />
+                </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="2">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="height: 100%;">
                     <RadzenSwitch @bind-Value="FilterModel.NotSignedOnly" Name="NotSignedOnly" />
                     <RadzenLabel Text="Not Signed Only" Component="NotSignedOnly" class="rz-text-subtitle2" />
                 </RadzenStack>
             </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="4">
-                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.End" Gap="0.5rem" Style="height: 100%;">
+            <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Style="height: 100%;">
+                        <RadzenSwitch @bind-Value="FilterModel.UploadedOnly" Name="UploadedOnly" />
+                        <RadzenLabel Text="Uploaded Only" Component="UploadedOnly" class="rz-text-subtitle2" />
+                    </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn SizeLG="4" SizeMD="12" SizeSM="8">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.End"
+                             Gap="0.5rem" Style="height: 100%;">
                     <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Text="Filter" Icon="filter_alt" />
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Text="Clear" Icon="ink_eraser"
                                   Click="ClearFilterAsync" />

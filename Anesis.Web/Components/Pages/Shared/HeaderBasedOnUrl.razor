@@ -49,44 +49,44 @@
     private async Task<string> GetPageTitleAsync()
     {
         var query = $@"(() => {{
-           return document.title ?? null;
-       }})()";
+            return document.title ?? null;
+        }})()";
         return await _jsRunTime.InvokeAsync<string>("eval", query);
     }
 
     private async Task<string> GetMenuTabNameAsync()
     {
         var query = $@"(() => {{
-          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('div.rz-navigation-item-link span.rz-navigation-item-text');
-          return element ? element.textContent : null;
-      }})()";
+            const element = document.querySelector(`.menu-tab a[href=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('div.rz-navigation-item-link span.rz-navigation-item-text');
+            return element ? element.textContent : null;
+        }})()";
         return await _jsRunTime.InvokeAsync<string>("eval", query);
     }
 
     private async Task<string> GetMenuItemNameAsync()
     {
         var query = $@"(() => {{
-          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('a.rz-navigation-item-link span.rz-navigation-item-text');
-          return element ? element.textContent : null;
-      }})()";
+            const element = document.querySelector(`.menu-tab a[href=""{_pathName}""]`)?.querySelector('span.rz-navigation-item-text');
+            return element ? element.textContent : null;
+        }})()";
         return await _jsRunTime.InvokeAsync<string>("eval", query);
     }
 
     private async Task<string> GetMenuTabIconAsync()
     {
         var query = $@"(() => {{
-          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('div.rz-navigation-item-link i.rz-navigation-item-icon');
-          return element ? element.textContent : null;
-      }})()";
+            const element = document.querySelector(`.menu-tab a[href=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('div.rz-navigation-item-link i.rz-navigation-item-icon');
+            return element ? element.textContent : null;
+        }})()";
         return await _jsRunTime.InvokeAsync<string>("eval", query);
     }
 
     private async Task<string> GetMenuItemIconAsync()
     {
         var query = $@"(() => {{
-          const element = document.querySelector(`.menu-tab a[href*=""{_pathName}""]`)?.closest('.menu-tab')?.querySelector('a.rz-navigation-item-link i.rz-navigation-item-icon');
-          return element ? element.textContent : null;
-      }})()";
+            const element = document.querySelector(`.menu-tab a[href=""{_pathName}""]`)?.querySelector('i.rz-navigation-item-icon');
+            return element ? element.textContent : null;
+        }})()";
         return await _jsRunTime.InvokeAsync<string>("eval", query);
     }
 }

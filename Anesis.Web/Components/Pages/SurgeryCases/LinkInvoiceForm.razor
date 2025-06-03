@@ -15,22 +15,32 @@
             <RadzenRow>
                 <RadzenColumn SizeSM="3" SizeXS="12">
                     <RadzenCheckBox @bind-Value="_limitedByLocation" TValue="bool" Name="LimitedByLocation"
-                    Change="async (isChecked) => { await LoadDropdownInvoicesAsync(); }" />
+                                    Change="async (isChecked) => { await LoadDropdownInvoicesAsync(); }" />
                     <RadzenLabel Text="@($"Limited by Location ({ViewModel.LocationName})")" Component="LimitedByLocation" class="rz-text-subtitle2" />
                 </RadzenColumn>
                 <RadzenColumn SizeSM="6" SizeXS="8">
                     <RadzenDropDown @bind-Value="_selectedInvoice" TValue="InvoiceViewModel" Name="SelectedInvoice"
-                    Data="_invoices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
-                    Placeholder="---Select---" Style="width: 100%;"
-                    Change="SelectInvoiceLinkToCase">
+                                    Data="_invoices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
+                                    Placeholder="---Select---" Style="width: 100%;" 
+                                    Change="SelectInvoiceLinkToCase">
                         <ValueTemplate Context="invoice">
                             <div>
                                 #<strong>@invoice.InvoiceNo</strong> - @invoice.VendorName - @invoice.InvoiceDate.ToString("MM/dd/yyyy")
+                                @if (invoice.IsBulk)
+                                {
+                                    <span> - </span>
+                                    <span class="rz-color-danger">Bulk Order</span>
+                                }
                             </div>
                         </ValueTemplate>
                         <Template Context="invoice">
                             <div>
                                 #<strong>@invoice.InvoiceNo</strong> - <strong class="rz-color-series-4">@invoice.TotalAmount.ToString("C2")</strong> - @invoice.InvoiceDate.ToString("MM/dd/yyyy")
+                                @if (invoice.IsBulk)
+                                {
+                                    <span> - </span>
+                                    <span class="rz-color-danger">Bulk Order</span>
+                                }
                             </div>
                             <div>
                                 <strong class="rz-color-primary">@invoice.VendorName</strong> - @(invoice.VendorDescription ?? "")
@@ -48,12 +58,12 @@
                         </Start>
                         <ChildContent>
                             <RadzenNumeric @bind-Value="_linkInvoiceModel.SeparateAmount" TValue="decimal" Name="SeparateAmount"
-                            Disabled="@(_selectedInvoice != null && _selectedInvoice.Id > 0 && !_selectedInvoice.IsBulk)"
-                            Style="width: 100%;" />
+                                           Disabled="@(_selectedInvoice != null && _selectedInvoice.Id > 0 && !_selectedInvoice.IsBulk)"
+                                           Style="width: 100%;" />
                         </ChildContent>
                         <End>
                             <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary"
-                            Text="Link" Icon="link" />
+                                          Text="Link" Icon="link" />
                         </End>
                     </RadzenFormField>
                 </RadzenColumn>
@@ -64,7 +74,7 @@
         {
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
                 <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base"
-                Text="Close" Click="() => _dialogService.Close()" />
+                              Text="Close" Click="() => _dialogService.Close()" />
             </RadzenStack>
         }
     </RadzenStack>

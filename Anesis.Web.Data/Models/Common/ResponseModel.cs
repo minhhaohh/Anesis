@@ -10,7 +10,7 @@
 
         public int TotalCount { get; set; }
 
-        public ResponseModel () 
+        public ResponseModel() 
         {
             Success = true;
             Messages = new List<string>();

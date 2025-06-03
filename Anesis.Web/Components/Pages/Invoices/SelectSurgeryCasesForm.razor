@@ -197,8 +197,8 @@
     // OVERRIDE METHODS
     protected override void OnParametersSet()
     {
-        _filterModel.NotLinkInvoice = true;
-        _filterModel.PurchaseInvoiceId = InvoiceId;
+        _filterModel.NotLinkedInvoice = true;
+        _filterModel.InvoiceId = InvoiceId;
         _filterModel.SelectedCaseIds = LinkedCases.Select(x => x.SurgeryCaseId).StrJoin(",");
 
         if (IsBulk)
@@ -240,8 +240,8 @@
     {
         var model = new SurgeryCaseFilterModel()
             {
-                NotLinkInvoice = true,
-                PurchaseInvoiceId = InvoiceId,
+                NotLinkedInvoice = true,
+                InvoiceId = InvoiceId,
                 SelectedCaseIds = LinkedCases.Select(x => x.SurgeryCaseId).StrJoin(","),
             };
         await FilterGridAsync(model);

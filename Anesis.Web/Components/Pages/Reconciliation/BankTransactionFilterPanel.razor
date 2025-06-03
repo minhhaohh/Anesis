@@ -110,7 +110,7 @@
         var confirmMessage = $"Do you really want to mark the reconciliation to {FilterModel.ReconciledDate.Value.ToString("MM/dd/yyyy")} as completed?";
 
         var result = await _dialogService.Confirm(confirmMessage, $"Complete Reconciliation",
-            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+            new ConfirmOptions() { Style = "max-width: 600px;", OkButtonText = "Yes", CancelButtonText = "No" });
 
         if (result == null || result == false)
         {

@@ -3,11 +3,11 @@
 @inject NotificationService _notifyService
 
 <RadzenDataGrid @ref="_grid" TItem="SurgeryCaseViewModel" IsLoading="_isLoading" Density="Density.Compact"
-Count="_data.TotalCount" Data="_data.Data" KeyProperty="Id" LoadData="LoadDataAsync"
-AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-PageSizeOptions="PageSize.All()" PageSize="_pageSize"
-PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
+                Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
+                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+                PageSizeOptions="PageSize.All()" PageSize="_pageSize"
+                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     <Columns>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Id)" Title="#ID" Width="5%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.EcwChartNo)" Title="Patient" Width="10%">
@@ -23,13 +23,22 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     var colorClass = SurgeryCaseStatusColors.GetColorClass(surgeryCase.CaseStatusStr);
                 }
                 <div><strong title="Procedure">@surgeryCase.ProcedureName</strong></div>
-                <div><span title="Surgery Date">@surgeryCase.SurgeryDate.ToString("MM-dd-yyyy")</span> | <strong class="@colorClass" title="Status">@surgeryCase.CaseStatusStr</strong></div>
+                <div>
+                    <span title="Surgery Date">@surgeryCase.SurgeryDate.ToString("MM-dd-yyyy") @surgeryCase.StartTime.ToTimeString(true) -> @surgeryCase.EndTime.ToTimeString(true)</span>
+                    <span> | </span>
+                    <strong class="@colorClass" title="Status">@surgeryCase.CaseStatusStr</strong>
+                </div>
+                <div title="Insurance">Insurance: <i>@surgeryCase.InsuranceName</i></div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.PrimaryProviderName)" Title="Surgery By" Width="10%">
             <Template Context="surgeryCase">
                 <div class="rz-color-series-4"><strong title="Surgeon">@surgeryCase.PrimaryProviderName</strong></div>
-                <div><strong title="Location">@surgeryCase.LocationName</strong></div>
+                <div>
+                    <strong title="Location">@surgeryCase.LocationName</strong>
+                    <span> - </span>
+                    <span title="Operating Room">@surgeryCase.RoomName</span>
+                </div>
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(SurgeryCaseViewModel.Codes)" Title="Cpt Codes" Width="10%" Sortable="false">
@@ -39,8 +48,8 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     if (surgeryCase.CanManageCptCodes)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
-                        Text="Manage CPT Codes" Click="async () => await OpenManageCptCodesDialogAsync(surgeryCase)"
-                        title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")" />
+                                      Text="Manage CPT Codes" Click="async () => await OpenManageCptCodesDialogAsync(surgeryCase)"
+                                      title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")" />
                     }
                 }
                 else
@@ -48,8 +57,8 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     @if (surgeryCase.CanManageCptCodes)
                     {
                         <a href="javascript:;" class="rz-color-primary text-underline-none"
-                        title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")"
-                        onclick="@(async () => await OpenManageCptCodesDialogAsync(surgeryCase))">
+                           title="@($"Manage CPT codes for surgery case #{surgeryCase.Id}")"
+                           onclick="@(async () => await OpenManageCptCodesDialogAsync(surgeryCase))">
                             <ul>
                                 @foreach (var cptCode in surgeryCase.Codes)
                                 {
@@ -60,7 +69,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     }
                     else
                     {
-                        <ul>
+                        <ul title="List of CPT codes">
                             @foreach (var cptCode in surgeryCase.Codes)
                             {
                                 <li>@cptCode</li>
@@ -74,15 +83,15 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
             <Template Context="surgeryCase">
                 @if (surgeryCase.PurchaseInvoiceId > 0)
                 {
-                    <div>Inv. No: #<strong>@surgeryCase.InvoiceNumber</strong> - @surgeryCase.InvoiceAmount.ToString("C2")</div>
+                    <div title="Linked Invoice">Inv. No: #<strong>@surgeryCase.InvoiceNumber</strong> - @surgeryCase.InvoiceAmount.ToString("C2")</div>
                 }
                 @if (surgeryCase.Devices == null || surgeryCase.Devices.Count == 0)
                 {
                     if (surgeryCase.CanManageDevices)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"
-                        Text="Manage Devices" Click="async () => await OpenManageDevicesDialogAsync(surgeryCase)"
-                        title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")" />
+                                      Text="Manage Devices" Click="async () => await OpenManageDevicesDialogAsync(surgeryCase)"
+                                      title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")" />
                     }
                 }
                 else
@@ -90,8 +99,8 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     if (surgeryCase.CanManageDevices)
                     {
                         <a href="javascript:;" class="rz-color-primary text-underline-none"
-                        title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")"
-                        onclick="@(async () => await OpenManageDevicesDialogAsync(surgeryCase))">
+                           title="@($"Manage devices and link the invoice for surgery case #{surgeryCase.Id}")"
+                           onclick="@(async () => await OpenManageDevicesDialogAsync(surgeryCase))">
                             <ul>
                                 @foreach (var device in surgeryCase.Devices)
                                 {
@@ -102,7 +111,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
                     }
                     else
                     {
-                        <ul>
+                        <ul title="List of devices">
                             @foreach (var device in surgeryCase.Devices)
                             {
                                 <li>@device</li>
@@ -116,19 +125,19 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
             <Template Context="surgeryCase">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Size="ButtonSize.Small" Icon="manage_history"
-                    Click="async () => await OpenSurgeryCaseChangeLogsDialogAsync(surgeryCase.Id)"
-                    title="@($"View change logs of surgery case #{surgeryCase.Id}")" />
+                                  Click="async () => await OpenSurgeryCaseChangeLogsDialogAsync(surgeryCase.Id)"
+                                  title="@($"View change logs of surgery case #{surgeryCase.Id}")" />
                     @if (surgeryCase.CanLinkInvoice)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Icon="link"
-                        Click="async () => await OpenLinkInvoiceDialogAsync(surgeryCase)"
-                        title="@($"Link invoice for surgery case #{surgeryCase.Id}")" />
+                                      Click="async () => await OpenLinkInvoiceDialogAsync(surgeryCase)"
+                                      title="@($"Link invoice for surgery case #{surgeryCase.Id}")" />
                     }
                     @if (surgeryCase.CanEditCases)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Icon="check_circle"
-                        Click="async () => await ConfirmAndSetCompletedSurgeryCaseAsync(surgeryCase)"
-                        title="@($"Mark surgery case #{surgeryCase.Id} as completed")" />
+                                      Click="async () => await ConfirmAndSetCompletedSurgeryCaseAsync(surgeryCase)"
+                                      title="@($"Mark surgery case #{surgeryCase.Id} as completed")" />
                     }
                 </RadzenStack>
             </Template>
@@ -142,19 +151,30 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     [Parameter]
     public bool CollapsedFilterPanel { get; set; }
 
-    private string _gridStyle = "max-height: 500px;";
+    // GRID PROPERTIES
+    private List<SurgeryCaseViewModel> _data = new();
+    private int _totalCount = 0;
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
-    private ResponseModel<List<SurgeryCaseViewModel>> _data = new();
+    private string _gridStyle = "max-height: 492px;";
 
     // COMPONENTS
     private RadzenDataGrid<SurgeryCaseViewModel> _grid;
+
+    // OVERRIDE METHODS
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshGridAsync();
+        }
+    }
 
     // PUBLIC METHODS
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 700px;" : "max-height: 500px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 686px;" : "max-height: 492px;";
     }
 
     public async Task RefreshGridAsync()
@@ -173,22 +193,45 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     {
         _isLoading = true;
 
+        SetPageableProperties(args);
+
+        await LoadGridDataAsync(FilterModel);
+
+        _isLoading = false;
+    }
+
+    private void SetPageableProperties(LoadDataArgs args)
+    {
         FilterModel.CountNumber = args.Top.Value;
         FilterModel.StartIndex = args.Skip.Value;
 
         FilterModel.Sidx = args.Sorts.FirstOrDefault()?.Property;
         FilterModel.Sord = args.Sorts.FirstOrDefault()?.SortOrder.ToString();
+    }
 
-        _data = await _apiService.SearchSurgeryCasesAsync(FilterModel);
+    private async Task LoadGridDataAsync(SurgeryCaseFilterModel filterModel)
+    {
+        var searchRes = await _apiService.SearchSurgeryCasesAsync(filterModel);
 
-        _isLoading = false;
+        if (searchRes.Success)
+        {
+            _data = searchRes.Data;
+            _totalCount = searchRes.TotalCount;
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Search Surgery Cases", searchRes.Messages);
+
+            _data = new();
+            _totalCount = 0;
+        }
     }
 
     private async Task ConfirmAndSetCompletedSurgeryCaseAsync(SurgeryCaseViewModel surgeryCase)
     {
         var confirmMessage = GetSetStatusConfirmMessage(surgeryCase, SurgeryCaseStatus.Completed);
         var result = await _dialogService.Confirm(confirmMessage, $"Set Status Of Surgery Case #{surgeryCase.Id}",
-            new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+            new ConfirmOptions() { Style = "max-width: 600px;", OkButtonText = "Yes", CancelButtonText = "No" });
 
         if (result == null || result == false)
         {

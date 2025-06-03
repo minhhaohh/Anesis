@@ -44,7 +44,7 @@ namespace Anesis.ApiService.Services.Services
         {
             return await _providerRepo.All(true)
                 .Where(x => x.Id > 0)                // Ignore dummy providers
-                .Where(x => ProviderTypes.GetDoctor().Contains(x.ProviderType))
+                .Where(x => ProviderType.GetDoctor().Contains(x.ProviderType))
                 .WhereIf(x => x.IsActive, activeOnly)
                 .OrderBy(x => x.ProviderName)
                 .ToDictionaryAsync(x => x.Id, x => x.ProviderName, cancellationToken);
@@ -55,7 +55,7 @@ namespace Anesis.ApiService.Services.Services
         {
             return await _providerRepo.All(true)
                 .Where(x => x.Id > 0)                // Ignore dummy providers
-                .Where(x => ProviderTypes.GetMidLevel().Contains(x.ProviderType))
+                .Where(x => ProviderType.GetMidLevel().Contains(x.ProviderType))
                 .WhereIf(x => x.IsActive, activeOnly)
                 .OrderBy(x => x.ProviderName)
                 .ToDictionaryAsync(x => x.Id, x => x.ProviderName, cancellationToken);

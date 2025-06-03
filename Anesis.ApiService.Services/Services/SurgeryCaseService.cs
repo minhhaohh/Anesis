@@ -358,17 +358,18 @@ namespace Anesis.ApiService.Services.Services
                 .WhereIf(x => x.LocationId == filter.LocationId, filter.LocationId > 0)
                 .WhereIf(x => x.InsuranceId == filter.InsuranceId, filter.InsuranceId > 0)
                 .WhereIf(x => x.PrimaryProviderId == filter.PrimaryProviderId, filter.PrimaryProviderId > 0)
+                .WhereIf(x => x.RoomName == filter.RoomName, filter.RoomName.HasValue())
                 .WhereIf(x => x.CaseStatus == filter.CaseStatus, filter.CaseStatus.HasValue)
                 .WhereIf(x => x.DeviceCosts.Any(), filter.HasDevices)
                 .WhereIf(x => !x.DeviceCosts.Any(), filter.NoDevices)
-                .WhereIf(x => x.PurchaseInvoiceId > 0, filter.LinkedInvoice)
+                .WhereIf(x => x.PurchaseInvoiceId > 0, filter.IsLinkedInvoice)
                 .WhereIf(x => !x.DeviceCosts.Any(), filter.NoDevices)
-                .WhereIf(x => x.PurchaseInvoiceId == filter.PurchaseInvoiceId, filter.LinkedInvoice && filter.PurchaseInvoiceId > 0)
-                .WhereIf(x => x.PurchaseInvoiceId == null || (filter.PurchaseInvoiceId > 0 && x.PurchaseInvoiceId == filter.PurchaseInvoiceId),
-                    filter.NotLinkInvoice && filter.CaseIds.Count == 0)
-                .WhereIf(x => x.PurchaseInvoiceId == null || (filter.PurchaseInvoiceId > 0 && x.PurchaseInvoiceId == filter.PurchaseInvoiceId) || filter.CaseIds.Contains(x.Id),
-                    filter.NotLinkInvoice && filter.CaseIds.Count > 0)
-                .WhereIf(x => x.PurchaseInvoiceId > 0 && x.PurchaseInvoice.InvoiceNo.Contains(filter.LinkedInvoiceNo), filter.LinkedInvoiceNo.HasValue())
+                .WhereIf(x => x.PurchaseInvoiceId == filter.InvoiceId, filter.IsLinkedInvoice && filter.InvoiceId > 0)
+                .WhereIf(x => x.PurchaseInvoiceId == null || (filter.InvoiceId > 0 && x.PurchaseInvoiceId == filter.InvoiceId),
+                    filter.NotLinkedInvoice && filter.CaseIds.Count == 0)
+                .WhereIf(x => x.PurchaseInvoiceId == null || (filter.InvoiceId > 0 && x.PurchaseInvoiceId == filter.InvoiceId) || filter.CaseIds.Contains(x.Id),
+                    filter.NotLinkedInvoice && filter.CaseIds.Count > 0)
+                .WhereIf(x => x.PurchaseInvoiceId > 0 && x.PurchaseInvoice.InvoiceNo.Contains(filter.InvoiceNumber), filter.InvoiceNumber.HasValue())
                 .WhereIf(x => x.DeviceCosts.Any(x => x.Device.VendorName.Contains(filter.VendorName)), filter.VendorName.HasValue())
                 .WhereIf(x => filter.CaseIds.Contains(x.Id), filter.SelectedOnly)
                 .OrderByDescending(x => x.SurgeryDate);

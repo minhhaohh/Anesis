@@ -573,7 +573,7 @@
         var confirmMessage = GetDeleteEventConfirmMessage(id, locationName, employeeName, calendarDate, startTime, endTime);
 
         var result = await _dialogService.Confirm(confirmMessage, $"Delete Event #{id}",
-           new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+           new ConfirmOptions() { Style = "max-width: 600px;", OkButtonText = "Yes", CancelButtonText = "No" });
 
         if (result == null || result == false)
             return;
