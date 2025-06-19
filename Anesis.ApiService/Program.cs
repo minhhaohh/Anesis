@@ -97,6 +97,7 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 
 builder.Services.AddScoped<IMediaFileService, MediaFileService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
 
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();

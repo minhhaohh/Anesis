@@ -3,26 +3,24 @@
 @inject NotificationService _notifyService
 
 <RadzenDataGrid @ref="_grid" TItem="DeviceWithCostViewModel" IsLoading="_isLoading"
-                Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
-                AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
-                PageSizeOptions="PageSize.All()" PageSize="_pageSize"
-                PagingSummaryFormat="Page {0} of {1} (total {2} records)"
-                PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle"
-                CellClick="OnCellClick">
+Count="_totalCount" Data="_data" KeyProperty="Id" LoadData="LoadDataAsync"
+AllowSorting="true" AllowPaging="true" ShowPagingSummary="true"
+PageSizeOptions="PageSize.All()" PageSize="_pageSize"
+PagingSummaryFormat="Page {0} of {1} (total {2} records)"
+PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle"
+CellClick="OnCellClick">
     <Columns>
-        <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.Id)" Title="#ID"
-                              Width="10%" CssClass="rz-text-subtitle2" />
+        <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.Id)" Title="#ID" Width="10%" CssClass="rz-text-subtitle2" />
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.Name)" Title="Device Name" Width="40%" />
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.VendorName)" Title="Vendor Name" Width="15%" />
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.CategoryName)" Title="Category" Width="15%" Sortable="false" />
-        <RadzenDataGridColumn TItem="DeviceWithCostViewModel" Property="@nameof(DeviceWithCostViewModel.DisplayOrder)" Title="D. Order"
-                              IsInEditMode="IsEditing" Width="10%">
+        <RadzenDataGridColumn TItem="DeviceWithCostViewModel" Property="@nameof(DeviceWithCostViewModel.DisplayOrder)" Title="D. Order" IsInEditMode="IsEditing" Width="10%">
             <Template Context="device">
                 <span class="@(CanEditDevice ? "cell-editable" : "")">@device.DisplayOrder.ToString()</span>
             </Template>
             <EditTemplate Context="device">
                 <RadzenNumeric @bind-Value="device.DisplayOrder" TValue="int" Style="width:100%"
-                               Change="async (changedValue) => await UpdateFieldAsync(device.Id, nameof(DeviceWithCostViewModel.DisplayOrder), changedValue.ToString())" />
+                Change="async (changedValue) => await UpdateFieldAsync(device.Id, nameof(DeviceWithCostViewModel.DisplayOrder), changedValue.ToString())" />
             </EditTemplate>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(DeviceWithCostViewModel.IsActive)" Title="Active" Width="10%">
@@ -32,14 +30,14 @@
                     @if (device.IsActive)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"
-                                      Shade="Shade.Lighter" Icon="check" title="Click to update device to inactive"
-                                      Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
+                        Shade="Shade.Lighter" Icon="check" title="Click to update device to inactive"
+                        Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
                     }
                     else
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
-                                      Shade="Shade.Lighter" Icon="close" title="Click to update device to active"
-                                      Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
+                        Shade="Shade.Lighter" Icon="close" title="Click to update device to active"
+                        Click="async () => await ToggleFlagAsync(device.Id, nameof(DeviceWithCostViewModel.IsActive))" />
                     }
                 }
                 else
@@ -64,16 +62,16 @@
             <Template Context="device">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="0.2rem">
                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Base" Size="ButtonSize.Small" Icon="manage_history"
-                                  Click="async () => await OpenPriceHistoryDialogAsync(device.Id)"
-                                  title="@($"View price history of device #{device.Id}")" />
+                    Click="async () => await OpenPriceHistoryDialogAsync(device.Id)"
+                    title="@($"View price history of device #{device.Id}")" />
                     @if (CanEditDevice)
                     {
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Icon="edit"
-                                      Click="async () => await OpenEditDeviceDialogAsync(device.Id)"
-                                      title="@($"Edit device #{device.Id}")" />
+                        Click="async () => await OpenEditDeviceDialogAsync(device.Id)"
+                        title="@($"Edit device #{device.Id}")" />
                         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Warning" Size="ButtonSize.Small" Icon="attach_money"
-                                      Click="async () => await OpenEditCostDialogAsync(device.Id)"
-                                      title="@($"Edit cost of device #{device.Id}")" />
+                        Click="async () => await OpenEditCostDialogAsync(device.Id)"
+                        title="@($"Edit cost of device #{device.Id}")" />
                     }
                 </RadzenStack>
             </Template>
@@ -97,7 +95,7 @@
     private int _totalCount = 0;
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
-    private string _gridStyle = "max-height: 610px;";
+    private string _gridStyle = "max-height: 660px;";
 
     private string _columnEditing;
     private DeviceWithCostViewModel _deviceToUpdate = new();
@@ -118,7 +116,7 @@
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 686px;" : "max-height: 610px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 736px;" : "max-height: 660px;";
     }
 
     public async Task RefreshGridAsync()
@@ -215,15 +213,14 @@
 
     private async Task OpenEditCostDialogAsync(int deviceId)
     {
-        var deviceCostRes = await _apiService.GetCurrentDeviceCostAsync(deviceId);
+        var deviceCost = await GetCurrentDeviceCostAsync(deviceId);
 
-        if (!deviceCostRes.Success)
+        if (deviceCost == null)
         {
-            _notifyService.NotifyErrors("Get Device Cost Information", deviceCostRes.Messages);
             return;
         }
 
-        var editCostModel = deviceCostRes.Data.ToDeviceCostEditModel();
+        var editCostModel = deviceCost.ToDeviceCostEditModel();
 
         var title = $"Change Cost Of Device #{deviceId}";
         var paramsDic = new Dictionary<string, object>()
@@ -239,18 +236,16 @@
         await _dialogService.OpenAsync<EditDeviceCostForm>(title, paramsDic, options);
     }
 
-    private async Task OpenPriceHistoryDialogAsync(int id)
+    private async Task OpenPriceHistoryDialogAsync(int deviceId)
     {
-        var priceHistoryRes = await _apiService.GetDevicePriceHistoryAsync(id);
+        var priceHistory = await GetDevicePriceHistoryAsync(deviceId);
 
-        if (!priceHistoryRes.Success)
+        if (priceHistory == null)
         {
-            _notifyService.NotifyErrors("Get Device Cost History", priceHistoryRes.Messages);
             return;
         }
 
-        var priceHistory = priceHistoryRes.Data;
-        var title = $"Price History Of Device #{id}";
+        var title = $"Price History Of Device #{deviceId}";
         var paramsDic = new Dictionary<string, object>()
             {
                 { "PriceHistory", priceHistory },
@@ -266,6 +261,32 @@
     private async Task OpenEditDeviceDialogAsync(int id)
     {
         await OnOpenEditDeviceDialog.InvokeAsync(id);
+    }
+
+    private async Task<DeviceCostViewModel> GetCurrentDeviceCostAsync(int deviceId)
+    {
+        var deviceCostRes = await _apiService.GetCurrentDeviceCostAsync(deviceId);
+
+        if (!deviceCostRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Device Cost Information", deviceCostRes.Messages);
+            return null;
+        }
+
+        return deviceCostRes.Data;
+    }
+
+    private async Task<List<DeviceCostViewModel>> GetDevicePriceHistoryAsync(int deviceId)
+    {
+        var priceHistoryRes = await _apiService.GetDevicePriceHistoryAsync(deviceId);
+
+        if (!priceHistoryRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Device Cost History", priceHistoryRes.Messages);
+            return null;
+        }
+
+        return priceHistoryRes.Data;
     }
 
     private bool IsEditing(string columnName, DeviceWithCostViewModel caseCost)

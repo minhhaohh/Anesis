@@ -22,14 +22,14 @@
                     <RadzenDropDown @bind-Value="_selectedInvoice" TValue="InvoiceViewModel" Name="SelectedInvoice"
                                     Data="_invoices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
                                     Placeholder="---Select---" Style="width: 100%;" 
-                                    Change="SelectInvoiceLinkToCase">
+                                    Change="SelectInvoice">
                         <ValueTemplate Context="invoice">
                             <div>
                                 #<strong>@invoice.InvoiceNo</strong> - @invoice.VendorName - @invoice.InvoiceDate.ToString("MM/dd/yyyy")
                                 @if (invoice.IsBulk)
                                 {
                                     <span> - </span>
-                                    <span class="rz-color-danger">Bulk Order</span>
+                                    <strong class="rz-color-danger">Bulk Order</strong>
                                 }
                             </div>
                         </ValueTemplate>
@@ -39,7 +39,7 @@
                                 @if (invoice.IsBulk)
                                 {
                                     <span> - </span>
-                                    <span class="rz-color-danger">Bulk Order</span>
+                                    <strong class="rz-color-danger">Bulk Order</strong>
                                 }
                             </div>
                             <div>
@@ -121,7 +121,7 @@
         _invoices = invoicesRes.Data;
     }
 
-    private void SelectInvoiceLinkToCase()
+    private void SelectInvoice()
     {
         _linkInvoiceModel.InvoiceId = _selectedInvoice?.Id;
         _linkInvoiceModel.SeparateAmount = _selectedInvoice != null && !_selectedInvoice.IsBulk ? _selectedInvoice.TotalAmount : 0;

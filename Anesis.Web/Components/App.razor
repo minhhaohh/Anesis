@@ -21,3 +21,24 @@
 </body>
 
 </html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext _httpContext { get; set; }
+
+    [Inject]
+    private ThemeService _themeService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (_httpContext != null)
+        {
+            var theme = _httpContext.Request.Cookies["Anesis.SettingsPortal.Theme"];
+
+            if (theme.HasValue())
+            {
+                _themeService.SetTheme(theme, false);
+            }
+        }
+    }
+}

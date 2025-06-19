@@ -11,9 +11,9 @@
     <Columns>
         <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Id)" Title="#ID"
                               Width="5%" CssClass="rz-text-subtitle2" />
-        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Category)" Title="Category" Width="10%" />
         <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.FileName)" Title="File Name" Width="20%" />
         <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.FileExt)" Title="File Ext" Width="5%" />
+        <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Category)" Title="Category" Width="10%" />
         <RadzenDataGridColumn Property="@nameof(MediaFileViewModel.Signed)" Title="Signed" Width="5%" Sortable="false">
             <Template Context="file">
                 @if (file.Signed)

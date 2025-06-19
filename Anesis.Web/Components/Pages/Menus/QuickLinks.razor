@@ -1,0 +1,252 @@
+﻿@page "/quick-links"
+@inject IApiService _apiService
+@inject NotificationService _notifyService
+
+<PageTitle>Quick Links</PageTitle>
+
+<RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
+        <RadzenText TextStyle="TextStyle.H5">Quick Links</RadzenText>
+
+        <RadzenBreadCrumb>
+            <RadzenBreadCrumbItem Icon="home" Text="Home" />
+            <RadzenBreadCrumbItem Icon="hub" Text="Quick Links" Path="/quick-links" />
+        </RadzenBreadCrumb>
+    </RadzenStack>
+
+    <RadzenDropZoneContainer TItem="QuickLinkViewModel" Data="_data"
+                             ItemSelector="ItemSelector" Drop="OnDrop">
+        <ChildContent>
+            <RadzenRow>
+                <RadzenColumn SizeSM="4" Size="6">
+                    <div style="height: 60px;">
+                        <RadzenText TextStyle="TextStyle.Body2" Text="@_warningMessage" class="rz-color-danger rz-m-0" />
+                    </div>
+                    <div style="max-height: 700px; overflow-y: scroll;">
+                        @foreach (var tabName in _menuTabNames)
+                        {
+                            <RadzenDropZone Value="tabName" class="rz-display-flex rz-flex-column rz-background-color-info-lighter rz-p-4" Style="flex: 1; gap: 1rem;">
+                                <RadzenText Text="@tabName.Replace("DefaultMenu.", "")" TextStyle="TextStyle.Subtitle1" />
+                            </RadzenDropZone>
+                        }
+                    </div>
+                </RadzenColumn>
+                <RadzenColumn SizeSM="8" Size="6">
+                    <div style="height: 60px;">
+                        <RadzenFormField Text="Enter New Group Name" Style="width: 100%;" class="custom-input-group">
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="_newGroupName" Name="NewGroupName"
+                                               Style="width: 100%;" />
+                            </ChildContent>
+                            <End>
+                                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Success"
+                                              Text="Add New Group" Icon="add" Click="AddNewGroup" />
+                            </End>
+                        </RadzenFormField>
+                    </div>
+                    <div style="max-height: 700px; overflow-y: scroll;">
+                        <RadzenRow>
+                            @foreach (var groupName in _groupNames)
+                            {
+                                <RadzenColumn SizeSM="6" Size="12">
+                                    <RadzenDropZone Value="groupName" class="rz-display-flex rz-flex-column rz-background-color-success-lighter rz-p-4" Style="flex: 1; gap: 1rem;">
+                                        <RadzenText Text="@groupName" TextStyle="TextStyle.Subtitle1" />
+                                    </RadzenDropZone>
+                                </RadzenColumn>
+                            }
+                        </RadzenRow>
+                    </div>
+                </RadzenColumn>
+            </RadzenRow>
+        </ChildContent>
+        <Template>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
+                <RadzenIcon Icon="@context.IconPath" />
+                <RadzenText TextStyle="TextStyle.Subtitle2" Text="@context.MenuText" class="rz-m-0" />
+            </RadzenStack>
+        </Template>
+    </RadzenDropZoneContainer>
+</RadzenStack>
+
+@code {
+    private List<QuickLinkViewModel> _data = new();
+    private List<string> _menuTabNames = new();
+    private List<string> _groupNames = new();
+    private string _newGroupName = "";
+    private string _warningMessage = "Here is a list of default menu items. Please drag and drop them into the appropriate group (green on the right) to create quick links.";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadQuickLinksAsync();
+    }
+
+    private bool ItemSelector(QuickLinkViewModel item, RadzenDropZone<QuickLinkViewModel> zone)
+    {
+        return item.GroupName == zone.Value.ToString();
+    }
+
+    private async void OnDrop(RadzenDropZoneItemEventArgs<QuickLinkViewModel> args)
+    {
+        var editModel = args.Item.ToEditModel();
+        if (args.FromZone != args.ToZone)
+        {
+            //// Update item zone
+            //args.Item.GroupName = args.ToZone.Value.ToString();
+
+            editModel.GroupName = args.ToZone.Value.ToString();
+            editModel.DisplayOrder = _data.Where(x => x.GroupName == args.ToZone.Value.ToString()).Count() + 1;
+        }
+
+        if (args.ToItem != null && args.ToItem != args.Item)
+        {
+            // // Reorder items in same zone or place the item at specific index in new zone
+            // _data.Remove(args.Item);
+            // _data.Insert(_data.IndexOf(args.ToItem), args.Item);
+
+            editModel.DisplayOrder = _data.Where(x => x.GroupName == args.ToZone.Value.ToString()).ToList().IndexOf(args.ToItem) + 1;
+        }
+
+        await SaveQuickLinksAsync(editModel);
+        await ReloadQuickLinksAsync();
+    }
+
+    private async Task ReloadQuickLinksAsync()
+    {
+        var menuItems = await GetMenuItemsForCurrentUserAsync() ?? new();
+        var quickLinks = await GetQuickLinksForCurrentUserAsync() ?? new();
+        var checkedMenuItemIds = quickLinks.Select(x => x.MenuItemId).Distinct().ToList();
+
+        _menuTabNames = menuItems
+            .OrderBy(x => x.TabDisplayOrder)
+            .Select(x => $"DefaultMenu.{x.TabName}")
+            .Distinct()
+            .ToList();
+
+        _groupNames = quickLinks
+            .Select(x => x.GroupName)
+            .Distinct()
+            .ToList();
+
+        _data = menuItems
+            .Select(x => new QuickLinkViewModel
+                {
+                    Id = quickLinks.FirstOrDefault(q => q.MenuItemId == x.Id)?.Id ?? 0,
+                    MenuItemId = x.Id,
+                    MenuText = x.MenuText,
+                    IconPath = x.IconPath,
+                    LinkUrl = x.LinkUrl,
+                    DisplayOrder = quickLinks.FirstOrDefault(q => q.MenuItemId == x.Id)?.DisplayOrder ?? x.DisplayOrder,
+                    CssClass = x.CssClass,
+                    Tooltip = x.Tooltip,
+                    GroupName = quickLinks.FirstOrDefault(q => q.MenuItemId == x.Id)?.GroupName ?? $"DefaultMenu.{x.TabName}",
+                })
+            .OrderBy(x => x.GroupName)
+            .ThenBy(x => x.DisplayOrder)
+            .ToList();
+
+        StateHasChanged();
+    }
+
+    private void AddNewGroup()
+    {
+        if (_newGroupName.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+
+        if (_groupNames.Contains(_newGroupName))
+        {
+            _notifyService.NotifyError("Add Quick Link Group", $"Group name '{_newGroupName}' already exists.");
+            return;
+        }
+
+        _groupNames.Add(_newGroupName);
+        _newGroupName = string.Empty;
+    }
+
+    private async Task<List<MenuItemViewModel>> GetMenuItemsForCurrentUserAsync()
+    {
+        var menuItemsRes = await _apiService.GetMenuItemsForCurrentUserAsync();
+
+        if (!menuItemsRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Menu Items", menuItemsRes.Messages);
+        }
+
+        return menuItemsRes.Data;
+    }
+
+    private async Task<List<QuickLinkViewModel>> GetQuickLinksForCurrentUserAsync()
+    {
+        var quickLinksRes = await _apiService.GetQuickLinksForCurrentUserAsync();
+
+        if (!quickLinksRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Quick Links", quickLinksRes.Messages);
+            return null;
+        }
+
+        return quickLinksRes.Data;
+    }
+
+    private async Task SaveQuickLinksAsync(QuickLinkEditModel editModel)
+    {
+        if (editModel.Id > 0)
+        {
+            if (editModel.GroupName.StartsWith("DefaultMenu."))
+            {
+                await DeleteQuickLinkAsync(editModel.Id);
+            }
+            else
+            {
+                await UpdateQuickLinkAsync(editModel);
+            }
+        }
+        else
+        {
+            await CreateQuickLinkAsync(editModel);
+        }
+    }
+
+    private async Task CreateQuickLinkAsync(QuickLinkEditModel editModel)
+    {
+        var createQuickLinkRes = await _apiService.CreateQuickLinkAsync(editModel);
+
+        if (createQuickLinkRes.Success)
+        {
+            _notifyService.NotifySuccess("Create Quick Link", createQuickLinkRes.Data);
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Create Quick Link", createQuickLinkRes.Messages);
+        }
+    }
+
+    private async Task UpdateQuickLinkAsync(QuickLinkEditModel editModel)
+    {
+        var updateQuickLinkRes = await _apiService.UpdateQuickLinkAsync(editModel);
+
+        if (updateQuickLinkRes.Success)
+        {
+            _notifyService.NotifySuccess("Update Quick Link", updateQuickLinkRes.Data);
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Update Quick Link", updateQuickLinkRes.Messages);
+        }
+    }
+
+    private async Task DeleteQuickLinkAsync(int id)
+    {
+        var updateQuickLinkRes = await _apiService.DeleteQuickLinkAsync(id);
+
+        if (updateQuickLinkRes.Success)
+        {
+            _notifyService.NotifySuccess("Delete Quick Link", updateQuickLinkRes.Data);
+        }
+        else
+        {
+            _notifyService.NotifyErrors("Delete Quick Link", updateQuickLinkRes.Messages);
+        }
+    }
+}

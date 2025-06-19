@@ -31,7 +31,19 @@ namespace Anesis.ApiService.Services.Services
                 .AnyAsync(x => x.AccountId == accountId && x.IsActive && x.FlagValue == permUniqueId, cancellationToken);
         }
 
-        public async Task<List<int>> GetPermissionsForUserAsync(string accountId, CancellationToken cancellationToken = default)
+        public async Task<List<int>> GetPermissionIdsForUserAsync(string accountId, CancellationToken cancellationToken = default)
+        {
+            return await _groupPermissionRepo.All(true)
+                .Join(_userInGroupRepo.All(true),
+                    gp => gp.UserGroupId,
+                    ug => ug.UserGroupId,
+                    (gp, ug) => new { gp.Permission.Id, ug.AccountId, gp.UserGroup.IsActive })
+                .Where(x => x.AccountId == accountId && x.IsActive == true)
+                .Select(x => x.Id)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<int>> GetPermissionUniqueCodesForUserAsync(string accountId, CancellationToken cancellationToken = default)
         {
             return await _groupPermissionRepo.All(true)
                 .Join(_userInGroupRepo.All(true),

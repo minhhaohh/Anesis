@@ -2,10 +2,10 @@
 {
     public interface IApiService : IAuthService, ICustomerService,
         IDeviceService, IDropdownDataService, IInvoiceService,
-        ILocationService, IMediaFileService,IPatientService, 
-        IProcedureService,  IProposalService, IProviderService, 
-        IReconciliationService, ISiteSettingService, ISurgeryCaseService, 
-        ITimetableService
+        ILocationService, IMediaFileService, IMenuService, 
+        IPatientService, IProcedureService,  IProposalService, 
+        IProviderService, IReconciliationService, ISiteSettingService, 
+        ISurgeryCaseService, ITimetableService
     {
     }
 }

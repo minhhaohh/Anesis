@@ -79,6 +79,7 @@ namespace Anesis.ApiService.Controllers
                 return validationResult.ToResponseWithErrors();
             }
 
+            // Ensure that the vendor cost is set to applied cost if it's not greater than 0
             model.VendorCost = model.VendorCost > 0 ? model.VendorCost : model.AppliedCost;
             
             if (!await _deviceService.CreateAsync(model))
@@ -103,6 +104,7 @@ namespace Anesis.ApiService.Controllers
                 return validationResult.ToResponseWithErrors();
             }
 
+            // Ensure that the vendor cost is set to applied cost if it's not greater than 0
             model.VendorCost = model.VendorCost > 0 ? model.VendorCost : model.AppliedCost;
 
             if (!await _deviceService.UpdateAsync(model))

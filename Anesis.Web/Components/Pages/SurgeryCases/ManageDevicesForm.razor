@@ -16,7 +16,7 @@
                         <RadzenDropDown @bind-Value="_selectedDevice" TValue="DeviceWithCostViewModel" Name="SelectedDevice"
                                         Data="_activeDevices" AllowClear="true" AllowFiltering="true" ClearSearchAfterSelection="true"
                                         Placeholder="---Select---" Style="width: 100%;"
-                                        Change="SelectDeviceAddToCase">
+                                        Change="SelectDevice">
                             <ValueTemplate Context="device">
                                 <div>
                                     #<strong>@device.Id</strong> - <strong>@device.Name</strong> (@device.VendorName)
@@ -283,7 +283,7 @@
         };
     }
 
-    private void SelectDeviceAddToCase()
+    private void SelectDevice()
     {
         _addCastCostModel.DeviceId = _selectedDevice?.Id;
     }

@@ -1,7 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject CookieThemeService _cookieThemeService
 
-<div>
-    @Body
-</div>
+<RadzenLayout>
+    <RadzenBody>
+        @Body
+    </RadzenBody>
+</RadzenLayout>
 
 <RadzenComponents @rendermode="InteractiveServer" />

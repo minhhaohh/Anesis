@@ -24,6 +24,11 @@ builder.Services.AddOutputCache();
 
 builder.Services.AddRadzenComponents();
 
+builder.Services.AddRadzenCookieThemeService(options =>
+{
+    options.Name = "Anesis.SettingsPortal.Theme";
+});
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 

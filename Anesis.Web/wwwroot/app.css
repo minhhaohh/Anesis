@@ -55,3 +55,21 @@ textarea::placeholder,
 .rz-dialog {
     max-width: 100%;
 }
+
+.quick-link-item {
+    width: 100%;
+    padding: 16px 8px;
+    border-radius: 12px;
+}
+
+    .quick-link-item a {
+        text-decoration: none;
+    }
+
+    .quick-link-item i, .quick-link-item p {
+        color: #eaebec;
+    }
+
+.popover-header {
+    color: var(--rz-primary) !important;
+}

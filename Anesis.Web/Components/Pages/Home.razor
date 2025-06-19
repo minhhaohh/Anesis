@@ -1,7 +1,59 @@
 ﻿@page "/"
+@inject IApiService _apiService
+@inject NotificationService _notifyService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
+        <RadzenText TextStyle="TextStyle.H5">Dashboard</RadzenText>
 
-Welcome to your new app.
+        <RadzenBreadCrumb>
+            <RadzenBreadCrumbItem Icon="home" Text="Home" />
+            <RadzenBreadCrumbItem Icon="home" Text="Dashboard" Path="/" />
+        </RadzenBreadCrumb>
+    </RadzenStack>
+
+    @foreach (var group in _userQuickLinks.GroupBy(x => x.GroupName).OrderBy(x => x.Key))
+    {
+        var groupName = group.Key;
+        <RadzenFieldset Text="@groupName" AllowCollapse="true">
+            <RadzenRow>
+                @foreach (var item in group.OrderBy(x => x.DisplayOrder))
+                {
+                    var style = $"background-color: {item.CssClass};";
+                    <RadzenColumn SizeLG="2" SizeMD="3" SizeSM="4" SizeXS="6" Style="@style" class="quick-link-item">
+                        <a href="@item.LinkUrl" title="@item.Tooltip">
+                            <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                                <RadzenIcon Icon="@item.IconPath" Style="font-size: 3rem;" />
+                                <RadzenText TextStyle="TextStyle.Body1" Text="@item.MenuText" TextAlign="TextAlign.Center" />
+                            </RadzenStack>
+                        </a>
+                    </RadzenColumn>
+                }
+            </RadzenRow>
+        </RadzenFieldset>
+    }
+</RadzenStack>
+
+@code {
+    private List<QuickLinkViewModel> _userQuickLinks = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _userQuickLinks = await GetQuickLinksForCurrentUserAsync() ?? new();
+    }
+
+    private async Task<List<QuickLinkViewModel>> GetQuickLinksForCurrentUserAsync()
+    {
+        var quickLinksRes = await _apiService.GetQuickLinksForCurrentUserAsync();
+
+        if (!quickLinksRes.Success)
+        {
+            _notifyService.NotifyErrors("Get Quick Links", quickLinksRes.Messages);
+            return null;
+        }
+
+        return quickLinksRes.Data;
+    }
+}

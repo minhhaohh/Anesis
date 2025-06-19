@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
+@inject CookieThemeService _cookieThemeService
 
 @* <AuthorizeView>
     <Authorized> *@
-<RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body' 'rz-sidebar rz-footer'">
+<RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader>
         <RadzenRow>
             <RadzenColumn Size="3">
@@ -15,7 +16,7 @@
             <RadzenColumn Size="6">
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center"
                              AlignItems="AlignItems.Center" Style="height: 100%;">
-                    <span class="rz-color-info-dark rz-m-0" style="font-size: 30px; font-weight: 800; text-align: center;">
+                    <span class="rz-color-info-dark" style="font-size: 30px; font-weight: 800;">
                         ANESIS SPINE AND PAIN CARE
                     </span>
                 </RadzenStack>
@@ -33,9 +34,9 @@
     <RadzenBody>
         @Body
     </RadzenBody>
-    <RadzenFooter>
+    @* <RadzenFooter>  'rz-sidebar rz-footer'
         <span><b>Copyright © 2016-@DateTime.Now.Year Anesis Spine and Pain Care.</b> All rights reserved.</span>
-    </RadzenFooter>
+    </RadzenFooter> *@
 </RadzenLayout>
 @*     </Authorized>
     <NotAuthorized>

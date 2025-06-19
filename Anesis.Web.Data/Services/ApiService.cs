@@ -11,6 +11,7 @@
         private static string API_Invoices = "api/Invoices";
         private static string API_Locations = "api/Locations";
         private static string API_Media_Files = "api/MediaFiles";
+        private static string API_Menus = "api/Menus";
         private static string API_Patients = "api/Patients";
         private static string API_Procedures = "api/Procedures";
         private static string API_Proposals = "api/Proposals";

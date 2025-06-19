@@ -8,6 +8,7 @@ using Anesis.ApiService.Domain.DTOs.GeneralChangeLogs;
 using Anesis.ApiService.Domain.DTOs.GenericInvoices;
 using Anesis.ApiService.Domain.DTOs.Locations;
 using Anesis.ApiService.Domain.DTOs.MediaFiles;
+using Anesis.ApiService.Domain.DTOs.Menus;
 using Anesis.ApiService.Domain.DTOs.Patients;
 using Anesis.ApiService.Domain.DTOs.PotentialProcedures;
 using Anesis.ApiService.Domain.DTOs.Reconciliations;
@@ -27,6 +28,7 @@ namespace Anesis.ApiService.Infrastructures
             CreateInvoiceMap();
             CreateLocationMap();
             CreateMediaFileMap();
+            CreateMenuMap();
             CreatePatientMap();
             CreateProposalMap();
             CreateReconciliationMap();
@@ -76,6 +78,23 @@ namespace Anesis.ApiService.Infrastructures
         {
             CreateMap<CustomMediaFile, MediaFileDto>()
                 .ForMember(x => x.Signed, options => options.MapFrom(x => x.Signatures != null && x.Signatures.Count > 0));
+        }
+
+        public void CreateMenuMap()
+        {
+            CreateMap<MenuItem, MenuItemDto>()
+                .ForMember(x => x.TabName, options => options.MapFrom(x => x.MenuTab.TabName))
+                .ForMember(x => x.TabDisplayOrder, options => options.MapFrom(x => x.MenuTab.DisplayOrder))
+                .ForMember(x => x.TabIconPath, options => options.MapFrom(x => x.MenuTab.NewIconPath))
+                .ForMember(x => x.LinkUrl, options => options.MapFrom(x => x.NewLinkUrl))
+                .ForMember(x => x.IconPath, options => options.MapFrom(x => x.NewIconPath));
+
+            CreateMap<UserQuickLink, QuickLinkDto>()
+                .ForMember(x => x.MenuText, options => options.MapFrom(x => x.MenuItem.MenuText))
+                .ForMember(x => x.LinkUrl, options => options.MapFrom(x => x.MenuItem.NewLinkUrl))
+                .ForMember(x => x.Tooltip, options => options.MapFrom(x => x.MenuItem.Tooltip))
+                .ForMember(x => x.IconPath, options => options.MapFrom(x => x.MenuItem.NewIconPath))
+                .ForMember(x => x.CssClass, options => options.MapFrom(x => x.MenuItem.CssClass));
         }
 
         public void CreatePatientMap()

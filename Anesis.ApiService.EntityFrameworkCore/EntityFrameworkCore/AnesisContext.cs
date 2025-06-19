@@ -30,6 +30,7 @@ namespace Anesis.ApiService.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ClosedPayrollMap());
             modelBuilder.ApplyConfiguration(new CreditTransactionMap());
             modelBuilder.ApplyConfiguration(new CustomerMap());
+            modelBuilder.ApplyConfiguration(new CustomMediaFileMap());
 
             modelBuilder.ApplyConfiguration(new DepositBatchItemMap());
             modelBuilder.ApplyConfiguration(new DepositBatchMap());
@@ -53,7 +54,8 @@ namespace Anesis.ApiService.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new LocalityAllowedAmountMap());
             modelBuilder.ApplyConfiguration(new LocationMap());
 
-            modelBuilder.ApplyConfiguration(new CustomMediaFileMap());
+            modelBuilder.ApplyConfiguration(new MenuItemMap());
+            modelBuilder.ApplyConfiguration(new MenuTabMap());
 
             modelBuilder.ApplyConfiguration(new PatientMap());
             modelBuilder.ApplyConfiguration(new PermissionMap());
@@ -79,6 +81,7 @@ namespace Anesis.ApiService.EntityFrameworkCore
 
             modelBuilder.ApplyConfiguration(new UserGroupMap());
             modelBuilder.ApplyConfiguration(new UserInGroupMap());
+            modelBuilder.ApplyConfiguration(new UserQuickLinkMap());
 
             modelBuilder.ApplyConfiguration(new WeekMap());
         }

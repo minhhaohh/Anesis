@@ -200,52 +200,61 @@ namespace Anesis.ApiService.Services.Services
 
         public async Task<bool> CreateAsync(DeviceWithCostEditDto model, CancellationToken cancellationToken = default)
         {
-            var device = _mapper.Map<DeviceAndSupply>(model);
+            // Insert the new device
+            var newDevice = model.ToDeviceModel();
+            await _deviceRepo.InsertAsync(newDevice, cancellationToken);
 
-            device.CreatedDate = device.UpdatedDate = DateTime.Now;
-            device.CreatedBy = device.UpdatedBy = "haotm";
-
-            await _deviceRepo.InsertAsync(device, cancellationToken);
-
-            await _deviceCostRepo.InsertAsync(model.ToDeviceCost(device), cancellationToken);
+            // Insert the cost for the new device
+            var newDeviceCost = model.ToDeviceCostModel(newDevice);
+            await _deviceCostRepo.InsertAsync(newDeviceCost, cancellationToken);
 
             return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
         }
 
         public async Task<bool> UpdateAsync(DeviceWithCostEditDto model, CancellationToken cancellationToken = default)
         {
-            var currentTime = DateTime.Now;
-            var device =  await FindByIdAsync(model.Id, cancellationToken);
-
-            _mapper.Map(model, device); 
-
-            device.UpdatedDate = currentTime;
-            device.UpdatedBy = "haotm";
-
-            _deviceRepo.Update(device);
-
-            var deviceCost = await FindCurrentCostAsync(device.Id);
-
-            if (deviceCost == null)
+            // Find the existing device by ID
+            var existingDevice =  await FindByIdAsync(model.Id, cancellationToken);
+            if (existingDevice == null)
             {
-                await _deviceCostRepo.InsertAsync(model.ToDeviceCost(device.Id), cancellationToken);
+                return false;
+            }
+
+            // Apply changes to the device entity
+            model.ApplyChangesTo(existingDevice);
+            _deviceRepo.Update(existingDevice);
+
+            // Find the current cost for the device
+            var currentDeviceCost = await FindCurrentCostAsync(existingDevice.Id);
+
+            // If there is no current cost, insert a new one
+            if (currentDeviceCost == null)
+            {
+                var newDeviceCost = model.ToDeviceCostModel(existingDevice.Id);
+                await _deviceCostRepo.InsertAsync(newDeviceCost, cancellationToken);
+
                 return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
             }
 
-            if (deviceCost.EffectiveDate.Date == model.EffectiveDate.Value.Date || model.OverwriteEffDate)
+            // If the effective date matches or is overwritten, apply changes to the cost
+            if (currentDeviceCost.EffectiveDate.Date == model.EffectiveDate.Value.Date || model.OverwriteEffDate)
             {
-                model.ApplyCostChanges(deviceCost);
+                model.ApplyCostChanges(currentDeviceCost);
             }
+            // If the effective date does not match, set the end date and insert a new cost
             else
             {
-                deviceCost.EndDate = model.EffectiveDate.Value.Date.AddDays(-1);
-                deviceCost.UpdatedBy = "haotm";
-                deviceCost.UpdatedDate = currentTime;
+                // Set the end date for the current cost
+                currentDeviceCost.EndDate = model.EffectiveDate.Value.Date.AddDays(-1);
+                currentDeviceCost.UpdatedBy = "haotm";
+                currentDeviceCost.UpdatedDate = DateTime.Now;
 
-                await _deviceCostRepo.InsertAsync(model.ToDeviceCost(device.Id), cancellationToken);
+                // Insert a new cost for the device with the new effective date
+                var newDeviceCost = model.ToDeviceCostModel(existingDevice.Id);
+                await _deviceCostRepo.InsertAsync(newDeviceCost, cancellationToken);
             }
 
-            _deviceCostRepo.Update(deviceCost);
+            _deviceCostRepo.Update(currentDeviceCost);
 
             return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
         }

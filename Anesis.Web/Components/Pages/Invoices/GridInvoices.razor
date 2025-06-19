@@ -163,7 +163,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     private int _totalCount = 0;
     private int _pageSize = PageSize.Default();
     private bool _isLoading = false;
-    private string _gridStyle = "max-height: 500px;";
+    private string _gridStyle = "max-height: 550px;";
 
     // COMPONENTS
     private RadzenDataGrid<InvoiceViewModel> _grid;
@@ -181,7 +181,7 @@ PagerHorizontalAlign="HorizontalAlign.Center" Style="@_gridStyle">
     public void ResizeGrid(bool collapsedFilterPanel)
     {
         CollapsedFilterPanel = collapsedFilterPanel;
-        _gridStyle = CollapsedFilterPanel ? "max-height: 686px;" : "max-height: 500px;";
+        _gridStyle = CollapsedFilterPanel ? "max-height: 736px;" : "max-height: 550px;";
     }
 
     public async Task RefreshGridAsync()
